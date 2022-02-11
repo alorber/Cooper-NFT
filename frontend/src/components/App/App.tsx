@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import React from 'react';
 import SellPageLayout from '../layouts/SellPageLayout/SellPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -11,7 +10,7 @@ const App = () => {
     <BrowserRouter>
       <Stack className='App' h={'100%'}>
         <Routes>
-          <Route path='/' element={<></>} />
+          <Route path='/' element={<>hi</>} />
           <Route path='/sell' element={<SellPageLayout />} />
         </Routes>
       </Stack>

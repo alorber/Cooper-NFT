@@ -1,5 +1,5 @@
-import { Heading } from '@chakra-ui/react';
 import React from 'react';
+import UploadForm from '../../ui/UploadForm/UploadForm';
 
 type SellPageLayoutProps = {
 
@@ -8,7 +8,7 @@ type SellPageLayoutProps = {
 const SellPageLayout = ({}: SellPageLayoutProps) => {
 
     return (
-        <Heading>Hi There</Heading>
+       <UploadForm />
     );
 }
 
