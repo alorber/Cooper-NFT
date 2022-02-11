@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { Flex, Spinner, Text } from '@chakra-ui/react';
+import { Flex, IconButton, Spinner, Stack, Text } from '@chakra-ui/react';
 import { useDropzone } from 'react-dropzone';
+import { CloseIcon } from '@chakra-ui/icons';
 
 type FileUploaderProps = {
 
@@ -8,18 +9,21 @@ type FileUploaderProps = {
 
 const FileUploader = ({}: FileUploaderProps) => {
     const [isLoading, setIsLoading] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
 
     // Set up Dropzone
     const onDrop = useCallback((acceptedFiles) => {
-        const file = acceptedFiles?.[0];
+        const newFile = acceptedFiles?.[0];
 
-        if(!file) {
+        if(!newFile) {
             return;
         }
 
         try {
-            console.log(file);
-            const file_url =URL.createObjectURL(file);
+            console.log(newFile);
+            const file_url =URL.createObjectURL(newFile);
+            console.log(file_url);
+            setFile(newFile);
         } catch(err) {
             console.log(err);
         }
@@ -27,17 +31,29 @@ const FileUploader = ({}: FileUploaderProps) => {
     }, []);
     const {getRootProps, getInputProps} = useDropzone({onDrop, maxFiles:1});
 
+    const deleteFile = () => {
+        setFile(null);
+    }
+
     return (
-        <Flex bg="#dadada" w={250} h={250} justify="center" align="center"
-            p={50} m={2} borderRadius={5} textAlign="center" {...getRootProps()}>
-            <input {...getInputProps()} />
-                {isLoading ? (
-                    <Spinner size={'lg'} />
-                ) : (
-                    <Text>Upload your NFT</Text>
-                )}
-                
-        </Flex>
+        <Stack>
+            <Flex bg="#dadada" w={250} h={250} justify="center" align="center"
+                p={50} m={2} borderRadius={5} textAlign="center" {...getRootProps()}>
+                <input {...getInputProps()} />
+                    {isLoading ? (
+                        <Spinner size={'lg'} />
+                    ) : (
+                        <Text>Upload your NFT</Text>
+                    )}
+            </Flex>
+            {file && (
+                <Flex dir='hor' m={2}>
+                    <IconButton aria-label='Delete File' icon={<CloseIcon />} 
+                        onClick={deleteFile} ml={2} />
+                    <Text ml={4} alignSelf={'center'}>{file.name}</Text>
+                </Flex>
+            )}
+        </Stack>
     );
 }
 

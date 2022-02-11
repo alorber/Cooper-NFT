@@ -60,7 +60,7 @@ const UploadForm = ({}: UploadFormProps) => {
                                 label={"NFT Name"} type={"text"} placeholder={"My NFT"} ariaLabel={"NFT_Name"} />
 
                             {/* Description Field */}
-                            <FormTextInput value={formValues.name} onChange={(val) => {updateForm('description', val)}}
+                            <FormTextInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
                                 label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
 
                             {/* Price Field */}
