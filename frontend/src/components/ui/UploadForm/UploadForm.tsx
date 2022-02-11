@@ -21,19 +21,24 @@ type UploadFormProps = {
 type formValuesType = {
     name: string, 
     description: string, 
-    price: number | null, 
-    imgUrl: string | null
+    price: number | null
 }
 
 const UploadForm = ({}: UploadFormProps) => {
-    const [formValues, setFormValues] = useState<formValuesType>({name: '', description: '', price: null, imgUrl: null})
+    const [file, setFile] = useState<File | null>(null);
+    const [formValues, setFormValues] = useState<formValuesType>({name: '', description: '', price: null})
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const clearForm = () => {setFormValues({name: '', description: '', price: null, imgUrl: null})}
+    const clearForm = () => {setFormValues({name: '', description: '', price: null})}
     const updateForm = (field: keyof typeof formValues, value: string | number | null) => {
         setFormValues({...formValues, [field]: value});
     };
+
+    const isFormInvalid = () => {
+        return file === null || formValues.name === '' || formValues.description === '' || formValues.price === null || 
+            Number(formValues.price) < 0.01;
+    }
 
     const onSubmit = () => {
 
@@ -52,7 +57,7 @@ const UploadForm = ({}: UploadFormProps) => {
 
                             {/* NFT File Upload Field */}
                             <Flex w='100%' justifyContent={'center'}>
-                                <FileUploader />  
+                                <FileUploader file={file} setFile={setFile} />  
                             </Flex>
 
                             {/* Name Field */}
@@ -68,7 +73,7 @@ const UploadForm = ({}: UploadFormProps) => {
                                 onChange={(val) => {updateForm('price', val)}} />
 
                             {/* Submit Button */}
-                            <FormSubmitButton isLoading={isLoading} label={"Submit"} />
+                            <FormSubmitButton isLoading={isLoading} label={"Submit"} isDisabled={isFormInvalid()} />
                         </Stack>
                     </form>
                 </Box>

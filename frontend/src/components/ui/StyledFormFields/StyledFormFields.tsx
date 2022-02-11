@@ -48,15 +48,18 @@ export const FormNumberInput = ({value, onChange, label}: FormNumberInputProps) 
     const parse = (val: string) => val.replace(/^\$/, '');
 
     return (
-        <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? 1.32)} min={0.01} 
-                borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}} focusBorderColor="#2395ff" 
-                precision={2} pattern={"$?[0-9]*(.[0-9]+)?"}>
-            <NumberInputField />
-            <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-            </NumberInputStepper>
-        </NumberInput>
+        <FormControl isRequired>
+            <FormLabel>{label}</FormLabel>
+            <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
+                    borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}} focusBorderColor="#2395ff" 
+                    precision={2} pattern={"$?[0-9]*(.[0-9]+)?"}>
+                <NumberInputField />
+                <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                </NumberInputStepper>
+            </NumberInput>
+        </FormControl>
     );
 }
 
@@ -64,12 +67,13 @@ export const FormNumberInput = ({value, onChange, label}: FormNumberInputProps) 
 export type FormSubmitButtonProps = {
     isLoading: boolean,
     label: string,
-    onClick?: () => void
+    onClick?: () => void,
+    isDisabled?: boolean
 }
 
-export const FormSubmitButton = ({isLoading, label, onClick}: FormSubmitButtonProps) => {
+export const FormSubmitButton = ({isLoading, label, onClick, isDisabled=false}: FormSubmitButtonProps) => {
     return (
-        <Button width="full" type="submit" boxShadow='sm' 
+        <Button width="full" type="submit" boxShadow='sm' isDisabled={isDisabled}
                 backgroundColor={"#b7e0ff"} _hover={{boxShadow: 'md'}}
                 _active={{boxShadow: 'lg'}} _focus={{outline: "none"}} 
                 isLoading={isLoading} onClick={onClick} >

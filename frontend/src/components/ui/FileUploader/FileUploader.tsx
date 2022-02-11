@@ -4,12 +4,12 @@ import { useDropzone } from 'react-dropzone';
 import { CloseIcon } from '@chakra-ui/icons';
 
 type FileUploaderProps = {
-
+    file: File | null,
+    setFile: (f: File | null) => void
 };
 
-const FileUploader = ({}: FileUploaderProps) => {
+const FileUploader = ({file, setFile}: FileUploaderProps) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [file, setFile] = useState<File | null>(null);
 
     // Set up Dropzone
     const onDrop = useCallback((acceptedFiles) => {
