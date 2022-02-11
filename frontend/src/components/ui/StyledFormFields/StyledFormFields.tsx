@@ -39,17 +39,18 @@ export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLa
 // Number Input
 export type FormNumberInputProps = {
     value: number | null,
-    onChange: (v: number) => void,
+    onChange: (v: number | string) => void,
     label: string,
 }
 
 export const FormNumberInput = ({value, onChange, label}: FormNumberInputProps) => {
-    const format = (val: number | string) => '$' + val;
-    const parse = (val: string) => Number(val.replace(/^\$/, ''));
+    const format = (val: number | string) => `$` + val;
+    const parse = (val: string) => val.replace(/^\$/, '');
 
     return (
-        <NumberInput onChange={(val) => {onChange(parse(val))}} value={format(value ?? '')} min={0.01} isRequired={true}
-                borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}} focusBorderColor="#2395ff" precision={2} step={0.01}>
+        <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? 1.32)} min={0.01} 
+                borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}} focusBorderColor="#2395ff" 
+                precision={2} pattern={"$?[0-9]*(.[0-9]+)?"}>
             <NumberInputField />
             <NumberInputStepper>
                 <NumberIncrementStepper />
