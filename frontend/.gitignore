@@ -98,3 +98,6 @@ lerna-debug.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# IPFS Authentication
+/services/IPFS_AUTH.ts

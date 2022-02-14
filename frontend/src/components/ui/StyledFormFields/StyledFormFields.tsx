@@ -52,7 +52,7 @@ export const FormNumberInput = ({value, onChange, label}: FormNumberInputProps) 
             <FormLabel>{label}</FormLabel>
             <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
                     borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}} focusBorderColor="#2395ff" 
-                    precision={2} pattern={"$?[0-9]*(.[0-9]+)?"}>
+                    precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?"}>
                 <NumberInputField />
                 <NumberInputStepper>
                     <NumberIncrementStepper />

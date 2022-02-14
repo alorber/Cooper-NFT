@@ -13,21 +13,22 @@ const FileUploader = ({file, setFile}: FileUploaderProps) => {
 
     // Set up Dropzone
     const onDrop = useCallback((acceptedFiles) => {
+        setIsLoading(true);
+
         const newFile = acceptedFiles?.[0];
 
         if(!newFile) {
+            setIsLoading(false);
             return;
         }
 
         try {
             console.log(newFile);
-            const file_url =URL.createObjectURL(newFile);
-            console.log(file_url);
             setFile(newFile);
         } catch(err) {
             console.log(err);
         }
-
+        setIsLoading(false);
     }, []);
     const {getRootProps, getInputProps} = useDropzone({onDrop, maxFiles:1});
 

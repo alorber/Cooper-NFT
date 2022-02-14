@@ -13,6 +13,7 @@ import {
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
+import {uploadFileToIPFS} from '../../../services/ipfs';
 
 type UploadFormProps = {
 
@@ -40,8 +41,16 @@ const UploadForm = ({}: UploadFormProps) => {
             Number(formValues.price) < 0.01;
     }
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
+        if(file === null) {
+            return;
+        }
 
+        setIsLoading(true);
+
+        await uploadFileToIPFS(file);
+
+        setIsLoading(false);
     }
 
     return (
