@@ -1,19 +1,18 @@
 import FileUploader from '../../ui/FileUploader/FileUploader';
 import React, { useState } from 'react';
 import {
-    Box,
-    Flex,
-    Heading,
-    Stack,
-    Text
-    } from '@chakra-ui/react';
-import {
     FormErrorMessage,
     FormNumberInput,
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
-import {uploadFileToIPFS} from '../../../services/ipfs';
+import { uploadFileToIPFS } from '../../../services/ipfs';
+import {
+    Box,
+    Flex,
+    Heading,
+    Stack,
+    } from '@chakra-ui/react';
 
 type UploadFormProps = {
 

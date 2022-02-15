@@ -120,9 +120,6 @@ contract CU_NFT is ERC1155, AccessControl {
     function mint(address to, uint256 id, uint256 amount) public virtual {
         require(hasRole(_CURRENT_STUDENT, _msgSender()), "Must be a current student to mint");
 
-        // _tokenIds.increment();
-        // uint256 tokenId = _tokenIds.current();
-
         _mint(to, id, amount, "");
     }
 
