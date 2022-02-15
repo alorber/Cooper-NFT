@@ -101,3 +101,6 @@ Thumbs.db
 
 # IPFS Authentication
 /services/IPFS_AUTH.ts
+
+#Hardhat files
+artifacts

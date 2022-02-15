@@ -41,6 +41,9 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
+  paths: {
+    artifacts: '../frontend/src/artifacts',
+  },
 };
 
 export default config;

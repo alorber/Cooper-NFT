@@ -1,5 +1,5 @@
 // Functions to Access Ethereum Contracts
-import CU_NFT from '../../../backend/artifacts/contracts/CU_NFT.sol/CU_NFT.json';
+import CU_NFT from '../artifacts/contracts/CU_NFT.sol/CU_NFT.json';
 import { CU_MARKETPLACE_ADDRESS, CU_NFT_ADDRESS } from './CONTRACT_ADDRESSES';
 import { ethers, providers } from 'ethers';
 
@@ -46,10 +46,23 @@ export const getMetaMaskWallet = async (request: boolean = true): Promise<MetaMa
     
             return {status: "Success", address: addresses[0]}
         } catch(err) {
-            return {status: "Failure", error: err}
+            return {status: "Failure", error: ""}
         }
     } else {
         return {status: "Failure", error: "MetaMask not installed"}
+    }
+}
+
+// Adds MetaMask 'Listener'
+export const watchMetaMask = (setAddress: (address: string | null) => void) => {
+    if(window.ethereum) {
+        window.ethereum.on("accountsChanged", (accounts: string[]) => {
+            if (accounts.length > 0) {
+              setAddress(accounts[0]);
+            } else {
+              setAddress(null);
+            }
+          });
     }
 }
 
