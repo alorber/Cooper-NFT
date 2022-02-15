@@ -40,10 +40,7 @@ export const getMetaMaskWallet = async (request: boolean = true): Promise<MetaMa
         try {
             const addresses = await window.ethereum.request({
                 method: request ? 'eth_requestAccounts' : 'eth_accounts'
-            });
-    
-            // TODO: Allow user to decide between multiple wallet addresses
-    
+            });    
             return {status: "Success", address: addresses[0]}
         } catch(err) {
             return {status: "Failure", error: ""}
