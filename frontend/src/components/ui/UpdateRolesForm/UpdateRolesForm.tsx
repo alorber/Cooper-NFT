@@ -91,7 +91,7 @@ const UpdateRolesForm = ({accountContractRoles}: UpdateRolesFormProps) => {
                                     alignSelf='center'>
                                 <Stack direction={"row"} spacing={4}>
                                     {rolesControlled.map(role => 
-                                        <Radio value={role}>{role}</Radio>
+                                        <Radio value={role} key={role}>{role}</Radio>
                                     )}    
                                 </Stack>
                             </RadioGroup>

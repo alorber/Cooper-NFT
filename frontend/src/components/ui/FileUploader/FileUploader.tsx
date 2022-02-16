@@ -23,7 +23,6 @@ const FileUploader = ({file, setFile}: FileUploaderProps) => {
         }
 
         try {
-            console.log(newFile);
             setFile(newFile);
         } catch(err) {
             console.log(err);
