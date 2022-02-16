@@ -29,7 +29,7 @@ const FileUploader = ({file, setFile}: FileUploaderProps) => {
             console.log(err);
         }
         setIsLoading(false);
-    }, []);
+    }, [setFile]);
     const {getRootProps, getInputProps} = useDropzone({onDrop, maxFiles:1});
 
     const deleteFile = () => {

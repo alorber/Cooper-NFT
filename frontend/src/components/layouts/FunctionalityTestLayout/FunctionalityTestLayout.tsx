@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import UpdateRolesForm from '../../ui/UpdateRolesForm/UpdateRolesForm';
 import UploadForm from '../../ui/UploadForm/UploadForm';
 import {
     Box,
     Button,
-    Flex,
+    ButtonGroup,
     Heading,
     Stack,
-    Text
     } from '@chakra-ui/react';
 import {
     ContractRole,
@@ -24,6 +24,7 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
     const [address, setAddress] = useState<string | null>(null);
     const [metaMaskError, setMetaMaskError] = useState<string | null>(null);
     const [accountContractRoles, setAccountContractRoles] = useState<ContractRole[] | null>(null);
+    const [selectedForm, setSelectedForm] = useState<'Roles' | 'NFT'>('NFT');
 
     const loadWallet = async (request: boolean = true) => {
         const resp = await getMetaMaskWallet(request);
@@ -48,7 +49,7 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
     // Check for connected accounts
     useEffect(() => {
         loadWallet(false);
-        watchMetaMask(setAddress);
+        watchMetaMask(setAddress, setAccountContractRoles, setMetaMaskError);
     }, [])
 
     return (
@@ -73,8 +74,28 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
                 </Heading>
             )}
             
-            {/* NFT Upload Form */}
-            <UploadForm />
+            {accountContractRoles && address && (
+                <Stack>
+                    <ButtonGroup isAttached alignSelf='center' mb={6}>
+                        <Button colorScheme={selectedForm === 'Roles' ? 'green' : 'gray'}
+                                onClick={(e) => {e.preventDefault(); setSelectedForm('Roles')}}>
+                            Update Roles
+                        </Button>
+                        <Button colorScheme={selectedForm === 'NFT' ? 'green' : 'gray'}
+                                onClick={(e) => {e.preventDefault(); setSelectedForm('NFT')}}>
+                            Create NFT
+                        </Button>
+                    </ButtonGroup>    
+
+                    {/* Update Roles Form */}
+                    {selectedForm === 'Roles' &&
+                        <UpdateRolesForm accountContractRoles={accountContractRoles} />
+                    }
+
+                    {/* NFT Upload Form */}
+                    {selectedForm === 'NFT' && <UploadForm />}
+                </Stack>
+            )}
         </Stack>
     )
 }

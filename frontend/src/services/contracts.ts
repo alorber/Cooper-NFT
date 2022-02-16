@@ -1,7 +1,7 @@
 // Functions to Access Ethereum Contracts
 import CU_NFT from '../artifacts/contracts/CU_NFT.sol/CU_NFT.json';
 import { CU_MARKETPLACE_ADDRESS, CU_NFT_ADDRESS } from './CONTRACT_ADDRESSES';
-import { ethers, providers } from 'ethers';
+import { ethers } from 'ethers';
 
 // Fix MetaMask TypeScript Issue
 declare let window: any;
@@ -68,13 +68,24 @@ export const getMetaMaskWallet = async (request: boolean = true): Promise<MetaMa
 }
 
 // Adds MetaMask 'Listener'
-export const watchMetaMask = (setAddress: (address: string | null) => void) => {
+export const watchMetaMask = (
+        setAddress: (address: string | null) => void,
+        setRoles: (role: ContractRole[] | null) => void,
+        setMetaMaskError: (err: string | null) => void
+    ) => {
     if(window.ethereum) {
-        window.ethereum.on("accountsChanged", (accounts: string[]) => {
+        window.ethereum.on("accountsChanged", async (accounts: string[]) => {
             if (accounts.length > 0) {
               setAddress(accounts[0]);
+
+              // Get Account Role(s)
+              const rolesResp = await getContractRole(accounts[0]);
+              if(rolesResp.status === "Success") {
+                setRoles(rolesResp.roles);
+              }
             } else {
               setAddress(null);
+              setMetaMaskError("User signed out");
             }
           });
     }
@@ -102,9 +113,13 @@ const initiateNFTContractWriteConnection = async (): Promise<NFTContractWriteCon
 export const setContractAdmin = async (address: string): Promise<TransactionResponse> => {
     if(window.ethereum) {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.addAdmin(address);
-        await transaction.wait();
-        return {status: "Success"};
+        try {
+            const transaction = await contract.addAdmin(address);
+            await transaction.wait();    
+            return {status: "Success"};
+        } catch(err: any) {
+            return {status: "Failure", error: err}
+        }
     } else {
         return MetaMaskNotInstalledError;
     }
@@ -114,9 +129,13 @@ export const setContractAdmin = async (address: string): Promise<TransactionResp
 export const removeContractAdmin = async (address: string): Promise<TransactionResponse> => {
     if(window.ethereum) {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.removeAdmin(address);
-        await transaction.wait();
-        return {status: "Success"};
+        try {
+            const transaction = await contract.removeAdmin(address);
+            await transaction.wait();
+            return {status: "Success"};
+        }  catch(err: any) {
+            return {status: "Failure", error: err}
+        }
     } else {
         return MetaMaskNotInstalledError;
     }
@@ -125,10 +144,14 @@ export const removeContractAdmin = async (address: string): Promise<TransactionR
 // Gives account "student" role
 export const setContractStudent = async (address: string): Promise<TransactionResponse> => {
     if(window.ethereum) {
-        const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.addStudent(address);
-        await transaction.wait();
-        return {status: "Success"};
+        try {
+            const {contract} = await initiateNFTContractWriteConnection();
+            const transaction = await contract.addStudent(address);
+            await transaction.wait();
+            return {status: "Success"};    
+        }  catch(err: any) {
+            return {status: "Failure", error: err}
+        }
     } else {
         return MetaMaskNotInstalledError;
     }
@@ -137,10 +160,14 @@ export const setContractStudent = async (address: string): Promise<TransactionRe
 // Removes account's "student" role
 export const removeContractStudent = async (address: string): Promise<TransactionResponse> => {
     if(window.ethereum) {
-        const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.removeStudent(address);
-        await transaction.wait();
-        return {status: "Success"};
+        try {
+            const {contract} = await initiateNFTContractWriteConnection();
+            const transaction = await contract.removeStudent(address);
+            await transaction.wait();
+            return {status: "Success"};    
+        }  catch(err: any) {
+            return {status: "Failure", error: err}
+        }
     } else {
         return MetaMaskNotInstalledError;
     }
@@ -149,10 +176,14 @@ export const removeContractStudent = async (address: string): Promise<Transactio
 // Gives account "previous student" role
 export const setContractPreviousStudent = async (address: string): Promise<TransactionResponse> => {
     if(window.ethereum) {
-        const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.expireStudent(address);
-        await transaction.wait();
-        return {status: "Success"};
+        try {
+            const {contract} = await initiateNFTContractWriteConnection();
+            const transaction = await contract.expireStudent(address);
+            await transaction.wait();
+            return {status: "Success"};
+        }  catch(err: any) {
+            return {status: "Failure", error: err}
+        }
     } else {
         return MetaMaskNotInstalledError;
     }
