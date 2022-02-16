@@ -13,9 +13,10 @@ import {
     Heading,
     Stack,
     } from '@chakra-ui/react';
+import { ContractRole } from '../../../services/contracts';
 
 type UploadFormProps = {
-
+    roles: ContractRole[]
 };
 
 type formValuesType = {
@@ -24,7 +25,7 @@ type formValuesType = {
     price: number | null
 }
 
-const UploadForm = ({}: UploadFormProps) => {
+const UploadForm = ({roles}: UploadFormProps) => {
     const [file, setFile] = useState<File | null>(null);
     const [formValues, setFormValues] = useState<formValuesType>({name: '', description: '', price: null})
     const [isLoading, setIsLoading] = useState(false);
@@ -58,32 +59,38 @@ const UploadForm = ({}: UploadFormProps) => {
             <Flex width="full" style={{margin: '0'}} h={'100%'} justifyContent="center">
                 <Box p={8} w={1000} h={'fit-content'} borderWidth={1} borderRadius={8} 
                         boxShadow="lg" borderColor="#b7e0ff ">
-                    <form onSubmit={e => {e.preventDefault(); onSubmit()}}>
-                        <Stack spacing={4}>
-                            {/* Error Message */}
-                            {error !== null && <FormErrorMessage error={error} /> }
+                    {roles.includes(ContractRole.CURRENT_STUDENT) ? (
+                        <form onSubmit={e => {e.preventDefault(); onSubmit()}}>
+                            <Stack spacing={4}>
+                                {/* Error Message */}
+                                {error !== null && <FormErrorMessage error={error} /> }
 
-                            {/* NFT File Upload Field */}
-                            <Flex w='100%' justifyContent={'center'}>
-                                <FileUploader file={file} setFile={setFile} />  
-                            </Flex>
+                                {/* NFT File Upload Field */}
+                                <Flex w='100%' justifyContent={'center'}>
+                                    <FileUploader file={file} setFile={setFile} />  
+                                </Flex>
 
-                            {/* Name Field */}
-                            <FormTextInput value={formValues.name} onChange={(val) => {updateForm('name', val)}}
-                                label={"NFT Name"} type={"text"} placeholder={"My NFT"} ariaLabel={"NFT_Name"} />
+                                {/* Name Field */}
+                                <FormTextInput value={formValues.name} onChange={(val) => {updateForm('name', val)}}
+                                    label={"NFT Name"} type={"text"} placeholder={"My NFT"} ariaLabel={"NFT_Name"} />
 
-                            {/* Description Field */}
-                            <FormTextInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
-                                label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
+                                {/* Description Field */}
+                                <FormTextInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
+                                    label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
 
-                            {/* Price Field */}
-                            <FormNumberInput value={formValues.price} label={"Price"} 
-                                onChange={(val) => {updateForm('price', val)}} />
+                                {/* Price Field */}
+                                <FormNumberInput value={formValues.price} label={"Price"} 
+                                    onChange={(val) => {updateForm('price', val)}} />
 
-                            {/* Submit Button */}
-                            <FormSubmitButton isLoading={isLoading} label={"Submit"} isDisabled={isFormInvalid()} />
-                        </Stack>
-                    </form>
+                                {/* Submit Button */}
+                                <FormSubmitButton isLoading={isLoading} label={"Submit"} isDisabled={isFormInvalid()} />
+                            </Stack>
+                        </form>
+                    ) : (
+                        <Heading size={'sm'}>
+                            Must be a current student to create an NFT
+                        </Heading>
+                    )}
                 </Box>
             </Flex>
             
