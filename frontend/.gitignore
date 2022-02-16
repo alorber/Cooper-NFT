@@ -100,7 +100,10 @@ lerna-debug.log
 Thumbs.db
 
 # IPFS Authentication
-/services/IPFS_AUTH.ts
+IPFS_AUTH.ts
+
+# Contract Addresses
+CONTRACT_ADDRESSES.ts
 
 #Hardhat files
 artifacts
