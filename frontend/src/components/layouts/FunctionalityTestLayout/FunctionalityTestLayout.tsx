@@ -24,7 +24,7 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
     const [address, setAddress] = useState<string | null>(null);
     const [metaMaskError, setMetaMaskError] = useState<string | null>(null);
     const [accountContractRoles, setAccountContractRoles] = useState<ContractRole[] | null>(null);
-    const [selectedForm, setSelectedForm] = useState<'Roles' | 'NFT'>('NFT');
+    const [selectedForm, setSelectedForm] = useState<'Roles' | 'Upload_NFT' | 'My_NFT'>('Upload_NFT');
 
     const loadWallet = async (request: boolean = true) => {
         const resp = await getMetaMaskWallet(request);
@@ -81,9 +81,9 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
                                 onClick={(e) => {e.preventDefault(); setSelectedForm('Roles')}}>
                             Update Roles
                         </Button>
-                        <Button colorScheme={selectedForm === 'NFT' ? 'green' : 'gray'}
-                                onClick={(e) => {e.preventDefault(); setSelectedForm('NFT')}}>
-                            Create NFT
+                        <Button colorScheme={selectedForm === 'Upload_NFT' ? 'green' : 'gray'}
+                                onClick={(e) => {e.preventDefault(); setSelectedForm('Upload_NFT')}}>
+                            Upload NFT
                         </Button>
                     </ButtonGroup>    
 
@@ -93,7 +93,7 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
                     }
 
                     {/* NFT Upload Form */}
-                    {selectedForm === 'NFT' && <UploadForm />}
+                    {selectedForm === 'Upload_NFT' && <UploadForm roles={accountContractRoles} />}
                 </Stack>
             )}
         </Stack>
