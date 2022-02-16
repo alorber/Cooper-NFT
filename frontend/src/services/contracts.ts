@@ -1,5 +1,7 @@
 // Functions to Access Ethereum Contracts
 import CU_NFT from '../artifacts/contracts/CU_NFT.sol/CU_NFT.json';
+import { CID } from 'ipfs-http-client';
+import { cidToBase16 } from './ipfs';
 import { CU_MARKETPLACE_ADDRESS, CU_NFT_ADDRESS } from './CONTRACT_ADDRESSES';
 import { ethers } from 'ethers';
 
@@ -42,6 +44,11 @@ export enum ContractRole {
 export type ContractRoleResponse = {
     status: "Success",
     roles: ContractRole[]
+} | Failure;
+
+export type ContractURIResponse = {
+    status: "Success",
+    uri: string
 } | Failure;
 
 // MetaMask
@@ -209,21 +216,45 @@ export const getContractRole = async (address: string): Promise<ContractRoleResp
     }
 }
 
+// Creates tokenID from CID
+export const cidToTokenID = (CID: CID) => {
+    // Converts to base16
+    const base16CID = cidToBase16(CID);
+    console.log("Converted CID to base16: ", base16CID);
+
+    // Converts to tokenID form
+    const tokenID = '0x' + base16CID.substring(1);
+
+    return tokenID;
+}
+
 // Mints New NFT
 export const mintNFT = async (toAddress: string, tokenID: string, amount: number = 1): Promise<TransactionResponse> => {
     if(window.ethereum) {
-        const {signer, contract} = await initiateNFTContractWriteConnection();
-        
-        // Defaults toAddress to signer
-        if(toAddress === null) {
-            toAddress = signer._address;
+        try {
+            const {contract} = await initiateNFTContractWriteConnection();
+            const transaction = await contract.mint(toAddress, tokenID, amount);
+            await transaction.wait();
+            return {status: "Success"}
+        } catch(err: any) {
+            return {status: "Failure", error: err}
         }
-
-        const transaction = await contract.mint(toAddress, tokenID, amount);
-        await transaction.wait();
-        
-        return {status: "Success"}
     } else {
         return MetaMaskNotInstalledError;
     }
 }
+
+// Retrieves URI of NFT
+export const getNFTuri = async (tokenID: string): Promise<ContractURIResponse> => {
+    if(window.ethereum) {
+        try {
+            const {contract} = await initiateNFTContractReadConnection();
+            const uriResp = await contract.uri(tokenID);
+            return {status: "Success", uri: uriResp};
+        } catch(err: any) {
+            return {status: "Failure", error: err};
+        }
+    } else {
+        return MetaMaskNotInstalledError;
+    }
+} 
