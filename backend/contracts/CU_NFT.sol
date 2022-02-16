@@ -85,6 +85,36 @@ contract CU_NFT is ERC1155, AccessControl {
         revokeRole(DEFAULT_ADMIN_ROLE, _msgSender());
     }
 
+    // Gets account's role(s)
+    function getContractRoles(address account) public view virtual returns (uint8) {
+        // Roles are return as 4 bits
+        // 1 in a given spot means account has been assigned that role
+        // Roles, in order of bit, are: COOPER   ADMIN   CURRENT_STUDENT   PREVIOUS_STUDENT
+        uint8 roles = 0;
+
+        // Checks Cooper role
+        if(hasRole(_COOPER, account)) {
+            roles = roles | 8;
+        }
+
+        // Checks Admin role
+        if(hasRole(_ADMIN, account)) {
+            roles = roles | 4;
+        }
+
+        // Checks Current Student role
+        if(hasRole(_CURRENT_STUDENT, account)) {
+            roles = roles | 2;
+        }
+
+        // Checks Previous Student role
+        if(hasRole(_PREVIOUS_STUDENT, account)) {
+            roles = roles | 1;
+        }
+
+        return roles;
+    }
+
     // ------ Overriding uri function for IPFS ------
 
     // From https://forum.openzeppelin.com/t/erc1155-uri-function-doesnt-use-the-tokenid/4500/24
@@ -101,7 +131,7 @@ contract CU_NFT is ERC1155, AccessControl {
         return string(bstr);
     }
 
-    function uri(uint256 _tokenID) override public view returns (string memory) {
+    function uri(uint256 _tokenID) override public pure returns (string memory) {
     
         string memory hexstringtokenID;
         hexstringtokenID = uint2hexstr(_tokenID);
