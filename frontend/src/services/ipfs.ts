@@ -16,7 +16,7 @@ const client = ipfsHttpClient({
 
 // Uploads file to IPFS & returns CID
 export const uploadFileToIPFS = async (file: File, hash: string = 'blake2b-208') => {
-    const addedFile = await client.add(file, {cidVersion: 1, hashAlg: hash});
+    const addedFile = await client.add(file, {cidVersion: 1, hashAlg: hash, pin: true});
     const cid = addedFile.cid;
     return cid;
 }
@@ -34,4 +34,15 @@ export type NFTMetadata = {
 }
 export const buildNFTMetadata = (data: NFTMetadata) => {
     return JSON.stringify(data);
+}
+
+// Retrieves file from IPFS
+export const getFileFromIPFS = async (uri: string) => {
+    const retrievedFile = await client.cat(uri);
+    const decoder = new TextDecoder();
+    let decodedFile = '';
+    for await (const chunk of retrievedFile) {
+        decodedFile += decoder.decode(chunk);
+    }
+    return decodedFile;
 }

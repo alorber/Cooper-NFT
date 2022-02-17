@@ -121,9 +121,10 @@ contract CU_NFT is ERC1155, AccessControl {
     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
     function uint2hexstr(uint256 value) public pure returns (string memory) {
         uint length = 64;
-        bytes memory bstr = new bytes(length+2);
+        bytes memory bstr = new bytes(length+1);
+        bstr[0] = 'f';
 
-        for (uint256 i = length + 1; i > 1; --i) {
+        for (uint256 i = length; i > 0; --i) {
             bstr[i] = _HEX_SYMBOLS[value & 0xf];
             value >>= 4;
         }
@@ -136,13 +137,7 @@ contract CU_NFT is ERC1155, AccessControl {
         string memory hexstringtokenID;
         hexstringtokenID = uint2hexstr(_tokenID);
     
-        return string(
-            abi.encodePacked(
-                "ipfs://f0",
-                hexstringtokenID,
-                ".json"
-            )
-        );
+        return string(hexstringtokenID);
     }
 
     // ------ Minting ------
