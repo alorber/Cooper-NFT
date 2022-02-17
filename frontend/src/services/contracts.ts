@@ -220,7 +220,6 @@ export const getContractRole = async (address: string): Promise<ContractRoleResp
 export const cidToTokenID = (CID: CID) => {
     // Converts to base16
     const base16CID = cidToBase16(CID);
-    console.log("Converted CID to base16: ", base16CID);
 
     // Converts to tokenID form
     const tokenID = '0x' + base16CID.substring(1);
