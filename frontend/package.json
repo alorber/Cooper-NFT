@@ -19,6 +19,7 @@
     "@types/react-router-dom": "^5.3.3",
     "babel-core": "7.0.0-bridge.0",
     "ethers": "^5.5.4",
+    "file-type": "16.5.3",
     "framer-motion": "^4.1.7",
     "ipfs-http-client": "^56.0.1",
     "multiformats": "^9.6.3",
