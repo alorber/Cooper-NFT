@@ -1,35 +1,39 @@
 import FileUploader from '../../ui/FileUploader/FileUploader';
 import React, { useState } from 'react';
+import testNFTSubmission from '../../../services/testNFTSubmission';
+import {
+    Box,
+    Flex,
+    Heading,
+    Image,
+    Stack
+    } from '@chakra-ui/react';
+import { ContractRole } from '../../../services/contracts';
 import {
     FormErrorMessage,
     FormNumberInput,
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
-import { uploadFileToIPFS } from '../../../services/ipfs';
-import {
-    Box,
-    Flex,
-    Heading,
-    Stack,
-    } from '@chakra-ui/react';
-import { ContractRole } from '../../../services/contracts';
 
 type UploadFormProps = {
-    roles: ContractRole[]
+    roles: ContractRole[],
+    address: string,
 };
 
-type formValuesType = {
+export type FormValuesType = {
     name: string, 
     description: string, 
     price: number | null
 }
 
-const UploadForm = ({roles}: UploadFormProps) => {
+const UploadForm = ({roles, address}: UploadFormProps) => {
     const [file, setFile] = useState<File | null>(null);
-    const [formValues, setFormValues] = useState<formValuesType>({name: '', description: '', price: null})
+    const [formValues, setFormValues] = useState<FormValuesType>({name: '', description: '', price: null})
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [url, setUrl] = useState<string | null>(null);
+    const [retrievedNFT, setRetrievedNFT] = useState<boolean>(false);
 
     const clearForm = () => {setFormValues({name: '', description: '', price: null})}
     const updateForm = (field: keyof typeof formValues, value: string | number | null) => {
@@ -48,9 +52,16 @@ const UploadForm = ({roles}: UploadFormProps) => {
 
         setIsLoading(true);
 
-        await uploadFileToIPFS(file);
+        await testNFTSubmission(file, formValues, address, setUrl);
 
         setIsLoading(false);
+        setRetrievedNFT(true);
+    }
+
+    const showNewForm = () => {
+        clearForm();
+        setUrl(null);
+        setRetrievedNFT(false);
     }
 
     return (
@@ -59,33 +70,42 @@ const UploadForm = ({roles}: UploadFormProps) => {
             <Flex width="full" style={{margin: '0'}} h={'100%'} justifyContent="center">
                 <Box p={8} w={1000} h={'fit-content'} borderWidth={1} borderRadius={8} 
                         boxShadow="lg" borderColor="#b7e0ff ">
-                    {roles.includes(ContractRole.CURRENT_STUDENT) ? (
-                        <form onSubmit={e => {e.preventDefault(); onSubmit()}}>
-                            <Stack spacing={4}>
-                                {/* Error Message */}
-                                {error !== null && <FormErrorMessage error={error} /> }
-
-                                {/* NFT File Upload Field */}
-                                <Flex w='100%' justifyContent={'center'}>
-                                    <FileUploader file={file} setFile={setFile} />  
-                                </Flex>
-
-                                {/* Name Field */}
-                                <FormTextInput value={formValues.name} onChange={(val) => {updateForm('name', val)}}
-                                    label={"NFT Name"} type={"text"} placeholder={"My NFT"} ariaLabel={"NFT_Name"} />
-
-                                {/* Description Field */}
-                                <FormTextInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
-                                    label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
-
-                                {/* Price Field */}
-                                <FormNumberInput value={formValues.price} label={"Price"} 
-                                    onChange={(val) => {updateForm('price', val)}} />
-
-                                {/* Submit Button */}
-                                <FormSubmitButton isLoading={isLoading} label={"Submit"} isDisabled={isFormInvalid()} />
+                    {roles.includes(ContractRole.CURRENT_STUDENT) ?
+                        retrievedNFT ? (
+                            <Stack spacing={4} my={2}>
+                                <Heading size='md' mb={4}>
+                                    Retrieved file from IPFS
+                                </Heading>
+                                <Image src={url ?? ''} w={400} alignSelf='center' />
+                                <FormSubmitButton isLoading={false} label={"Create Another NFT"} onClick={showNewForm} />
                             </Stack>
-                        </form>
+                        ) : (
+                            <form onSubmit={e => {e.preventDefault(); onSubmit()}}>
+                                <Stack spacing={4}>
+                                    {/* Error Message */}
+                                    {error !== null && <FormErrorMessage error={error} /> }
+
+                                    {/* NFT File Upload Field */}
+                                    <Flex w='100%' justifyContent={'center'}>
+                                        <FileUploader file={file} setFile={setFile} />  
+                                    </Flex>
+
+                                    {/* Name Field */}
+                                    <FormTextInput value={formValues.name} onChange={(val) => {updateForm('name', val)}}
+                                        label={"NFT Name"} type={"text"} placeholder={"My NFT"} ariaLabel={"NFT_Name"} />
+
+                                    {/* Description Field */}
+                                    <FormTextInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
+                                        label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
+
+                                    {/* Price Field */}
+                                    <FormNumberInput value={formValues.price} label={"Price"} 
+                                        onChange={(val) => {updateForm('price', val)}} />
+
+                                    {/* Submit Button */}
+                                    <FormSubmitButton isLoading={isLoading} label={"Submit"} isDisabled={isFormInvalid()} />
+                                </Stack>
+                            </form>
                     ) : (
                         <Heading size={'sm'}>
                             Must be a current student to create an NFT

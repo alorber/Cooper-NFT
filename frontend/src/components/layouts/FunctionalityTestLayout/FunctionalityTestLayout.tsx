@@ -6,7 +6,7 @@ import {
     Button,
     ButtonGroup,
     Heading,
-    Stack,
+    Stack
     } from '@chakra-ui/react';
 import {
     ContractRole,
@@ -93,7 +93,7 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
                     }
 
                     {/* NFT Upload Form */}
-                    {selectedForm === 'Upload_NFT' && <UploadForm roles={accountContractRoles} />}
+                    {selectedForm === 'Upload_NFT' && <UploadForm roles={accountContractRoles} address={address} />}
                 </Stack>
             )}
         </Stack>
