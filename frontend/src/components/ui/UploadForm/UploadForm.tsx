@@ -61,6 +61,7 @@ const UploadForm = ({roles, address}: UploadFormProps) => {
     const showNewForm = () => {
         clearForm();
         setUrl(null);
+        setFile(null);
         setRetrievedNFT(false);
     }
 
