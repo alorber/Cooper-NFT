@@ -15,19 +15,30 @@ const FileUploader = ({file, setFile}: FileUploaderProps) => {
     const onDrop = useCallback((acceptedFiles) => {
         setIsLoading(true);
 
-        const newFile = acceptedFiles?.[0];
+        const uploadedFile: File = acceptedFiles?.[0];
 
-        if(!newFile) {
+        if(!uploadedFile) {
             setIsLoading(false);
             return;
         }
 
         try {
-            setFile(newFile);
+            // Set up file reader
+            const reader = new FileReader();
+            reader.onload = () => {
+                if(reader.result) {
+                    const blob = new Blob([reader.result], {type: uploadedFile.type});
+                    const newFile = new File([blob], uploadedFile.name, {type: uploadedFile.type});
+                    setFile(newFile);
+                    console.log(newFile);
+                }
+                setIsLoading(false);
+            }
+            reader.readAsArrayBuffer(uploadedFile);
         } catch(err) {
             console.log(err);
+            setIsLoading(false);
         }
-        setIsLoading(false);
     }, [setFile]);
     const {getRootProps, getInputProps} = useDropzone({onDrop, maxFiles:1});
 
