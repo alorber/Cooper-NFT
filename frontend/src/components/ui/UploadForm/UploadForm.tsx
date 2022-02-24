@@ -33,7 +33,7 @@ const UploadForm = ({roles, address}: UploadFormProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [url, setUrl] = useState<string | null>(null);
-    const [retrievedNFT, setRetrievedNFT] = useState<boolean>(false);
+    const [retrievedNFT, setRetrievedNFT] = useState<string | null>(null);
 
     const clearForm = () => {setFormValues({name: '', description: '', price: null})}
     const updateForm = (field: keyof typeof formValues, value: string | number | null) => {
@@ -52,17 +52,16 @@ const UploadForm = ({roles, address}: UploadFormProps) => {
 
         setIsLoading(true);
 
-        await testNFTSubmission(file, formValues, address, setUrl);
+        await testNFTSubmission(file, formValues, address, setUrl, setRetrievedNFT);
 
         setIsLoading(false);
-        setRetrievedNFT(true);
     }
 
     const showNewForm = () => {
         clearForm();
         setUrl(null);
         setFile(null);
-        setRetrievedNFT(false);
+        setRetrievedNFT(null);
     }
 
     return (
@@ -72,10 +71,13 @@ const UploadForm = ({roles, address}: UploadFormProps) => {
                 <Box p={8} w={1000} h={'fit-content'} borderWidth={1} borderRadius={8} 
                         boxShadow="lg" borderColor="#b7e0ff ">
                     {roles.includes(ContractRole.CURRENT_STUDENT) ?
-                        retrievedNFT ? (
+                        retrievedNFT && !isLoading ? (
                             <Stack spacing={4} my={2}>
                                 <Heading size='md' mb={4}>
-                                    Retrieved file from IPFS
+                                    Retrieved NFT from IPFS
+                                </Heading>
+                                <Heading size="sm">
+                                    {retrievedNFT}
                                 </Heading>
                                 <Image src={url ?? ''} w={400} alignSelf='center' />
                                 <FormSubmitButton isLoading={false} label={"Create Another NFT"} onClick={showNewForm} />

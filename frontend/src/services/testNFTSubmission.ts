@@ -13,7 +13,8 @@ const testNFTSubmission = async (
     file: File,
     formValues: FormValuesType,
     address: string,
-    setUrl: (u: string | null) => void
+    setUrl: (u: string | null) => void,
+    setRetrievedNFT: (nft: string | null) => void
 ) => {
     // Uploads file to IPFS
     console.log("Uploading file to IPFS....");
@@ -88,6 +89,8 @@ const testNFTSubmission = async (
         console.log("Error retrieving NFT: ", ipfsNFTResp.error);
         setUrl(null);
     }
+
+    setRetrievedNFT(ipfsMetadata.name)
 }
 
 export default testNFTSubmission;
