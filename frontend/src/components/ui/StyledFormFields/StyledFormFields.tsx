@@ -14,6 +14,12 @@ import {
     NumberInputField,
     NumberInputStepper,
     } from '@chakra-ui/react';
+import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+
+/**
+ * This file contains various form components with uniform styling.
+ * Allows easy creation of forms.
+ */
 
 // Text Input
 export type FormTextInputProps = {
@@ -30,8 +36,8 @@ export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLa
         <FormControl isRequired>
             <FormLabel>{label}</FormLabel>
             <Input type={type} placeholder={placeholder} value={value}
-                aria-label={ariaLabel}  borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}}
-                onChange={e => onChange(e.currentTarget.value)} focusBorderColor="#2395ff"/>
+                aria-label={ariaLabel}  borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
+                onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR}/>
         </FormControl>
     );
 }
@@ -51,7 +57,7 @@ export const FormNumberInput = ({value, onChange, label}: FormNumberInputProps) 
         <FormControl isRequired>
             <FormLabel>{label}</FormLabel>
             <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
-                    borderColor="#b7e0ff" _hover={{borderColor: "#2395FF"}} focusBorderColor="#2395ff" 
+                    borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
                     precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?"}>
                 <NumberInputField />
                 <NumberInputStepper>
@@ -74,7 +80,7 @@ export type FormSubmitButtonProps = {
 export const FormSubmitButton = ({isLoading, label, onClick, isDisabled=false}: FormSubmitButtonProps) => {
     return (
         <Button width="full" type="submit" boxShadow='sm' isDisabled={isDisabled}
-                backgroundColor={"#b7e0ff"} _hover={{boxShadow: 'md'}}
+                backgroundColor={MID_SHADE_COLOR} _hover={{boxShadow: 'md'}}
                 _active={{boxShadow: 'lg'}} _focus={{outline: "none"}} 
                 isLoading={isLoading} onClick={onClick} >
             {label}
