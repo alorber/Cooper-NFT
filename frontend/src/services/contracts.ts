@@ -116,21 +116,40 @@ const initiateNFTContractWriteConnection = async (): Promise<NFTContractWriteCon
     return {provider, signer, contract};
 }
 
-// Gives account "admin" role
-export const setContractAdmin = async (address: string): Promise<TransactionResponse> => {
-    if(window.ethereum) {
-        const {contract} = await initiateNFTContractWriteConnection();
-        try {
-            const transaction = await contract.addAdmin(address);
-            await transaction.wait();    
-            return {status: "Success"};
-        } catch(err: any) {
-            return {status: "Failure", error: err}
-        }
-    } else {
-        return MetaMaskNotInstalledError;
-    }
+
+
+
+
+
+// NFT Marketplace
+// -------------
+
+// Connects to Marketplace Contract (Read)
+const initiateMarketplaceContractReadConnection = async (): Promise<NFTContractReadConnectionResponse> => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const contract = new ethers.Contract(CU_MARKETPLACE_ADDRESS, NFT_Marketplace.abi, provider);
+    return {provider, contract};
 }
+
+// Connects to Marketplace Contract (Write)
+const initiateMarketplceContractWriteConnection = async (): Promise<NFTContractWriteConnectionResponse> => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(CU_MARKETPLACE_ADDRESS, NFT_Marketplace.abi, signer);
+    return {provider, signer, contract};
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Removes account's "admin" role
 export const removeContractAdmin = async (address: string): Promise<TransactionResponse> => {
