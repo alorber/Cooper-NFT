@@ -1,8 +1,9 @@
 import { ethers } from "hardhat";
 
 
-
 /* test/sample-test.js */
+
+
 describe("NFTMarket", function() {
   it("Should create and execute market sales", async function() {
     /* deploy the marketplace */
@@ -11,7 +12,6 @@ describe("NFTMarket", function() {
     await nftMarketplace.deployed()
 
     let listingPrice = await nftMarketplace.getListingPrice()
-    //let listingPrice = 5
 
     let listingPrice1 = listingPrice.toString()
 

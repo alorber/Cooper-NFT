@@ -121,35 +121,6 @@ const initiateNFTContractWriteConnection = async (): Promise<NFTContractWriteCon
 
 
 
-// NFT Marketplace
-// -------------
-
-// Connects to Marketplace Contract (Read)
-const initiateMarketplaceContractReadConnection = async (): Promise<NFTContractReadConnectionResponse> => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(CU_MARKETPLACE_ADDRESS, NFT_Marketplace.abi, provider);
-    return {provider, contract};
-}
-
-// Connects to Marketplace Contract (Write)
-const initiateMarketplceContractWriteConnection = async (): Promise<NFTContractWriteConnectionResponse> => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(CU_MARKETPLACE_ADDRESS, NFT_Marketplace.abi, signer);
-    return {provider, signer, contract};
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Removes account's "admin" role
 export const removeContractAdmin = async (address: string): Promise<TransactionResponse> => {
