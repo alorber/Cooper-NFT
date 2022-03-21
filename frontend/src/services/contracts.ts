@@ -116,11 +116,21 @@ const initiateNFTContractWriteConnection = async (): Promise<NFTContractWriteCon
     return {provider, signer, contract};
 }
 
-
-
-
-
-
+// Gives account "admin" role
+export const setContractAdmin = async (address: string): Promise<TransactionResponse> => {
+    if(window.ethereum) {
+        const {contract} = await initiateNFTContractWriteConnection();
+        try {
+            const transaction = await contract.addAdmin(address);
+            await transaction.wait();    
+            return {status: "Success"};
+        } catch(err: any) {
+            return {status: "Failure", error: err}
+        }
+    } else {
+        return MetaMaskNotInstalledError;
+    }
+}
 
 // Removes account's "admin" role
 export const removeContractAdmin = async (address: string): Promise<TransactionResponse> => {
