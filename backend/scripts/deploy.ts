@@ -20,6 +20,14 @@ async function main() {
   await cuNFT.deployed();
 
   console.log("CU_NFT deployed to:", cuNFT.address);
+
+  const CU_MARKETPLACE = await ethers.getContractFactory("NFT_Marketplace");
+  const cuMarketplace = await CU_MARKETPLACE.deploy();
+
+  await cuMarketplace.deployed();
+
+  console.log("CU_MARKETPLACE deployed to:", cuMarketplace.address);
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
