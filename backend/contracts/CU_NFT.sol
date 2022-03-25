@@ -43,46 +43,33 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // ------ Role Functions ------
 
     // Adds current student
-    function addStudent(address student) public virtual {
-        require(hasRole(_ADMIN, _msgSender()), "Must be an marketplace admin to set student role");
-
+    function addStudent(address student) public virtual onlyRole(_ADMIN) {
         grantRole(_CURRENT_STUDENT, student);
     }
 
     // Changes current student to previous student
-    function expireStudent(address student) public virtual {
-        require(hasRole(_ADMIN, _msgSender()), "Must be an marketplace admin to set student role");
-
+    function expireStudent(address student) public virtual onlyRole(_ADMIN) {
         revokeRole(_CURRENT_STUDENT, student);
         grantRole(_PREVIOUS_STUDENT, student);
     }
 
     // Completely removes student from system
-    function removeStudent(address student) public virtual {
-        require(hasRole(_ADMIN, _msgSender()), "Must be an marketplace admin to set student role");
-
+    function removeStudent(address student) public virtual onlyRole(_ADMIN) {
         revokeRole(_CURRENT_STUDENT, student);
     }
 
     // Adds marketplace admin
-    function addAdmin(address admin) public virtual {
-        require(hasRole(_COOPER, _msgSender()), "Must be an admin to set admin role");
-
+    function addAdmin(address admin) public virtual onlyRole(_COOPER) {
         grantRole(_ADMIN, admin);
     }
 
     // Removes marketplace admin
-    function removeAdmin(address admin) public virtual {
-        require(hasRole(_COOPER, _msgSender()), "Must be an admin to set admin role");
-
+    function removeAdmin(address admin) public virtual onlyRole(_COOPER) {
         revokeRole(_ADMIN, admin);
     }
 
     // Change Cooper account
-    function updateCooperRole(address newOwner) public virtual {
-        require(hasRole(_COOPER, _msgSender()), "Must be Cooper to transfer marketplace ownership");
-        require(hasRole(DEFAULT_ADMIN_ROLE, _msgSender()), "Must be marketplace owner to transfer ownership");
-
+    function updateCooperRole(address newOwner) public virtual onlyRole(_COOPER) onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         grantRole(_COOPER, newOwner);
 
@@ -138,7 +125,6 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     }
 
     function uri(uint256 _tokenID) override public pure returns (string memory) {
-    
         string memory hexstringtokenID;
         hexstringtokenID = uint2hexstr(_tokenID);
     
@@ -148,9 +134,7 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // ------ Minting ------
 
     function mint(address to, uint256 id, uint256 amount, 
-            address royaltyRecipient, uint96 royaltyValue ) public virtual {
-        require(hasRole(_CURRENT_STUDENT, _msgSender()), "Must be a current student to mint");
-
+            address royaltyRecipient, uint96 royaltyValue ) public virtual onlyRole(_CURRENT_STUDENT) {
         _mint(to, id, amount, "");
 
         // Sets royalty (optional)
