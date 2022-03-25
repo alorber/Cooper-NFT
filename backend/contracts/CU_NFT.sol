@@ -3,9 +3,10 @@ pragma solidity ^0.8.3;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract CU_NFT is ERC1155, AccessControl {
+contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // ------ Token IDs ------
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -22,16 +23,20 @@ contract CU_NFT is ERC1155, AccessControl {
     bytes32 public constant _PREVIOUS_STUDENT = keccak256("_PREVIOUS_STUDENT");
 
     constructor() ERC1155("ipfs://f0{id}") {
+        // Sets role hierarchy
         _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
         _setupRole(_COOPER, _msgSender());
         _setupRole(_ADMIN, _msgSender());
         _setRoleAdmin(_ADMIN, _COOPER);
         _setRoleAdmin(_CURRENT_STUDENT, _ADMIN);
         _setRoleAdmin(_PREVIOUS_STUDENT, _ADMIN);
+
+        // Sets default royalty to be 5% to Cooper
+        _setDefaultRoyalty(_msgSender(), 500);
     }
 
-    // Makes AccessControl play nice with ERC1155
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, AccessControl) returns (bool) {
+    // Makes AccessControl & ERC2981 play nice with ERC1155
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, ERC2981, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -142,10 +147,16 @@ contract CU_NFT is ERC1155, AccessControl {
 
     // ------ Minting ------
 
-    function mint(address to, uint256 id, uint256 amount) public virtual {
+    function mint(address to, uint256 id, uint256 amount, 
+            address royaltyRecipient, uint96 royaltyValue ) public virtual {
         require(hasRole(_CURRENT_STUDENT, _msgSender()), "Must be a current student to mint");
 
         _mint(to, id, amount, "");
+
+        // Sets royalty (optional)
+        if(royaltyRecipient != address(0)) {
+            _setTokenRoyalty(id, royaltyRecipient, royaltyValue);
+        }
     }
 
     

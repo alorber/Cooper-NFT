@@ -228,7 +228,9 @@ export const cidToTokenID = (CID: CID) => {
 }
 
 // Mints New NFT
-export const mintNFT = async (toAddress: string, tokenID: string, amount: number = 1): Promise<TransactionResponse> => {
+// Royalty Value must be between 0 - 10000, where 10000 = 100% of sale price
+export const mintNFT = async (toAddress: string, tokenID: string, amount: number = 1, 
+        royaltyReciever: string, royaltyValue: number): Promise<TransactionResponse> => {
     if(window.ethereum) {
         try {
             const {contract} = await initiateNFTContractWriteConnection();
