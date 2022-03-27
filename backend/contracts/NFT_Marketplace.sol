@@ -58,16 +58,23 @@ contract NFT_Marketplace is Ownable {
     // Creates Market Item - Adds NFT to system
     // If price is > 0, will list also
     function createMarketItem(uint256 tokenId,  uint256 price) public {
-      // Determine if item is being listed
+      // Determines if item is being listed
       if(price > 0) {
-        _createAndListMarketItem(tokenId, price);
+        // Transfers token to marketplace
+        ERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
+        // Lists on marketplace
+        _createMarketItem(tokenId, _msgSender(), address(this), price, false);
       } else {
-        _createMarketItem(tokenId);
+        // Adds token to system, but doesn't list
+        _createMarketItem(tokenId, address(0), _msgSender(), 0, true);
+         _itemsSold.increment();
       }
     }
 
     // Internal function to create market item (doesn't list)
-    function _createMarketItem(uint256 tokenId) internal {
+    function _createMarketItem(
+      uint256 tokenId, address seller, address owner, uint256 price, bool isSold
+    ) internal {
       // Get new item ID
       _marketItemId.increment();
       uint256 itemId = _marketItemId.current();
@@ -76,52 +83,19 @@ contract NFT_Marketplace is Ownable {
       idToMarketItem[itemId] =  MarketItem(
         itemId,
         tokenId,
-        payable(address(0)),
-        payable(msg.sender),
-        0,
-        true
+        payable(seller),
+        payable(owner),
+        price,
+        isSold
       );
-
-      _itemsSold.increment();
       
       emit MarketItemCreated(
         itemId,
         tokenId,
-        address(0),
-        payable(msg.sender),
-        0,
-        true
-      );
-    }
-
-    // Internal function to create and list market item
-    function _createAndListMarketItem(uint256 tokenId, uint256 price) internal {
-      require(price > 0, "Price must be at least 1 wei");
-      
-      // Get new item ID
-      _marketItemId.increment();
-      uint256 itemId = _marketItemId.current();
-
-      // Create market item
-      idToMarketItem[itemId] =  MarketItem(
-        itemId,
-        tokenId,
-        payable(msg.sender),
-        payable(address(this)),
+        payable(seller),
+        payable(owner),
         price,
-        false
-      );
-
-      // Transfers token to marketplace
-      ERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
-      
-      emit MarketItemCreated(
-        itemId,
-        tokenId,
-        msg.sender,
-        address(this),
-        price,
-        false
+        isSold
       );
     }
 
@@ -235,7 +209,7 @@ contract NFT_Marketplace is Ownable {
     }
 
     // Calculates listing fee given price
-    function _calculateFee(uint256 price) internal pure returns (uint256) {
+    function _calculateFee(uint256 price) internal view returns (uint256) {
       return ((listingFee / 100) * price);
     }
 }
