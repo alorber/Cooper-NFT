@@ -143,6 +143,4 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
         }
     }
 
-    
-
 }

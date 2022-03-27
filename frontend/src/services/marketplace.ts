@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { CU_MARKETPLACE_ADDRESS} from './CONTRACT_ADDRESSES';
-import NFTMarketplace from '../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json';
+import NFTMarketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
 
 declare let window: any;
 
