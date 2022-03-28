@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "hardhat/console.sol";
@@ -122,14 +123,18 @@ contract NFT_Marketplace is Ownable {
       // Checks that Ids are correct
       require(idToMarketItem[marketItemId].tokenId == tokenId, "Ids do not match a listing");
 
-      uint price = idToMarketItem[marketItemId].price;
+      uint256 price = idToMarketItem[marketItemId].price;
       address seller = idToMarketItem[marketItemId].seller;
       // Confirms correct price was paid
       require(msg.value == price, "Please submit the asking price in order to complete the purchase");
       
-      // Transfers listing fee to marketplace owner & remaining payment to seller
+      // Pays listing fee to marketplace owner
       uint fee = _calculateFee(price);
       payable(_feeRecipient).transfer(fee);
+      // Pays royalties
+      (address royaltyReceiver, uint256 royaltyAmount) = IERC2981(_nftContract).royaltyInfo(tokenId, price);
+      payable(royaltyReceiver).transfer(royaltyAmount);
+      // Pays remaining money to seller
       payable(seller).transfer(msg.value);
 
       // Transfers ownership of NFT to buyer
@@ -210,6 +215,6 @@ contract NFT_Marketplace is Ownable {
 
     // Calculates listing fee given price
     function _calculateFee(uint256 price) internal view returns (uint256) {
-      return ((listingFee / 100) * price);
+      return ((listingFee / 10000) * price);
     }
 }

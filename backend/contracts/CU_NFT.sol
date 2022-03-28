@@ -133,6 +133,8 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
 
     // ------ Minting ------
 
+    // Mints token and set royalty info
+    // Royalty value is percentage of sale price (200 = 2%)
     function mint(address to, uint256 id, uint256 amount, 
             address royaltyRecipient, uint96 royaltyValue ) public virtual onlyRole(_CURRENT_STUDENT) {
         _mint(to, id, amount, "");
@@ -142,5 +144,4 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
             _setTokenRoyalty(id, royaltyRecipient, royaltyValue);
         }
     }
-
 }
