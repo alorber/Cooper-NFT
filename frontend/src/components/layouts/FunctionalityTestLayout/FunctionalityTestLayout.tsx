@@ -8,9 +8,9 @@ import {
     Heading,
     Stack
     } from '@chakra-ui/react';
-import { ContractRole, getContractRole } from '../../../services/nft_contract';
+import { ContractRole } from '../../../services/nft_contract';
 import { FormErrorMessage } from '../../ui/StyledFormFields/StyledFormFields';
-import { getMetaMaskWallet, watchMetaMask } from '../../../services/contracts';
+import { loadUserWallet, watchMetaMask } from '../../../services/contracts';
 
 type FunctionalityTestLayoutProps = {
 
@@ -22,29 +22,9 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
     const [accountContractRoles, setAccountContractRoles] = useState<ContractRole[] | null>(null);
     const [selectedForm, setSelectedForm] = useState<'Roles' | 'Upload_NFT' | 'My_NFT'>('Upload_NFT');
 
-    const loadWallet = async (request: boolean = true) => {
-        const resp = await getMetaMaskWallet(request);
-
-        if(resp.status === "Success") {
-            // Address Found
-            if(resp.address != null) {
-                setAddress(resp.address);
-                setMetaMaskError(null);
-
-                // Get Account Role(s)
-                const rolesResp = await getContractRole(resp.address);
-                if(rolesResp.status === "Success") {
-                    setAccountContractRoles(rolesResp.roles);
-                }
-            }
-        } else {
-            setMetaMaskError(resp.error);
-        }
-    }
-
     // Check for connected accounts
     useEffect(() => {
-        loadWallet(false);
+        loadUserWallet(false, setAddress, setMetaMaskError, setAccountContractRoles);
         watchMetaMask(setAddress, setAccountContractRoles, setMetaMaskError);
     }, [])
 
@@ -54,7 +34,9 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
             {address == null ? (
                 <Stack mt={8}>
                     <Button w={200} alignSelf='center'
-                            onClick={(e) => {e.preventDefault(); loadWallet(true)}}>
+                            onClick={(e) => {e.preventDefault(); 
+                                loadUserWallet(true, setAddress, setMetaMaskError, setAccountContractRoles)
+                            }}>
                         Connect to MetaMask
                     </Button>
                     

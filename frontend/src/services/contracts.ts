@@ -83,6 +83,32 @@ export const isMetaMaskInstalled = () => {
     return window.ethereum;
 }
 
+// Loads user's address and contract roles
+export const loadUserWallet = async (
+    request: boolean = true, 
+    setAddress: (a: string | null) => void,
+    setMetaMaskError: (e: string | null) => void,
+    setAccountContractRoles: (r: ContractRole[] | null) => void
+) => {
+    const resp = await getMetaMaskWallet(request);
+
+    if(resp.status === "Success") {
+        // Address Found
+        if(resp.address != null) {
+            setAddress(resp.address);
+            setMetaMaskError(null);
+
+            // Get Account Role(s)
+            const rolesResp = await getContractRole(resp.address);
+            if(rolesResp.status === "Success") {
+                setAccountContractRoles(rolesResp.roles);
+            }
+        }
+    } else {
+        setMetaMaskError(resp.error);
+    }
+}
+
 // Contracts
 // -----------
 
