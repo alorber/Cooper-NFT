@@ -8,13 +8,9 @@ import {
     Heading,
     Stack
     } from '@chakra-ui/react';
-import {
-    ContractRole,
-    getContractRole,
-    getMetaMaskWallet,
-    watchMetaMask
-    } from '../../../services/contracts';
+import { ContractRole, getContractRole } from '../../../services/nft_contract';
 import { FormErrorMessage } from '../../ui/StyledFormFields/StyledFormFields';
+import { getMetaMaskWallet, watchMetaMask } from '../../../services/contracts';
 
 type FunctionalityTestLayoutProps = {
 

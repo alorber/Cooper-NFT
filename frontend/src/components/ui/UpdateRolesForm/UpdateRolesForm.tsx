@@ -1,7 +1,23 @@
-import { Box, Flex, Heading, Input, Radio, RadioGroup, Stack } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { ContractRole, removeContractAdmin, removeContractStudent, setContractAdmin, setContractPreviousStudent, setContractStudent, TransactionResponse } from "../../../services/contracts";
-import { FormErrorMessage, FormSubmitButton, FormSuccessMessage } from "../StyledFormFields/StyledFormFields";
+import React, { useEffect, useState } from 'react';
+import {
+    Box,
+    Flex,
+    Heading,
+    Input,
+    Radio,
+    RadioGroup,
+    Stack
+    } from '@chakra-ui/react';
+import {
+    ContractRole,
+    removeContractAdmin,
+    removeContractStudent,
+    setContractAdmin,
+    setContractPreviousStudent,
+    setContractStudent
+    } from '../../../services/nft_contract';
+import { FormErrorMessage, FormSubmitButton, FormSuccessMessage } from '../StyledFormFields/StyledFormFields';
+import { TransactionResponse } from '../../../services/contracts';
 
 type UpdateRolesFormProps = {
     accountContractRoles: ContractRole[]

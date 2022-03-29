@@ -22,7 +22,7 @@ async function main() {
   console.log("CU_NFT deployed to:", cuNFT.address);
 
   const CU_MARKETPLACE = await ethers.getContractFactory("NFT_Marketplace");
-  const cuMarketplace = await CU_MARKETPLACE.deploy();
+  const cuMarketplace = await CU_MARKETPLACE.deploy(cuNFT.address);
 
   await cuMarketplace.deployed();
 

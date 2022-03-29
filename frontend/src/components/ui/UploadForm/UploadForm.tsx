@@ -8,7 +8,7 @@ import {
     Image,
     Stack
     } from '@chakra-ui/react';
-import { ContractRole } from '../../../services/contracts';
+import { ContractRole } from '../../../services/nft_contract';
 import {
     FormErrorMessage,
     FormNumberInput,
