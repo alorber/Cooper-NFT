@@ -44,7 +44,7 @@ const Navbar = ({isLoggedIn}: NavbarProps) => {
                 <Flex justifyContent={{ base: 'center', md: 'left' }} w='full' alignSelf='center'>
                     <NavbarLink linkTo={"/"} onPageChange={closeNavbar}>
                         {/* !!!!!!!!!!!!!! TODO: ADD LOGO !!!!!!!!!!!!!! */}
-                        <Text alignSelf={'center'}>Cooper Union</Text>
+                        Cooper Union
                     </NavbarLink>
                 </Flex>
 
