@@ -1,10 +1,11 @@
+import CreatePageLayout from '../layouts/CreatePageLayout/CreatePageLayout';
 import FunctionalityTestLayout from '../layouts/FunctionalityTestLayout/FunctionalityTestLayout';
 import LoginPageLayout from '../layouts/LoginPageLayout/LoginPageLayout';
 import Navbar from '../sections/Navbar/Navbar';
 import React, { useEffect, useState } from 'react';
 import SellPageLayout from '../layouts/SellPageLayout/SellPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ContractRole, getContractRole } from '../../services/nft_contract';
+import { ContractRole } from '../../services/nft_contract';
 import { loadUserWallet, watchMetaMask } from '../../services/contracts';
 import { Stack } from '@chakra-ui/react';
 import './App.css';
@@ -38,6 +39,7 @@ const App = () => {
                 <Navbar isLoggedIn={isLoggedIn()} />
                 <Routes>
                     <Route path='/' element={<>Home Page</>} />
+                    <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}/>} />
                     <Route path='/sell' element={<SellPageLayout />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />

@@ -1,5 +1,5 @@
 // Functions to Access Ethereum Contracts
-import { ContractRole, getContractRole } from '././nft_contract';
+import { ContractRole, getContractRole } from './nft_contract';
 import { ethers } from 'ethers';
 
 // Fixes MetaMask TypeScript Issue
