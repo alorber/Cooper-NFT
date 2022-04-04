@@ -4,6 +4,8 @@ import {
     Box,
     Checkbox,
     Flex,
+    FormControl,
+    FormLabel,
     Select,
     Stack
     } from '@chakra-ui/react';
@@ -22,8 +24,9 @@ export type FormValuesType = {
     name: string, 
     description: string, 
     disableRoyalties: boolean,
-    royaltyReceiver: string, 
     royaltyAmount: number | null,
+    royaltyRecipient: RoyaltyRecipients | null,
+    royaltyRecipientOther: string,
     sellNFT: boolean,
     price: number | null
 }
@@ -35,7 +38,16 @@ const enum RoyaltyRecipients {
 }
 
 const NFTCreationForm = ({address}: NFTCreationFormProps) => {
-    const defaultForm = {name: '', description: '', disableRoyalties: false, royaltyReceiver: '', royaltyAmount: null, sellNFT: false, price: null};
+    const defaultForm = {
+        name: '', 
+        description: '', 
+        disableRoyalties: false, 
+        royaltyAmount: null, 
+        royaltyRecipient: null,
+        royaltyRecipientOther: '',
+        sellNFT: false, 
+        price: null
+    };
     const [file, setFile] = useState<File | null>(null);
     const [formValues, setFormValues] = useState<FormValuesType>(defaultForm);
     const [isLoading, setIsLoading] = useState(false);
@@ -94,14 +106,25 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                             Disable royalties for this NFT
                         </Checkbox>
                         {!formValues.disableRoyalties && (<>
+                            {/* Royalty Amount */}
                             <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} 
                                 onChange={(val) => {updateForm('royaltyAmount', val)}} />
-
-                            <Select placeholder='Select Royalty Recipient' size={'lg'}>
-                                <option value={RoyaltyRecipients.CURRENT_WALLET}>Current Wallet: ${address}</option>
-                                <option value={RoyaltyRecipients.COOPER_UNION}>Cooper Union</option>
-                                <option value={RoyaltyRecipients.OTHER}>Other</option>
-                            </Select>
+                            {/* Royalty Recipient */}
+                            <FormControl>
+                                <FormLabel>Royalty Recipient</FormLabel>
+                                <Select placeholder='Select Royalty Recipient' size={'md'} value={formValues.royaltyRecipient ?? 0} 
+                                        onChange={(v) => {updateForm('royaltyRecipient', v.target.value)}}>
+                                    <option value={RoyaltyRecipients.CURRENT_WALLET}>Current Wallet: ${address}</option>
+                                    <option value={RoyaltyRecipients.COOPER_UNION}>Cooper Union</option>
+                                    <option value={RoyaltyRecipients.OTHER}>Other</option>
+                                </Select>
+                            </FormControl>
+                            
+                            {/* "Other" Field Input */}
+                            {formValues.royaltyRecipient === RoyaltyRecipients.OTHER && (
+                                <FormTextInput value={formValues.royaltyRecipientOther} onChange={(val) => {updateForm('royaltyRecipientOther', val)}}
+                                    label={"Royalty Recipent Address"} placeholder="Wallet Address" type={"text"} ariaLabel={"Royalty Recipent Address"} />
+                            )}
                         </>)}
 
                         {/* List NFT Checkbox */}
