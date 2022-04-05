@@ -102,7 +102,7 @@ const UploadForm = ({roles, address}: UploadFormProps) => {
                                         label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
 
                                     {/* Price Field */}
-                                    <FormNumberInput value={formValues.price} label={"Price"} 
+                                    <FormNumberInput value={formValues.price} label={"Price"} type='$'
                                         onChange={(val) => {updateForm('price', val)}} />
 
                                     {/* Submit Button */}

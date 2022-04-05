@@ -48,12 +48,13 @@ export type FormNumberInputProps = {
     value: number | null,
     onChange: (v: number | string) => void,
     label: string,
+    type: '$' | '%'
     isRequired?: boolean
 }
 
-export const FormNumberInput = ({value, onChange, label, isRequired = true}: FormNumberInputProps) => {
-    const format = (val: number | string) => `$` + val;
-    const parse = (val: string) => val.replace(/^\$/, '');
+export const FormNumberInput = ({value, onChange, label, type, isRequired = true}: FormNumberInputProps) => {
+    const format = type === '$' ? (val: number | string) => `$` + val : (val: number | string) => val + `%`;
+    const parse = type === '$' ? (val: string) => val.replace(/^\$/, ''): (val: string) => val.replace(/%$/, '');
 
     return (
         <FormControl isRequired={isRequired}>

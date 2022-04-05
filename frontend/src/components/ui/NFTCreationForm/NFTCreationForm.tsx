@@ -110,7 +110,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                         </Checkbox>
                         {!formValues.disableRoyalties && (<>
                             {/* Royalty Amount */}
-                            <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} 
+                            <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} type='%'
                                 onChange={(val) => {updateForm('royaltyAmount', val)}} isRequired={!formValues.disableRoyalties} />
                             
                             {/* Royalty Recipient */}
@@ -140,7 +140,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                         {/* Listing Info */}
                         {formValues.sellNFT && (
                             /* Price Field */
-                            <FormNumberInput value={formValues.price} label={"Price"} 
+                            <FormNumberInput value={formValues.price} label={"Price"} type='$'
                                 onChange={(val) => {updateForm('price', val)}} isRequired={formValues.sellNFT} />
                         )}
 
