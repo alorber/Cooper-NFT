@@ -43,33 +43,33 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // ------ Role Functions ------
 
     // Adds current student
-    function addStudent(address student) public virtual onlyRole(_ADMIN) {
+    function addStudent(address student) external virtual onlyRole(_ADMIN) {
         grantRole(_CURRENT_STUDENT, student);
     }
 
     // Changes current student to previous student
-    function expireStudent(address student) public virtual onlyRole(_ADMIN) {
+    function expireStudent(address student) external virtual onlyRole(_ADMIN) {
         revokeRole(_CURRENT_STUDENT, student);
         grantRole(_PREVIOUS_STUDENT, student);
     }
 
     // Completely removes student from system
-    function removeStudent(address student) public virtual onlyRole(_ADMIN) {
+    function removeStudent(address student) external virtual onlyRole(_ADMIN) {
         revokeRole(_CURRENT_STUDENT, student);
     }
 
     // Adds marketplace admin
-    function addAdmin(address admin) public virtual onlyRole(_COOPER) {
+    function addAdmin(address admin) external virtual onlyRole(_COOPER) {
         grantRole(_ADMIN, admin);
     }
 
     // Removes marketplace admin
-    function removeAdmin(address admin) public virtual onlyRole(_COOPER) {
+    function removeAdmin(address admin) external virtual onlyRole(_COOPER) {
         revokeRole(_ADMIN, admin);
     }
 
     // Change Cooper account
-    function updateCooperRole(address newOwner) public virtual onlyRole(_COOPER) onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updateCooperRole(address newOwner) external virtual onlyRole(_COOPER) onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(DEFAULT_ADMIN_ROLE, newOwner);
         grantRole(_COOPER, newOwner);
 
@@ -78,7 +78,7 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     }
 
     // Gets account's role(s)
-    function getContractRoles(address account) public view virtual returns (uint8) {
+    function getContractRoles(address account) external view virtual returns (uint8) {
         // Roles are return as 4 bits
         // 1 in a given spot means account has been assigned that role
         // Roles, in order of bit, are: COOPER   ADMIN   CURRENT_STUDENT   PREVIOUS_STUDENT
@@ -136,7 +136,7 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // Mints token and set royalty info
     // Royalty value is percentage of sale price (200 = 2%)
     function mint(address to, uint256 id, uint256 amount, 
-            address royaltyRecipient, uint96 royaltyValue ) public virtual onlyRole(_CURRENT_STUDENT) {
+            address royaltyRecipient, uint96 royaltyValue ) external virtual onlyRole(_CURRENT_STUDENT) {
         _mint(to, id, amount, "");
 
         // Sets royalty (optional)
