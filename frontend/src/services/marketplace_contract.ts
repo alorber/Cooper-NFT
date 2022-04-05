@@ -1,6 +1,6 @@
 import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
 import { buildNFTMetadata, uploadFileToIPFS } from './ipfs';
-import { cidToTokenID, mintNFT } from './nft_contract';
+import { cidToTokenID } from './nft_contract';
 import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
 import {
     Failure,
@@ -10,6 +10,7 @@ import {
     MetaMaskNotInstalledError,
     TransactionResponse
     } from './contracts';
+
 // Functions to Access Marketplace Contract
 
 // Type Declarations
@@ -70,9 +71,10 @@ export const getListingFee = async (): Promise<{status: "Success", listingFee: n
     }
 }
 
-// Creates Marketplace Item
+// Mints NFT & Creates Marketplace Item
 // Will only list item if price > 0, otherwise will just add info to marketplace
-export const createMarketItem = async(tokenId: string, salePrice: number): Promise<TransactionResponse> => {
+export const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royaltyReciever: string,
+        royaltyValue: number, salePrice: number): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -80,7 +82,7 @@ export const createMarketItem = async(tokenId: string, salePrice: number): Promi
 
     try {
         const {contract} = await initiateMarketplaceContractWriteConnection();
-        const transaction = await contract.createMarketItem(tokenId, salePrice);
+        const transaction = await contract.mintAndCreateMarketItem(toAddress, tokenId, royaltyReciever, royaltyValue, salePrice);
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
@@ -202,21 +204,12 @@ export const createNFT = async(
 
     // Mints
     console.log("\nMinting Token...")
-    const mintResp = await mintNFT(address, tokenID, royaltyRecipient, royaltyAmount);
+    const mintResp = await mintAndCreateMarketItem(address, tokenID, royaltyRecipient, royaltyAmount, price);
 
     if(mintResp.status === "Success") {
         console.log("SUCCESS: Successfully Minted Token")
     } else {
         console.log("Error Minting Token: ", mintResp.error)
-        return;
-    }
-
-    const marketResp = await createMarketItem(tokenID, price);
-
-    if(marketResp.status === "Success") {
-        console.log("SUCCESS: Successfully Listed Token")
-    } else {
-        console.log("Error Listing Token: ", marketResp.error)
         return;
     }
 }

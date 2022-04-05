@@ -162,25 +162,6 @@ export const cidToTokenID = (CID: CID) => {
     return tokenID;
 }
 
-// Mints New NFT
-// Royalty Value must be between 0 - 10000, where 10000 = 100% of sale price
-export const mintNFT = async (toAddress: string, tokenID: string, royaltyReciever: string,
-        royaltyValue: number, amount: number = 1): Promise<TransactionResponse> => {
-    // Checks MetaMask Install
-    if(!isMetaMaskInstalled) {
-        return MetaMaskNotInstalledError;
-    }
-
-    try {
-        const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.mint(toAddress, tokenID, amount, royaltyReciever, royaltyValue);
-        await transaction.wait();
-        return {status: "Success"}
-    } catch(err: any) {
-        return {status: "Failure", error: err}
-    }
-}
-
 // Retrieves URI of NFT
 export const getNFTuri = async (tokenID: string): Promise<ContractURIResponse> => {
     try {

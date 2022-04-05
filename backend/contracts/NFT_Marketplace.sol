@@ -2,10 +2,10 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "./CU_NFT.sol";
 import "hardhat/console.sol";
 
 contract NFT_Marketplace is Ownable {
@@ -41,6 +41,11 @@ contract NFT_Marketplace is Ownable {
         bool sold
     );
 
+    modifier onlyStudent {
+        require((CU_NFT(_nftContract).getContractRoles(_msgSender()) & 2) == 2, "Must be current student to mint");
+        _;
+    }
+
     constructor(address nftContract) {
         _feeRecipient = payable(owner());
         _nftContract = nftContract;
@@ -56,20 +61,22 @@ contract NFT_Marketplace is Ownable {
         return listingFee;
     }
 
-    // Creates Market Item - Adds NFT to system
+    // Creates Market Item - Mints NFT & adds to system
     // If price is > 0, will list also
-    function createMarketItem(uint256 tokenId,  uint256 price) public {
-      // Determines if item is being listed
-      if(price > 0) {
-        // Transfers token to marketplace
-        ERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
-        // Lists on marketplace
-        _createMarketItem(tokenId, _msgSender(), address(this), price, false);
-      } else {
-        // Adds token to system, but doesn't list
-        _createMarketItem(tokenId, address(0), _msgSender(), 0, true);
-         _itemsSold.increment();
-      }
+    function mintAndCreateMarketItem(address nftOwner, uint256 tokenId, address royaltyRecipient, 
+            uint96 royaltyValue, uint256 price) public onlyStudent {
+        // Mints token (gives ownership to marketplace, if being listed)
+        CU_NFT(_nftContract).mint(price > 0 ? address(this) : nftOwner, tokenId, 1, royaltyRecipient, royaltyValue);
+        
+        // Determines if item is being listed
+        if(price > 0) {
+            // Lists on marketplace
+            _createMarketItem(tokenId, _msgSender(), address(this), price, false);
+        } else {
+            // Adds token to system, but doesn't list
+            _createMarketItem(tokenId, address(0), _msgSender(), 0, true);
+            _itemsSold.increment();
+        }
     }
 
     // Internal function to create market item (doesn't list)

@@ -26,6 +26,8 @@ async function main() {
 
   await cuMarketplace.deployed();
 
+  await cuNFT.setMarketplaceAddress(cuMarketplace.address);
+
   console.log("CU_MARKETPLACE deployed to:", cuMarketplace.address);
 
 }

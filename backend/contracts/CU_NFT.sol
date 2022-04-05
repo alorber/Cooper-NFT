@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+import "hardhat/console.sol";
+
 contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // ------ Token IDs ------
     using Counters for Counters.Counter;
@@ -21,6 +23,14 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     bytes32 public constant _CURRENT_STUDENT = keccak256("_CURRENT_STUDENT");
     // Previous Students: Cannot list on marketplace, but can still get royalties
     bytes32 public constant _PREVIOUS_STUDENT = keccak256("_PREVIOUS_STUDENT");
+
+    // Marketplace contract address and authorization modifier
+    address private _marketplaceContract;
+
+    modifier onlyMarketplace {
+        require(_msgSender() == _marketplaceContract, "Mint can only be called by the marketplace");
+        _;
+    }
 
     constructor() ERC1155("ipfs://f0{id}") {
         // Sets role hierarchy
@@ -38,6 +48,11 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // Makes AccessControl & ERC2981 play nice with ERC1155
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, ERC2981, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
+    }
+
+    // Sets marketplace address
+    function setMarketplaceAddress(address marketplace) external virtual onlyRole(_COOPER) {
+        _marketplaceContract = marketplace;
     }
 
     // ------ Role Functions ------
@@ -135,8 +150,8 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
 
     // Mints token and set royalty info
     // Royalty value is percentage of sale price (200 = 2%)
-    function mint(address to, uint256 id, uint256 amount, 
-            address royaltyRecipient, uint96 royaltyValue ) external virtual onlyRole(_CURRENT_STUDENT) {
+    function mint(address to, uint256 id, uint256 amount, address royaltyRecipient, 
+            uint96 royaltyValue ) external virtual onlyMarketplace {
         _mint(to, id, amount, "");
 
         // Sets royalty (optional)

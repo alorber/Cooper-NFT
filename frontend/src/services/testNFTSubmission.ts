@@ -6,7 +6,8 @@ import {
     NFTMetadata,
     uploadFileToIPFS
     } from './ipfs';
-import { cidToTokenID, getNFTuri, mintNFT } from './nft_contract';
+import { mintAndCreateMarketItem } from './marketplace_contract';
+import { cidToTokenID, getNFTuri } from './nft_contract';
 
 // NFT Form Test
 const testNFTSubmission = async (
@@ -45,7 +46,7 @@ const testNFTSubmission = async (
 
     // Mints
     console.log("\nMinting Token...")
-    const mintResp = await mintNFT(address, tokenID, address, 100, 1);
+    const mintResp = await mintAndCreateMarketItem(address, tokenID, address, 100, 0);
 
     if(mintResp.status === "Success") {
         console.log("SUCCESS: Successfully Minted Token")
