@@ -1,5 +1,6 @@
 import React from 'react';
-import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+import { DARK_SHADE_COLOR, LIGHT_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+import { Link } from '@chakra-ui/react';
 import { QuestionIcon } from '@chakra-ui/icons';
 import {
     Alert,
@@ -11,12 +12,20 @@ import {
     FormControl,
     FormLabel,
     Input,
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalHeader,
+    ModalOverlay,
     NumberDecrementStepper,
     NumberIncrementStepper,
     NumberInput,
     NumberInputField,
     NumberInputStepper,
+    Text,
     Tooltip,
+    useDisclosure,
 } from '@chakra-ui/react';
 
 /**
@@ -145,4 +154,35 @@ export const FormTooltip = ({message}: FormTooltipProps) => {
             <QuestionIcon color='grey' mb={2} alignSelf={'center'}/>
         </Tooltip>
     )
+}
+
+// Modal
+export type FormModalProps = {
+    launcherText: string
+    modalHeader: string
+    modalText: string
+}
+
+export const FormModal = ({launcherText, modalHeader, modalText}: FormModalProps) => {
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    return (<>  
+        <Flex w='fit-content' display={'block'}>
+            <Text as={Link} _hover={{textDecoration: "none", color: DARK_SHADE_COLOR}} 
+                    color={MID_SHADE_COLOR} onClick={onOpen} fontWeight={500}>
+                {launcherText}
+            </Text>
+        </Flex>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>
+                    {modalHeader}
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody mb={6} textAlign='justify' >
+                    {modalText}
+                </ModalBody>
+            </ModalContent>
+        </Modal>
+    </>)
 }

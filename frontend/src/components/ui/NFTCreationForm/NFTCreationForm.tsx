@@ -11,6 +11,7 @@ import {
     } from '@chakra-ui/react';
 import {
     FormErrorMessage,
+    FormModal,
     FormNumberInput,
     FormSubmitButton,
     FormTextInput
@@ -105,6 +106,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                             label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
 
                         {/* Royalty Info */}
+                        <FormModal launcherText='What are royalties?' modalHeader='NFT Royalties' modalText={royaltiesModalText}/>
                         <Checkbox size='lg' isChecked={formValues.disableRoyalties} onChange={(v) => {updateForm("disableRoyalties", v.target.checked)}}>
                             Disable royalties for this NFT
                         </Checkbox>
@@ -155,3 +157,6 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
 }
 
 export default NFTCreationForm;
+
+const royaltiesModalText = "NFT royalties are automatic payments made to the original NFT minter (or specified wallet) during secondary " +
+    "sales of the NFT. These payments are a percentage of the sale price each time the NFT is resold."
