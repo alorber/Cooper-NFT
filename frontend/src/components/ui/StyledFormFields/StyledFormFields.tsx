@@ -42,10 +42,21 @@ export type FormTextInputProps = {
     placeholder: string,
     ariaLabel: string
     isRequired?: boolean,
-    tooltipMessage?: string
+    tooltipMessage?: string,
+    isAddress?: boolean
 }
 
-export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLabel, isRequired = true, tooltipMessage}: FormTextInputProps) => {
+export const FormTextInput = ({
+    value, 
+    onChange, 
+    label, 
+    type, 
+    placeholder, 
+    ariaLabel, 
+    isRequired = true, 
+    tooltipMessage,
+    isAddress
+}: FormTextInputProps) => {
     return (
         <FormControl isRequired={isRequired}>
             <Flex>
@@ -56,7 +67,8 @@ export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLa
             </Flex>
             <Input type={type} placeholder={placeholder} value={value}
                 aria-label={ariaLabel}  borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
-                onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR}/>
+                onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR} 
+                pattern={isAddress ? "/^0x[a-fA-F0-9]{40}$/" : undefined}/>
         </FormControl>
     );
 }
@@ -84,9 +96,9 @@ export const FormNumberInput = ({value, onChange, label, type, isRequired = true
                     <FormTooltip message={tooltipMessage} />     
                 )}
             </Flex>
-            <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
+            <NumberInput onChange={onChange} format={format} parse={parse} value={value ?? ''} min={0.01} 
                     borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
-                    precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?"} max={max}>
+                    precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?%?"} max={max}>
                 <NumberInputField />
                 <NumberInputStepper>
                     <NumberIncrementStepper />
