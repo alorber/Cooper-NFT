@@ -41,13 +41,19 @@ export type FormTextInputProps = {
     type: string,
     placeholder: string,
     ariaLabel: string
-    isRequired?: boolean
+    isRequired?: boolean,
+    tooltipMessage?: string
 }
 
-export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLabel, isRequired = true}: FormTextInputProps) => {
+export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLabel, isRequired = true, tooltipMessage}: FormTextInputProps) => {
     return (
         <FormControl isRequired={isRequired}>
-            <FormLabel>{label}</FormLabel>
+            <Flex>
+                <FormLabel>{label}</FormLabel>
+                {tooltipMessage && (
+                    <FormTooltip message={tooltipMessage} />     
+                )}
+            </Flex>
             <Input type={type} placeholder={placeholder} value={value}
                 aria-label={ariaLabel}  borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
                 onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR}/>
