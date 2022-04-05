@@ -49,10 +49,11 @@ export type FormNumberInputProps = {
     onChange: (v: number | string) => void,
     label: string,
     type: '$' | '%'
-    isRequired?: boolean
+    isRequired?: boolean,
+    max?: number
 }
 
-export const FormNumberInput = ({value, onChange, label, type, isRequired = true}: FormNumberInputProps) => {
+export const FormNumberInput = ({value, onChange, label, type, isRequired = true, max}: FormNumberInputProps) => {
     const format = type === '$' ? (val: number | string) => `$` + val : (val: number | string) => val + `%`;
     const parse = type === '$' ? (val: string) => val.replace(/^\$/, ''): (val: string) => val.replace(/%$/, '');
 
@@ -61,7 +62,7 @@ export const FormNumberInput = ({value, onChange, label, type, isRequired = true
             <FormLabel>{label}</FormLabel>
             <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
                     borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
-                    precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?"}>
+                    precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?"} max={max}>
                 <NumberInputField />
                 <NumberInputStepper>
                     <NumberIncrementStepper />

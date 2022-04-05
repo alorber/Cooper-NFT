@@ -110,7 +110,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                         </Checkbox>
                         {!formValues.disableRoyalties && (<>
                             {/* Royalty Amount */}
-                            <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} type='%'
+                            <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} type='%' max={15}
                                 onChange={(val) => {updateForm('royaltyAmount', val)}} isRequired={!formValues.disableRoyalties} />
                             
                             {/* Royalty Recipient */}
