@@ -59,8 +59,11 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     };
 
     const isFormInvalid = () => {
-        return file === null || formValues.name === '' || formValues.description === '' || formValues.price === null || 
-            Number(formValues.price) < 0.01;
+        const invalidRequiredFields = file === null || formValues.name === '' || formValues.description === '';
+        const invalidRoyaltyInfo = !formValues.disableRoyalties && (formValues.royaltyAmount === null || formValues.royaltyAmount < 0.01 
+            || formValues.royaltyRecipient === null || (formValues.royaltyRecipient === RoyaltyRecipients.OTHER && formValues.royaltyRecipientOther === ''));
+        const invalidSellInfo = formValues.sellNFT && (formValues.price === null || formValues.price < 0.01);
+        return invalidRequiredFields || invalidRoyaltyInfo || invalidSellInfo;
     }
 
     const onSubmit = async () => {
@@ -108,9 +111,10 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                         {!formValues.disableRoyalties && (<>
                             {/* Royalty Amount */}
                             <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} 
-                                onChange={(val) => {updateForm('royaltyAmount', val)}} />
+                                onChange={(val) => {updateForm('royaltyAmount', val)}} isRequired={!formValues.disableRoyalties} />
+                            
                             {/* Royalty Recipient */}
-                            <FormControl>
+                            <FormControl isRequired={!formValues.disableRoyalties}>
                                 <FormLabel>Royalty Recipient</FormLabel>
                                 <Select placeholder='Select Royalty Recipient' size={'md'} value={formValues.royaltyRecipient ?? 0} 
                                         onChange={(v) => {updateForm('royaltyRecipient', v.target.value)}}>
@@ -120,10 +124,11 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                                 </Select>
                             </FormControl>
                             
-                            {/* "Other" Field Input */}
+                            {/* "Other" Address Input */}
                             {formValues.royaltyRecipient === RoyaltyRecipients.OTHER && (
                                 <FormTextInput value={formValues.royaltyRecipientOther} onChange={(val) => {updateForm('royaltyRecipientOther', val)}}
-                                    label={"Royalty Recipent Address"} placeholder="Wallet Address" type={"text"} ariaLabel={"Royalty Recipent Address"} />
+                                    label={"Royalty Recipent Address"} placeholder="Wallet Address" type={"text"} ariaLabel={"Royalty Recipent Address"} 
+                                    isRequired={!formValues.disableRoyalties && formValues.royaltyRecipient === RoyaltyRecipients.OTHER} />
                             )}
                         </>)}
 
@@ -136,7 +141,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                         {formValues.sellNFT && (
                             /* Price Field */
                             <FormNumberInput value={formValues.price} label={"Price"} 
-                                onChange={(val) => {updateForm('price', val)}} />
+                                onChange={(val) => {updateForm('price', val)}} isRequired={formValues.sellNFT} />
                         )}
 
                         {/* Submit Button */}

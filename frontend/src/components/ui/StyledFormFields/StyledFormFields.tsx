@@ -1,4 +1,5 @@
 import React from 'react';
+import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import {
     Alert,
     AlertDescription,
@@ -13,8 +14,7 @@ import {
     NumberInput,
     NumberInputField,
     NumberInputStepper,
-    } from '@chakra-ui/react';
-import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+} from '@chakra-ui/react';
 
 /**
  * This file contains various form components with uniform styling.
@@ -29,11 +29,12 @@ export type FormTextInputProps = {
     type: string,
     placeholder: string,
     ariaLabel: string
+    isRequired?: boolean
 }
 
-export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLabel}: FormTextInputProps) => {
+export const FormTextInput = ({value, onChange, label, type, placeholder, ariaLabel, isRequired = true}: FormTextInputProps) => {
     return (
-        <FormControl isRequired>
+        <FormControl isRequired={isRequired}>
             <FormLabel>{label}</FormLabel>
             <Input type={type} placeholder={placeholder} value={value}
                 aria-label={ariaLabel}  borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
@@ -47,14 +48,15 @@ export type FormNumberInputProps = {
     value: number | null,
     onChange: (v: number | string) => void,
     label: string,
+    isRequired?: boolean
 }
 
-export const FormNumberInput = ({value, onChange, label}: FormNumberInputProps) => {
+export const FormNumberInput = ({value, onChange, label, isRequired = true}: FormNumberInputProps) => {
     const format = (val: number | string) => `$` + val;
     const parse = (val: string) => val.replace(/^\$/, '');
 
     return (
-        <FormControl isRequired>
+        <FormControl isRequired={isRequired}>
             <FormLabel>{label}</FormLabel>
             <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
                     borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
