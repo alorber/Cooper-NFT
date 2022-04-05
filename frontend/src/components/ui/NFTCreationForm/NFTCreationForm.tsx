@@ -111,7 +111,8 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                         {!formValues.disableRoyalties && (<>
                             {/* Royalty Amount */}
                             <FormNumberInput value={formValues.royaltyAmount} label={"Royalty Percentage"} type='%' max={15}
-                                onChange={(val) => {updateForm('royaltyAmount', val)}} isRequired={!formValues.disableRoyalties} />
+                                onChange={(val) => {updateForm('royaltyAmount', val)}} isRequired={!formValues.disableRoyalties} 
+                                tooltipMessage={"Royalties are generally between 5-10%"} />
                             
                             {/* Royalty Recipient */}
                             <FormControl isRequired={!formValues.disableRoyalties}>

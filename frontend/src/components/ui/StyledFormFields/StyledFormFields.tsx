@@ -1,11 +1,13 @@
 import React from 'react';
 import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+import { QuestionIcon } from '@chakra-ui/icons';
 import {
     Alert,
     AlertDescription,
     AlertIcon,
     Box,
     Button,
+    Flex,
     FormControl,
     FormLabel,
     Input,
@@ -14,6 +16,7 @@ import {
     NumberInput,
     NumberInputField,
     NumberInputStepper,
+    Tooltip,
 } from '@chakra-ui/react';
 
 /**
@@ -50,16 +53,22 @@ export type FormNumberInputProps = {
     label: string,
     type: '$' | '%'
     isRequired?: boolean,
-    max?: number
+    max?: number,
+    tooltipMessage?: string
 }
 
-export const FormNumberInput = ({value, onChange, label, type, isRequired = true, max}: FormNumberInputProps) => {
+export const FormNumberInput = ({value, onChange, label, type, isRequired = true, max, tooltipMessage}: FormNumberInputProps) => {
     const format = type === '$' ? (val: number | string) => `$` + val : (val: number | string) => val + `%`;
     const parse = type === '$' ? (val: string) => val.replace(/^\$/, ''): (val: string) => val.replace(/%$/, '');
 
     return (
         <FormControl isRequired={isRequired}>
-            <FormLabel>{label}</FormLabel>
+            <Flex>
+                <FormLabel>{label}</FormLabel>
+                {tooltipMessage && (
+                    <FormTooltip message={tooltipMessage} />     
+                )}
+            </Flex>
             <NumberInput onChange={(val) => onChange(parse(val))} value={format(value ?? '')} min={0.01} 
                     borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
                     precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?"} max={max}>
@@ -123,4 +132,17 @@ export const FormSuccessMessage = ({message}: FormSuccessMessageProps) => {
         </Alert>
       </Box>
     );
+}
+
+// Tooltip
+export type FormTooltipProps = {
+    message: string
+}
+
+export const FormTooltip = ({message}: FormTooltipProps) => {
+    return (
+        <Tooltip label={message} placement='top' hasArrow>
+            <QuestionIcon color='grey' mb={2} alignSelf={'center'}/>
+        </Tooltip>
+    )
 }
