@@ -45,7 +45,7 @@ const testNFTSubmission = async (
 
     // Mints
     console.log("\nMinting Token...")
-    const mintResp = await mintNFT(address, tokenID, 1, address, 100);
+    const mintResp = await mintNFT(address, tokenID, address, 100, 1);
 
     if(mintResp.status === "Success") {
         console.log("SUCCESS: Successfully Minted Token")

@@ -37,7 +37,6 @@ const FileUploader = ({file, setFile}: FileUploaderProps) => {
                     const blob = new Blob([reader.result], {type: uploadedFile.type});
                     const newFile = new File([blob], uploadedFile.name, {type: uploadedFile.type});
                     setFile(newFile);
-                    console.log(newFile);
                 }
                 setIsLoading(false);
             }

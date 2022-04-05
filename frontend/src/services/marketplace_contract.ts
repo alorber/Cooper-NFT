@@ -1,5 +1,6 @@
-// Functions to Access Marketplace Contract
 import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
+import { buildNFTMetadata, uploadFileToIPFS } from './ipfs';
+import { cidToTokenID, mintNFT } from './nft_contract';
 import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
 import {
     Failure,
@@ -8,7 +9,8 @@ import {
     isMetaMaskInstalled,
     MetaMaskNotInstalledError,
     TransactionResponse
-} from './contracts';
+    } from './contracts';
+// Functions to Access Marketplace Contract
 
 // Type Declarations
 // -------------------
@@ -155,5 +157,66 @@ export const fetchItemsListed = async():
         return {status: "Success", nfts: nfts};
     } catch(err: any) {
         return {status: "Failure", error: err};
+    }
+}
+
+// Minting & Listing NFTs
+// ------------------------
+
+// Mints NFT and adds it to marketplace
+export const createNFT = async(
+    nftFile: File,
+    nftName: string,
+    nftDescription: string,
+    royaltyAmount: number,
+    royaltyRecipient: string,
+    price: number,
+    address: string
+) => {
+    // Uploads file to IPFS
+    console.log("Uploading file to IPFS....");
+    const fileCID = await uploadFileToIPFS(nftFile);
+    console.log("SUCCESS: File uploaded with CID ", fileCID.toString());
+
+    // Creates NFT Metadata
+    console.log("\nCreating NFT Metadata...");
+    const nftMetadata = buildNFTMetadata({
+        name: nftName, 
+        description: nftDescription,
+        image: fileCID.toString()
+    });
+    console.log("SUCCESS: NFT metadata created")
+    console.log(nftMetadata)
+
+    // Uploads Metadata to IPFS
+    console.log("\nUploading Metadata to IPFS...");
+    const metadataFile = new File([new Blob([nftMetadata], {type: 'application/json'})], 
+        `${nftName.trim().split(' ').join('_')}_metadata.json`, {type: 'application/json'});
+    const metadataCID = await uploadFileToIPFS(metadataFile);
+    console.log("SUCCESS: Metadata uploaded with CID ", metadataCID.toString());
+    
+    // Creates TokenID
+    console.log("\nCreating TokenID from CID...");
+    const tokenID = cidToTokenID(metadataCID);
+    console.log("SUCCESS: Created tokenID ", tokenID);
+
+    // Mints
+    console.log("\nMinting Token...")
+    const mintResp = await mintNFT(address, tokenID, royaltyRecipient, royaltyAmount);
+
+    if(mintResp.status === "Success") {
+        console.log("SUCCESS: Successfully Minted Token")
+    } else {
+        console.log("Error Minting Token: ", mintResp.error)
+        return;
+    }
+
+    const marketResp = await createMarketItem(tokenID, price);
+
+    if(marketResp.status === "Success") {
+        console.log("SUCCESS: Successfully Listed Token")
+    } else {
+        console.log("Error Listing Token: ", marketResp.error)
+        return;
     }
 }

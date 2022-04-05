@@ -1,4 +1,3 @@
-// Functions to Access NFT Contract
 import CU_NFT from '../artifacts/contracts/CU_NFT.sol/CU_NFT.json';
 import { CID } from 'ipfs-http-client';
 import { cidToBase16 } from './ipfs';
@@ -10,7 +9,8 @@ import {
     isMetaMaskInstalled,
     MetaMaskNotInstalledError,
     TransactionResponse
-} from './contracts';
+    } from './contracts';
+// Functions to Access NFT Contract
 
 // Type Declarations
 // -------------------
@@ -164,8 +164,8 @@ export const cidToTokenID = (CID: CID) => {
 
 // Mints New NFT
 // Royalty Value must be between 0 - 10000, where 10000 = 100% of sale price
-export const mintNFT = async (toAddress: string, tokenID: string, amount: number = 1, 
-        royaltyReciever: string, royaltyValue: number): Promise<TransactionResponse> => {
+export const mintNFT = async (toAddress: string, tokenID: string, royaltyReciever: string,
+        royaltyValue: number, amount: number = 1): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if(!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;

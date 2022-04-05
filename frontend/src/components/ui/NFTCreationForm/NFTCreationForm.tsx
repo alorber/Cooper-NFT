@@ -16,6 +16,7 @@ import {
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
+import { createNFT } from '../../../services/marketplace_contract';
 
 type NFTCreationFormProps = {
     address: string,
@@ -68,12 +69,28 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     }
 
     const onSubmit = async () => {
-        if(file === null) {
+        if(file == null) {
             return;
         }
 
         setIsLoading(true);
 
+        // Determines missing values
+        const royaltyRecipientAddress = formValues.disableRoyalties ? (
+            '0x0000000000000000000000000000000000000000'
+        ) : formValues.royaltyRecipient === RoyaltyRecipients.CURRENT_WALLET ? (
+            address
+        ) : formValues.royaltyRecipient === RoyaltyRecipients.COOPER_UNION ? (
+            ''
+        ) : formValues.royaltyRecipient === RoyaltyRecipients.OTHER ? (
+            formValues.royaltyRecipientOther
+        ) : (
+            '0x0'
+        )
+        const royaltyAmount = formValues.disableRoyalties ? 0 : (formValues.royaltyAmount ?? 0) * 10;
+        const price = formValues.sellNFT ? formValues.price ?? 0 : 0;
+
+        createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
 
         setIsLoading(false);
     }
