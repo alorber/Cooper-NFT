@@ -1,5 +1,5 @@
 import FileUploader from '../../ui/FileUploader/FileUploader';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Checkbox,
@@ -7,16 +7,20 @@ import {
     FormControl,
     FormLabel,
     Select,
-    Stack
+    Stack,
+    Text
     } from '@chakra-ui/react';
+import { createNFT } from '../../../services/marketplace_contract';
 import {
     FormErrorMessage,
+    FormIconButton,
     FormModal,
     FormNumberInput,
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
-import { createNFT } from '../../../services/marketplace_contract';
+import { getETHToUSDRate } from '../../../services/ethereumValue';
+import { constants as etherConstants } from 'ethers';
 
 type NFTCreationFormProps = {
     address: string,
@@ -39,6 +43,9 @@ const enum RoyaltyRecipients {
     OTHER = "OTHER"
 }
 
+// Number of decimal points precision in sale price
+const ETH_PRECISION = 10;
+
 const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     const defaultForm = {
         name: '', 
@@ -52,7 +59,9 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     };
     const [file, setFile] = useState<File | null>(null);
     const [formValues, setFormValues] = useState<FormValuesType>(defaultForm);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isSubmitting, setIsSubmitted] = useState(false);
+    const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
+    const [isLoadingETHRate, setIsLoadingETHRate] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const clearForm = () => {setFormValues(defaultForm)}
@@ -73,11 +82,11 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
             return;
         }
 
-        setIsLoading(true);
+        setIsSubmitted(true);
 
         // Determines missing values
         const royaltyRecipientAddress = formValues.disableRoyalties ? (
-            '0x0000000000000000000000000000000000000000'
+            etherConstants.AddressZero
         ) : formValues.royaltyRecipient === RoyaltyRecipients.CURRENT_WALLET ? (
             address
         ) : formValues.royaltyRecipient === RoyaltyRecipients.COOPER_UNION ? (
@@ -92,13 +101,31 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
 
         createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
 
-        setIsLoading(false);
+        setIsSubmitted(false);
     }
 
     const showNewForm = () => {
         clearForm();
         setFile(null);
     }
+
+    const refreshETHRate = async () => {
+        setIsLoadingETHRate(true);
+        
+        const ethRateResp = await getETHToUSDRate();
+        if(ethRateResp.status === "Success") {
+            setEthToUsdRate(ethRateResp.exchangeRate);
+        } else {
+            setEthToUsdRate(null);
+        }
+
+        setIsLoadingETHRate(false);
+    }
+
+    // Gets exchange rate, when user wants to list item
+    useEffect(() => {
+        refreshETHRate();
+    }, [formValues.sellNFT]);
 
     return (
         <Flex width="full" style={{margin: '0'}} h={'100%'} justifyContent="center">
@@ -160,13 +187,24 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
 
                         {/* Listing Info */}
                         {formValues.sellNFT && (
-                            /* Price Field */
-                            <FormNumberInput value={formValues.price} label={"Price"} type='$'
-                                onChange={(val) => {updateForm('price', val)}} isRequired={formValues.sellNFT} />
+                            <Stack>
+                            {/* Price Field in ETH */}
+                            <FormNumberInput value={formValues.price} label={"Price"} type='ETH' step={.002} isRequired={formValues.sellNFT}
+                                onChange={(val) => {updateForm('price', val)}} min={ethToUsdRate !== null ? (.015 / ethToUsdRate): .00001} 
+                                precision={ETH_PRECISION} />
+                            {/* Conversion to USD */}
+                            {formValues.price != null && ethToUsdRate !== null && (
+                                <Flex alignItems='center'>
+                                    <Text as='i' mr={2}>Roughly {formValues.price * ethToUsdRate} USD</Text>
+                                    <FormIconButton iconType='Refresh' ariaLabel='ETH Refresh' message='Refresh ETH <-> USD Rate' 
+                                        onClick={refreshETHRate} isLoading={isLoadingETHRate} />
+                                </Flex>
+                            )}
+                            </Stack>
                         )}
 
                         {/* Submit Button */}
-                        <FormSubmitButton isLoading={isLoading} label={"Submit"} isDisabled={isFormInvalid()} />
+                        <FormSubmitButton isLoading={isSubmitting} label={"Submit"} isDisabled={isFormInvalid()} />
                     </Stack>
                 </form>
             </Box>

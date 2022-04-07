@@ -1,7 +1,7 @@
 import React from 'react';
 import { DARK_SHADE_COLOR, LIGHT_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
-import { Link } from '@chakra-ui/react';
-import { QuestionIcon } from '@chakra-ui/icons';
+import { IconButton, Link } from '@chakra-ui/react';
+import { QuestionIcon, RepeatIcon } from '@chakra-ui/icons';
 import {
     Alert,
     AlertDescription,
@@ -78,16 +78,42 @@ export type FormNumberInputProps = {
     value: number | null,
     onChange: (v: number | string) => void,
     label: string,
-    type: '$' | '%'
+    type: '$' | '%' | 'ETH'
     isRequired?: boolean,
+    precision?: number,
+    min?: number,
     max?: number,
-    tooltipMessage?: string
+    tooltipMessage?: string,
+    step?: number
 }
 
-export const FormNumberInput = ({value, onChange, label, type, isRequired = true, max, tooltipMessage}: FormNumberInputProps) => {
-    const format = type === '$' ? (val: number | string) => `$` + val : (val: number | string) => val + `%`;
-    const parse = type === '$' ? (val: string) => val.replace(/^\$/, ''): (val: string) => val.replace(/%$/, '');
-
+export const FormNumberInput = ({
+    value, 
+    onChange, 
+    label, 
+    type, 
+    isRequired = true,
+    precision = 2,
+    min = .01, 
+    max = Number.MAX_VALUE / (10**precision), 
+    tooltipMessage, 
+    step
+}: FormNumberInputProps) => {
+    const format = type === '$' ? (
+        (val: number | string) => `$` + val
+    ) : type === '%' ? (
+        (val: number | string) => val + `%`
+    ) : (
+        (val: number | string) => val + ` ETH`
+    );
+    const parse = type === '$' ? (
+        (val: string) => val.replace(/^\$/, '')
+    ) : type === '%' ? (
+        (val: string) => val.replace(/%$/, '')
+    ) : (
+        (val: string) => val.replaceAll(/\sETH|E/g, '')
+    );
+    
     return (
         <FormControl isRequired={isRequired}>
             <Flex>
@@ -96,9 +122,9 @@ export const FormNumberInput = ({value, onChange, label, type, isRequired = true
                     <FormTooltip message={tooltipMessage} />     
                 )}
             </Flex>
-            <NumberInput onChange={onChange} format={format} parse={parse} value={value ?? ''} min={0.01} 
+            <NumberInput onChange={onChange} format={format} parse={parse} value={value ?? ''} min={min} 
                     borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
-                    precision={2} pattern={"\\$?[0-9]*(.[0-9]+)?%?"} max={max}>
+                    precision={precision} pattern={"\\$?[0-9]*(.[0-9]+)?%?( ETH)?"} max={max} step={step}>
                 <NumberInputField />
                 <NumberInputStepper>
                     <NumberIncrementStepper />
@@ -203,4 +229,23 @@ export const FormModal = ({launcherText, modalHeader, modalText}: FormModalProps
             </ModalContent>
         </Modal>
     </>)
+}
+
+// Icon Button
+export type FormIconButtonProps = {
+    iconType: "Refresh",
+    ariaLabel: string,
+    message: string,
+    onClick: () => void,
+    isLoading?: boolean
+}
+
+export const FormIconButton = ({iconType, ariaLabel, message, onClick, isLoading = false}: FormIconButtonProps) => {
+    const icon = iconType === "Refresh" ? <RepeatIcon /> : undefined;
+    return (
+        <Tooltip label={message} placement='top' hasArrow>
+            <IconButton variant={'outline'} aria-label={ariaLabel} icon={icon}
+                onClick={onClick} isLoading={isLoading} borderRadius={100} />
+        </Tooltip>
+    );
 }
