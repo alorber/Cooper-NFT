@@ -1,6 +1,7 @@
 import CreatePageLayout from '../layouts/CreatePageLayout/CreatePageLayout';
 import FunctionalityTestLayout from '../layouts/FunctionalityTestLayout/FunctionalityTestLayout';
 import LoginPageLayout from '../layouts/LoginPageLayout/LoginPageLayout';
+import MyNFTsLayout from '../layouts/MyNFTsLayout/MyNFTsLayout';
 import Navbar from '../sections/Navbar/Navbar';
 import React, { useEffect, useState } from 'react';
 import SellPageLayout from '../layouts/SellPageLayout/SellPageLayout';
@@ -42,6 +43,7 @@ const App = () => {
                     <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}/>} />
                     <Route path='/sell' element={<SellPageLayout />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
+                    <Route path='/my_nfts' element={<MyNFTsLayout />} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
                 </Routes>
             </Stack>
