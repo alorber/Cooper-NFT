@@ -4,11 +4,12 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 
 import "./CU_NFT.sol";
 import "hardhat/console.sol";
 
-contract NFT_Marketplace is Ownable {
+contract NFT_Marketplace is Ownable, ERC1155Holder {
     // Counters for IDs
     using Counters for Counters.Counter;
     Counters.Counter private _marketItemId;
@@ -62,7 +63,7 @@ contract NFT_Marketplace is Ownable {
     }
 
     // Creates Market Item - Mints NFT & adds to system
-    // If price is > 0, will list also
+    // If price is > 0 wei, will list also
     function mintAndCreateMarketItem(address nftOwner, uint256 tokenId, address royaltyRecipient, 
             uint96 royaltyValue, uint256 price) public onlyStudent {
         // Mints token (gives ownership to marketplace, if being listed)
