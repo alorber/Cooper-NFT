@@ -20,7 +20,7 @@ import {
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
 import { getETHToUSDRate } from '../../../services/ethereumValue';
-import { constants as etherConstants } from 'ethers';
+import { BigNumber, constants as etherConstants } from 'ethers';
 
 type NFTCreationFormProps = {
     address: string,
@@ -97,7 +97,11 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
             '0x0'
         )
         const royaltyAmount = formValues.disableRoyalties ? 0 : (formValues.royaltyAmount ?? 0) * 10;
-        const price = formValues.sellNFT ? formValues.price ?? 0 : 0;
+        const price = formValues.sellNFT && formValues.price != null ? (
+            BigNumber.from(formValues.price * (10**ETH_PRECISION)).mul(etherConstants.WeiPerEther).div(10**ETH_PRECISION)
+        ) : (
+            BigNumber.from(0)
+        );
 
         createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
 

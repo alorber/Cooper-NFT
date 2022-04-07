@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { FormValuesType } from '../components/ui//UploadForm/UploadForm';
 import {
     buildNFTMetadata,
@@ -46,7 +47,7 @@ const testNFTSubmission = async (
 
     // Mints
     console.log("\nMinting Token...")
-    const mintResp = await mintAndCreateMarketItem(address, tokenID, address, 100, 0);
+    const mintResp = await mintAndCreateMarketItem(address, tokenID, address, 100, BigNumber.from(0));
 
     if(mintResp.status === "Success") {
         console.log("SUCCESS: Successfully Minted Token")

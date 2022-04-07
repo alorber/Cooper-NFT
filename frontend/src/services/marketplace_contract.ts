@@ -10,6 +10,7 @@ import {
     MetaMaskNotInstalledError,
     TransactionResponse
     } from './contracts';
+import { BigNumber } from 'ethers';
 
 // Functions to Access Marketplace Contract
 
@@ -74,7 +75,7 @@ export const getListingFee = async (): Promise<{status: "Success", listingFee: n
 // Mints NFT & Creates Marketplace Item
 // Will only list item if price > 0, otherwise will just add info to marketplace
 export const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royaltyReciever: string,
-        royaltyValue: number, salePrice: number): Promise<TransactionResponse> => {
+        royaltyValue: number, salePrice: BigNumber): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -82,7 +83,7 @@ export const mintAndCreateMarketItem = async(toAddress: string, tokenId: string,
 
     try {
         const {contract} = await initiateMarketplaceContractWriteConnection();
-        const transaction = await contract.mintAndCreateMarketItem(toAddress, tokenId, royaltyReciever, royaltyValue, salePrice);
+        const transaction = await contract.mintAndCreateMarketItem(toAddress, tokenId, royaltyReciever, royaltyValue, salePrice.toString());
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
@@ -172,7 +173,7 @@ export const createNFT = async(
     nftDescription: string,
     royaltyAmount: number,
     royaltyRecipient: string,
-    price: number,
+    price: BigNumber,
     address: string
 ) => {
     // Uploads file to IPFS
