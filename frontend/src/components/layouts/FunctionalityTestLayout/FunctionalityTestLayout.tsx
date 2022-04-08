@@ -1,6 +1,6 @@
+import NFTCreationForm from '../../ui/NFTCreationForm/NFTCreationForm';
 import React, { useEffect, useState } from 'react';
 import UpdateRolesForm from '../../ui/UpdateRolesForm/UpdateRolesForm';
-import UploadForm from '../../ui/UploadForm/UploadForm';
 import {
     Box,
     Button,
@@ -71,7 +71,18 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
                     }
 
                     {/* NFT Upload Form */}
-                    {selectedForm === 'Upload_NFT' && <UploadForm roles={accountContractRoles} address={address} />}
+                    {selectedForm === 'Upload_NFT' && (
+                        <Stack>
+                            <Heading mb={4}>NFT Upload Test Form</Heading>
+                            {accountContractRoles.includes(ContractRole.CURRENT_STUDENT) ? (
+                                <NFTCreationForm address={address} />
+                            ) : (
+                                <Heading size={'sm'}>
+                                    Must be a current student to create an NFT
+                                </Heading>
+                            )}
+                        </Stack>
+                    )}
                 </Stack>
             )}
         </Stack>
