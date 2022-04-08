@@ -1,6 +1,6 @@
 import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
 import { BigNumber } from 'ethers';
-import { buildNFTMetadata, uploadFileToIPFS } from './ipfs';
+import { buildNFTMetadata, contractMarketItemsToNFTList, uploadFileToIPFS } from './ipfs';
 import { cidToTokenID } from './nft_contract';
 import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
 import {
@@ -53,7 +53,14 @@ export type NFTMarketItem = {
 }
 
 export type NFTMarketItemsResponse = {
-    status: "Success", nftMarketItems: NFTMarketItem[]
+    status: "Success", 
+    nftMarketItems: NFTMarketItem[]
+} | Failure;
+
+export type UserNFTListResponse = {
+    status: "Success", 
+    listedNFTs: NFTMarketItem[], 
+    unlistedNFTs: NFTMarketItem[]
 } | Failure;
 
 // NFT Marketplace Contract
@@ -135,7 +142,7 @@ export const listMarketItem = async(marketItemId: string, tokenId: string, saleP
 }
 
 // Gets all active marketplace listings (can filter to those listed by user)
-const fetchLiveListings = async (userOnly: boolean): Promise<ContractMarketItemCondensedResponse> => {
+const fetchLiveListings = async (userOnly: boolean = false): Promise<ContractMarketItemCondensedResponse> => {
     // Checks MetaMask Install
     if (userOnly && !isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -235,4 +242,48 @@ export const createNFT = async(
         console.log("Error Minting Token: ", mintResp.error)
         return;
     }
+}
+
+// Retrieving NFTs
+// ----------------
+
+// Builds user nft list containing one or both of: 1) User's listed NFTs 2) User's unlisted NFTs
+export const buildUserNFTList = async (includeListed = true, includeUnlisted = true): Promise<UserNFTListResponse> => {
+    // Builds list of user's listed NFTs
+    const listedNFTs: NFTMarketItem[] = [];
+    if(includeListed) {
+        // Gets MarketItems
+        const userListedMarketItemsResp = await fetchLiveListings(true);
+        if(userListedMarketItemsResp.status === "Failure") {
+            return {status: "Failure", error: userListedMarketItemsResp.error};
+        }
+
+        // Converts to displayable NFTs
+        const userListedNftsResp = await contractMarketItemsToNFTList(userListedMarketItemsResp.contractMarketItems);
+        if(userListedNftsResp.status === "Failure") {
+            return {status: "Failure", error: userListedNftsResp.error};
+        }
+        
+        listedNFTs.concat(userListedNftsResp.nftMarketItems);
+    }
+
+    // Builds list of user's unlisted NFTs
+    const unlistedNFTs: NFTMarketItem[] = [];
+    if(includeUnlisted) {
+        // Gets MarketItems
+        const userUnlistedMarketItemsResp = await fetchUsersUnlistedNFTs();
+        if(userUnlistedMarketItemsResp.status === "Failure") {
+            return {status: "Failure", error: userUnlistedMarketItemsResp.error};
+        }
+
+        // Converts to displayable NFTs
+        const userUnlistedNftsResp = await contractMarketItemsToNFTList(userUnlistedMarketItemsResp.contractMarketItems);
+        if(userUnlistedNftsResp.status === "Failure") {
+            return {status: "Failure", error: userUnlistedNftsResp.error};
+        }
+        
+        unlistedNFTs.concat(userUnlistedNftsResp.nftMarketItems);
+    }
+
+    return {status: "Success", listedNFTs: listedNFTs, unlistedNFTs: unlistedNFTs};
 }

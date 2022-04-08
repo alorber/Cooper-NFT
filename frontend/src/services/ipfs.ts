@@ -93,7 +93,7 @@ export const getNftFromIPFS = async(uri: string, fileName: string = 'a'): Promis
     }
 }
 
-// Uses IPFS to convert contract MarketItems to displayable objects
+// Uses IPFS to convert contract MarketItems to displayable NFTs
 export const contractMarketItemsToNFTList = async (contractMarketItems: ContractMarketItemCondensed[]): Promise<NFTMarketItemsResponse>  => {
     // Keeps track of errors
     const errorCount = {getNFTuriError: 0, getMetadataFromIPFSError: 0, getNftFromIPFSError: 0};
