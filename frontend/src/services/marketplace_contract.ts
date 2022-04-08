@@ -17,7 +17,7 @@ import { BigNumber } from 'ethers';
 // Type Declarations
 // -------------------
 
-export type MarketItem = {
+export type ContractMarketItem = {
     itemId: string,
     tokenId: string,
     seller: string,
@@ -27,7 +27,7 @@ export type MarketItem = {
 };
 
 export type MarketItemResposne = {
-    status: "Success", marketItems: MarketItem[]
+    status: "Success", marketItems: ContractMarketItem[]
 } | Failure;
 
 // NFT Marketplace Contract
@@ -129,8 +129,8 @@ export const fetchUsersNFTs = async():
 
     try {
         const {contract} = await initiateMarketplaceContractReadConnection();
-        const response: MarketItem[] = await contract.fetchMyNFTs();
-        const nfts = response.map((nft: MarketItem) => ({
+        const response: ContractMarketItem[] = await contract.fetchMyNFTs();
+        const nfts = response.map((nft: ContractMarketItem) => ({
             itemId: nft.itemId,
             tokenId: nft.tokenId
         }));
@@ -151,8 +151,8 @@ export const fetchItemsListed = async():
 
     try {
         const {contract} = await initiateMarketplaceContractReadConnection();
-        const response: MarketItem[] = await contract.fetchMyNFTs();
-        const nfts = response.map((nft: MarketItem) => ({
+        const response: ContractMarketItem[] = await contract.fetchMyNFTs();
+        const nfts = response.map((nft: ContractMarketItem) => ({
             itemId: nft.itemId,
             tokenId: nft.tokenId,
             price: nft.price
