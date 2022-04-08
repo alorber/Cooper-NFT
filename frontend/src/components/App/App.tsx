@@ -34,6 +34,15 @@ const App = () => {
         return address !== null;
     }
 
+    // Shows login page if not logged in
+    const showIfLoggedIn = (component: React.ReactNode) => {
+        return isLoggedIn() ? (
+            component
+        ) : (
+            <LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />
+        )
+    }
+
     return (
         <BrowserRouter>
             <Stack className='App' h={'100%'}>
@@ -43,7 +52,7 @@ const App = () => {
                     <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}/>} />
                     <Route path='/sell' element={<SellPageLayout />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
-                    <Route path='/my_nfts' element={<MyNFTsLayout />} />
+                    <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
                 </Routes>
             </Stack>
