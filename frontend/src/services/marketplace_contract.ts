@@ -1,4 +1,5 @@
 import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
+import { BigNumber } from 'ethers';
 import { buildNFTMetadata, uploadFileToIPFS } from './ipfs';
 import { cidToTokenID } from './nft_contract';
 import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
@@ -10,13 +11,13 @@ import {
     MetaMaskNotInstalledError,
     TransactionResponse
     } from './contracts';
-import { BigNumber } from 'ethers';
 
 // Functions to Access Marketplace Contract
 
 // Type Declarations
 // -------------------
 
+// MarketItem type used in smart contract
 export type ContractMarketItem = {
     itemId: string,
     tokenId: string,
@@ -26,8 +27,33 @@ export type ContractMarketItem = {
     sold: boolean
 };
 
-export type MarketItemResposne = {
-    status: "Success", marketItems: ContractMarketItem[]
+// Consolidated ContractMarketItem
+export type ContractMarketItemCondensed = {
+    itemId: string,
+    tokenId: string,
+    owner: string,  // Set to seller if listed
+    isListed: boolean,
+    price: number
+}
+
+export type ContractMarketItemCondensedResponse = {
+    status: "Success", contractMarketItems: ContractMarketItemCondensed[]
+} | Failure;
+
+// Displayable MarketItem (after NFT has been retrieved from IPFS)
+export type NFTMarketItem = {
+    name: string,
+    description: string,
+    file: File,
+    itemId: string,
+    tokenId: string,
+    owner: string,
+    isListed: boolean,
+    price: number
+}
+
+export type NFTMarketItemsResponse = {
+    status: "Success", nftMarketItems: NFTMarketItem[]
 } | Failure;
 
 // NFT Marketplace Contract
@@ -74,7 +100,7 @@ export const getListingFee = async (): Promise<{status: "Success", listingFee: n
 
 // Mints NFT & Creates Marketplace Item
 // Will only list item if price > 0, otherwise will just add info to marketplace
-export const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royaltyReciever: string,
+const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royaltyReciever: string,
         royaltyValue: number, salePrice: BigNumber): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
@@ -108,42 +134,36 @@ export const listMarketItem = async(marketItemId: string, tokenId: string, saleP
     }
 }
 
-// Gets all active marketplace listings
-export const fetchLiveListings = async(): Promise<MarketItemResposne> => {
-    try {
-        const {contract} = await initiateMarketplaceContractReadConnection();
-        const marketItems = await contract.fetchMarketItems();   
-        return {status: "Success", marketItems: marketItems};
-    } catch(err: any) {
-        return {status: "Failure", error: err};
-    }
-}
-
-// Gets user's NFTs
-export const fetchUsersNFTs = async(): 
-        Promise<{status: "Success", nfts: {itemId: string, tokenId: string}[]} | Failure> => {
+// Gets all active marketplace listings (can filter to those listed by user)
+const fetchLiveListings = async (userOnly: boolean): Promise<ContractMarketItemCondensedResponse> => {
     // Checks MetaMask Install
-    if (!isMetaMaskInstalled) {
+    if (userOnly && !isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
     }
-
+    
     try {
         const {contract} = await initiateMarketplaceContractReadConnection();
-        const response: ContractMarketItem[] = await contract.fetchMyNFTs();
+        const response: ContractMarketItem[] = userOnly ? (
+            await contract.fetchMyNFTS()
+        ) : (
+            await contract.fetchMarketItems()
+        );   
         const nfts = response.map((nft: ContractMarketItem) => ({
             itemId: nft.itemId,
-            tokenId: nft.tokenId
+            tokenId: nft.tokenId,
+            owner: nft.seller,
+            isListed: true,
+            price: nft.price,
         }));
-        return {status: "Success", nfts: nfts};
+
+        return {status: "Success", contractMarketItems: nfts};
     } catch(err: any) {
         return {status: "Failure", error: err};
     }
 }
 
-// Gets NFTs listed by user
 // Gets user's NFTs
-export const fetchItemsListed = async(): 
-        Promise<{status: "Success", nfts: {itemId: string, tokenId: string, price: number}[]} | Failure> => {
+const fetchUsersUnlistedNFTs = async (): Promise<ContractMarketItemCondensedResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -155,9 +175,11 @@ export const fetchItemsListed = async():
         const nfts = response.map((nft: ContractMarketItem) => ({
             itemId: nft.itemId,
             tokenId: nft.tokenId,
-            price: nft.price
+            owner: nft.owner,
+            isListed: false,
+            price: 0,
         }));
-        return {status: "Success", nfts: nfts};
+        return {status: "Success", contractMarketItems: nfts};
     } catch(err: any) {
         return {status: "Failure", error: err};
     }

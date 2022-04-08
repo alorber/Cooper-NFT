@@ -1,7 +1,9 @@
 import { base16 } from 'multiformats/bases/base16';
 import { CID, create as ipfsHttpClient } from 'ipfs-http-client';
+import { ContractMarketItemCondensed, NFTMarketItem, NFTMarketItemsResponse } from './marketplace_contract';
 import { Failure } from './contracts';
-import { fromBuffer, FileExtension, MimeType } from 'file-type';
+import { FileExtension, fromBuffer, MimeType } from 'file-type';
+import { getNFTuri } from './nft_contract';
 import { IPFS_PROJECT_ID, IPFS_PROJECT_SECRET } from './IPFS_AUTH';
 
 // Type Declarations
@@ -89,4 +91,57 @@ export const getNftFromIPFS = async(uri: string, fileName: string = 'a'): Promis
     } catch(err: any) {
         return {status: "Failure", error: err};
     }
+}
+
+// Uses IPFS to convert contract MarketItems to displayable objects
+export const contractMarketItemsToNFTList = async (contractMarketItems: ContractMarketItemCondensed[]): Promise<NFTMarketItemsResponse>  => {
+    // Keeps track of errors
+    const errorCount = {getNFTuriError: 0, getMetadataFromIPFSError: 0, getNftFromIPFSError: 0};
+
+    const nftMarketItems: NFTMarketItem[] = [];
+    for(let contractMarketItem of contractMarketItems) {
+        // Gets nft metadata URI
+        const tokenURIResp = await getNFTuri(contractMarketItem.tokenId);
+        if(tokenURIResp.status === 'Failure') {
+            console.log("ERROR: ", tokenURIResp.error);
+            errorCount.getNFTuriError += 1;
+            continue;
+        }
+
+        // Retrieves Metadata from IPfs
+        const ipfsMetadataResp = await getMetadataFromIPFS(tokenURIResp.uri);
+        if(ipfsMetadataResp.status === 'Failure') {
+            console.log("ERROR: ", ipfsMetadataResp.error);
+            errorCount.getMetadataFromIPFSError += 1;
+            continue;
+        }
+
+        // Retrieves NFT from IPFS
+        const ipfsNFTResp = await getNftFromIPFS(ipfsMetadataResp.metadata.image, 
+            ipfsMetadataResp.metadata.name.trim().split(' ').join('_'));
+        if(ipfsNFTResp.status === "Failure") {
+            console.log("ERROR: ", ipfsNFTResp.error);
+            errorCount.getNftFromIPFSError += 1;
+            continue;
+        }
+
+        nftMarketItems.push({
+            name: ipfsMetadataResp.metadata.name,
+            description: ipfsMetadataResp.metadata.description,
+            file: ipfsNFTResp.file,
+            itemId: contractMarketItem.itemId,
+            tokenId: contractMarketItem.tokenId,
+            owner: contractMarketItem.owner,
+            isListed: contractMarketItem.isListed,
+            price: contractMarketItem.price
+        });
+    }
+
+    if(nftMarketItems.length === 0) {
+        return {status: "Failure", error: `Error Count: getNFTuriError - ${errorCount.getNFTuriError}, ` 
+                        + `getMetadataFromIPFSError - ${errorCount.getMetadataFromIPFSError}, `
+                        + `getNftFromIPFSError - ${errorCount.getNftFromIPFSError}`}
+    }
+
+    return {status: "Success", nftMarketItems: nftMarketItems};
 }
