@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Heading,
     HStack,
     Image,
+    Link,
     Stack,
-    Text
+    Text,
+    Tooltip
     } from '@chakra-ui/react';
+import { FiHeart } from 'react-icons/fi';
+import { FormIconButton } from '../StyledFormFields/StyledFormFields';
+import { LIGHT_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
 
 type NFTCardLayoutProps = {
     imageURL: string
@@ -17,12 +22,13 @@ type NFTCardLayoutProps = {
 }
 
 const NFTCard = ({imageURL, title, creator, price, ethToUsdRate}: NFTCardLayoutProps) => {
+    const [isFavorited, setIsFavorited] = useState(false);
+    
     return (
-        <Box w="300px" rounded="20px" overflow="hidden" 
-                bg={ "gray.200" } mt={10}>
+        <Box w="300px" rounded="20px" overflow="hidden" mt={10}>
             <Image src= {imageURL} 
-                boxSize="300px" objectFit={'contain'} backgroundColor='gray.400' />
-            <Box p={5}>
+                boxSize="300px" objectFit={'contain'} backgroundColor={NAVBAR_BORDER_COLOR} />
+            <Box p={5} backgroundColor={LIGHT_SHADE_COLOR}>
                 <Stack>
                     <Heading size={'md'} textAlign='center'>
                         {title}
@@ -33,7 +39,7 @@ const NFTCard = ({imageURL, title, creator, price, ethToUsdRate}: NFTCardLayoutP
                         </Text> 
                     )}
                 </Stack>
-                <HStack alignSelf={'flex-start'} mt={2} mb={6}>
+                <HStack alignSelf={'flex-start'} mt={4} mb={6}>
                     <Stack w='50%' alignSelf={'flex-start'} >
                         <Text textAlign='start' >
                             {price} ETH
@@ -42,15 +48,29 @@ const NFTCard = ({imageURL, title, creator, price, ethToUsdRate}: NFTCardLayoutP
                             (~ ${price * ethToUsdRate})
                         </Text>
                     </Stack>
-                    <Stack w='50%' alignSelf={'center'}>
-                        <Text textAlign='center' pl={10}>
-                            Favorite Icon Here
-                        </Text>
+                    <Stack w='50%' alignSelf={'center'} alignItems='flex-end' pr={6}>
+                        <FavoriteIconButton isFavorited={isFavorited} onClick={() => {setIsFavorited(!isFavorited)}} />
                     </Stack>
                 </HStack>
             </Box>
         </Box>
     );
+}
+
+type FavoriteIconButtonProps = {
+    isFavorited: boolean, 
+    onClick: () => void
+}
+const FavoriteIconButton = ({isFavorited, onClick}: FavoriteIconButtonProps) => {
+    
+    return (
+        <Tooltip label={isFavorited ? 'Remove from favorites' : 'Add to favorites'} placement='top' hasArrow>
+            <Link w='fit-content'>
+                <FiHeart color='red' fill={isFavorited ? 'red' : LIGHT_SHADE_COLOR} size={24} 
+                    onClick={onClick} /> 
+            </Link>
+        </Tooltip>
+    )
 }
 
 export default NFTCard;
