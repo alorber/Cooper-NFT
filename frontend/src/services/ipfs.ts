@@ -137,7 +137,7 @@ export const contractMarketItemsToNFTList = async (contractMarketItems: Contract
         });
     }
 
-    if(nftMarketItems.length === 0) {
+    if(errorCount.getNFTuriError > 0 || errorCount.getMetadataFromIPFSError > 0 || errorCount.getNftFromIPFSError > 0) {
         return {status: "Failure", error: `Error Count: getNFTuriError - ${errorCount.getNFTuriError}, ` 
                         + `getMetadataFromIPFSError - ${errorCount.getMetadataFromIPFSError}, `
                         + `getNftFromIPFSError - ${errorCount.getNftFromIPFSError}`}

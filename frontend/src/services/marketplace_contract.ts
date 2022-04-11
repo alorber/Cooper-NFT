@@ -149,9 +149,13 @@ const fetchLiveListings = async (userOnly: boolean = false): Promise<ContractMar
     }
     
     try {
-        const {contract} = await initiateMarketplaceContractReadConnection();
+        const {contract} = userOnly ? (
+            await initiateMarketplaceContractWriteConnection()
+        ) : (
+            await initiateMarketplaceContractReadConnection()
+        );
         const response: ContractMarketItem[] = userOnly ? (
-            await contract.fetchMyNFTS()
+            await contract.fetchItemsListed()
         ) : (
             await contract.fetchMarketItems()
         );   
@@ -264,7 +268,7 @@ export const buildUserNFTList = async (includeListed = true, includeUnlisted = t
             return {status: "Failure", error: userListedNftsResp.error};
         }
         
-        listedNFTs.concat(userListedNftsResp.nftMarketItems);
+        listedNFTs.push(...(userListedNftsResp.nftMarketItems));
     }
 
     // Builds list of user's unlisted NFTs
@@ -282,7 +286,7 @@ export const buildUserNFTList = async (includeListed = true, includeUnlisted = t
             return {status: "Failure", error: userUnlistedNftsResp.error};
         }
         
-        unlistedNFTs.concat(userUnlistedNftsResp.nftMarketItems);
+        unlistedNFTs.push(...(userUnlistedNftsResp.nftMarketItems));
     }
 
     return {status: "Success", listedNFTs: listedNFTs, unlistedNFTs: unlistedNFTs};

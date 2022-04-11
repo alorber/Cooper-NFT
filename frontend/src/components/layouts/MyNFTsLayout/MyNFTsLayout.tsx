@@ -22,6 +22,8 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
         if(loadNFTListsResp.status === "Success") {
             setUserListedNFTs(loadNFTListsResp.listedNFTs);
             setUserUnlistedNFTs(loadNFTListsResp.unlistedNFTs);
+        } else {
+            console.log(loadNFTListsResp.error)
         }
         setIsLoadingNFTs(false)
     }
