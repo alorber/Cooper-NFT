@@ -56,7 +56,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     };
     const [file, setFile] = useState<File | null>(null);
     const [formValues, setFormValues] = useState<FormValuesType>(defaultForm);
-    const [isSubmitting, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
     const [isLoadingETHRate, setIsLoadingETHRate] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -79,7 +79,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
             return;
         }
 
-        setIsSubmitted(true);
+        setIsSubmitting(true);
 
         // Determines missing values
         const royaltyRecipientAddress = formValues.disableRoyalties ? (
@@ -96,9 +96,11 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
         const royaltyAmount = formValues.disableRoyalties ? 0 : (formValues.royaltyAmount ?? 0) * 10;
         const price = formValues.sellNFT ? formValues.price ?? 0 : 0;
 
-        createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
+        await createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
 
-        setIsSubmitted(false);
+        showNewForm();
+
+        setIsSubmitting(false);
     }
 
     const showNewForm = () => {
