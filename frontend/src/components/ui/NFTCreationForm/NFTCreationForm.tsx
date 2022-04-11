@@ -10,7 +10,8 @@ import {
     Stack,
     Text
     } from '@chakra-ui/react';
-import { createNFT } from '../../../services/marketplace_contract';
+import { constants as etherConstants } from 'ethers';
+import { createNFT, ETH_PRECISION } from '../../../services/marketplace_contract';
 import {
     FormErrorMessage,
     FormIconButton,
@@ -20,7 +21,6 @@ import {
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
 import { getETHToUSDRate } from '../../../services/ethereumValue';
-import { BigNumber, constants as etherConstants } from 'ethers';
 
 type NFTCreationFormProps = {
     address: string,
@@ -42,9 +42,6 @@ const enum RoyaltyRecipients {
     COOPER_UNION = "COOPER_UNION",
     OTHER = "OTHER"
 }
-
-// Number of decimal points precision in sale price
-const ETH_PRECISION = 10;
 
 const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     const defaultForm = {
@@ -97,11 +94,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
             '0x0'
         )
         const royaltyAmount = formValues.disableRoyalties ? 0 : (formValues.royaltyAmount ?? 0) * 10;
-        const price = formValues.sellNFT && formValues.price != null ? (
-            BigNumber.from(formValues.price * (10**ETH_PRECISION)).mul(etherConstants.WeiPerEther).div(10**ETH_PRECISION)
-        ) : (
-            BigNumber.from(0)
-        );
+        const price = formValues.sellNFT ? formValues.price ?? 0 : 0;
 
         createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
 

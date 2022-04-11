@@ -1,5 +1,5 @@
 import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
-import { BigNumber } from 'ethers';
+import { BigNumber, constants as etherConstants } from 'ethers';
 import { buildNFTMetadata, contractMarketItemsToNFTList, uploadFileToIPFS } from './ipfs';
 import { cidToTokenID } from './nft_contract';
 import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
@@ -62,6 +62,9 @@ export type UserNFTListResponse = {
     listedNFTs: NFTMarketItem[], 
     unlistedNFTs: NFTMarketItem[]
 } | Failure;
+
+// Number of decimal points precision when displaying sale price in ETH
+export const ETH_PRECISION = 10;
 
 // NFT Marketplace Contract
 // --------------------------
@@ -164,7 +167,7 @@ const fetchLiveListings = async (userOnly: boolean = false): Promise<ContractMar
             tokenId: nft.tokenId,
             owner: nft.seller,
             isListed: true,
-            price: nft.price,
+            price: weiToEth(nft.price),
         }));
 
         return {status: "Success", contractMarketItems: nfts};
@@ -196,19 +199,44 @@ const fetchUsersUnlistedNFTs = async (): Promise<ContractMarketItemCondensedResp
     }
 }
 
+// ETH <--> WEI Conversion
+// -------------------------
+
+const ethToWei = (eth: number): BigNumber => {
+    return BigNumber.from(eth * (10**ETH_PRECISION))
+        .mul(etherConstants.WeiPerEther)
+        .div(10**ETH_PRECISION);
+}
+
+const weiToEth = (wei: BigNumber | number): number => {
+    const price = typeof wei === 'number' ? (
+        BigNumber.from(wei)
+    ) : (
+        wei
+    );
+
+    return price.mul(10**ETH_PRECISION)
+        .div(etherConstants.WeiPerEther)
+        .toNumber() / (10**ETH_PRECISION);
+}
+
 // Minting & Listing NFTs
 // ------------------------
 
 // Mints NFT and adds it to marketplace
+// Price in ETH
 export const createNFT = async(
     nftFile: File,
     nftName: string,
     nftDescription: string,
     royaltyAmount: number,
     royaltyRecipient: string,
-    price: BigNumber,
+    price: number,
     address: string
 ) => {
+    // Converts price to WEI
+    const priceWei = ethToWei(price);
+
     // Uploads file to IPFS
     console.log("Uploading file to IPFS....");
     const fileCID = await uploadFileToIPFS(nftFile);
@@ -238,7 +266,7 @@ export const createNFT = async(
 
     // Mints
     console.log("\nMinting Token...")
-    const mintResp = await mintAndCreateMarketItem(address, tokenID, royaltyRecipient, royaltyAmount, price);
+    const mintResp = await mintAndCreateMarketItem(address, tokenID, royaltyRecipient, royaltyAmount, priceWei);
 
     if(mintResp.status === "Success") {
         console.log("SUCCESS: Successfully Minted Token")
