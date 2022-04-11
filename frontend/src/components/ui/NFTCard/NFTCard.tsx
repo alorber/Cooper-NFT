@@ -10,18 +10,17 @@ import {
     Tooltip
     } from '@chakra-ui/react';
 import { FiHeart } from 'react-icons/fi';
-import { FormIconButton } from '../StyledFormFields/StyledFormFields';
 import { LIGHT_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
 
 type NFTCardLayoutProps = {
     imageURL: string
     title: string,
-    creator?: string,
+    owner?: string,
     price: number,
     ethToUsdRate: number
 }
 
-const NFTCard = ({imageURL, title, creator, price, ethToUsdRate}: NFTCardLayoutProps) => {
+const NFTCard = ({imageURL, title, owner, price, ethToUsdRate}: NFTCardLayoutProps) => {
     const [isFavorited, setIsFavorited] = useState(false);
     
     return (
@@ -33,9 +32,9 @@ const NFTCard = ({imageURL, title, creator, price, ethToUsdRate}: NFTCardLayoutP
                     <Heading size={'md'} textAlign='center'>
                         {title}
                     </Heading>
-                    {creator && (
+                    {owner && (
                         <Text as='i' textAlign='center' >
-                            {creator}
+                            {owner}
                         </Text> 
                     )}
                 </Stack>

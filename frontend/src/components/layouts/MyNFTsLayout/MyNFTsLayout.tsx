@@ -1,8 +1,8 @@
-import NFTCard from '../../ui/NFTCard/NFTCard';
+import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
-import { Stack } from '@chakra-ui/react';
 import { buildUserNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
 import { getETHToUSDRate } from '../../../services/ethereumValue';
+import { Stack } from '@chakra-ui/react';
 
 type MyNFTsLayoutProps = {
     address: string
@@ -46,8 +46,7 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
 
     return (
         <Stack align={'center'}>
-            <NFTCard imageURL="https://static01.nyt.com/images/2013/02/16/nyregion/JP-COOPER/JP-COOPER-superJumbo.jpg" 
-                title={"Cooper Union"} creator={'Cooper Student #4'} price={4.67} ethToUsdRate={1000000} />
+            <NFTCardGrid NFTList={userListedNFTs ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
         </Stack>
         
     );
