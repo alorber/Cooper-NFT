@@ -18,7 +18,8 @@ const NFTCardGrid = ({NFTList, ethToUsdRate}: NFTCardGridProps) => {
             )} gap={4} m={4} >
             {NFTList.map(nft => (
                 <NFTCard imageURL={URL.createObjectURL(nft.file)} title={nft.name} 
-                    owner={nft.owner} price={nft.price} ethToUsdRate={ethToUsdRate} />
+                    owner={nft.owner} price={nft.price} ethToUsdRate={ethToUsdRate}
+                    key={nft.itemId} />
             ))}
         </Grid>
     );
