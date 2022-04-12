@@ -319,3 +319,23 @@ export const buildUserNFTList = async (includeListed = true, includeUnlisted = t
 
     return {status: "Success", listedNFTs: listedNFTs, unlistedNFTs: unlistedNFTs};
 }
+
+// Builds list of all live NFT listings
+export const buildLiveNFTList = async (): Promise<NFTMarketItemsResponse> => {
+    const listedNFTs: NFTMarketItem[] = [];
+
+    // Gets MarketItems
+    const listedMarketItemsResp = await fetchLiveListings();
+    if(listedMarketItemsResp.status === "Failure") {
+        return {status: "Failure", error: listedMarketItemsResp.error};
+    }
+
+    // Converts to displayable NFTs
+    const listedNftsResp = await contractMarketItemsToNFTList(listedMarketItemsResp.contractMarketItems);
+    if(listedNftsResp.status === "Failure") {
+        return {status: "Failure", error: listedNftsResp.error};
+    }
+    listedNFTs.push(...(listedNftsResp.nftMarketItems));
+
+    return {status: "Success", nftMarketItems: listedNFTs};
+}
