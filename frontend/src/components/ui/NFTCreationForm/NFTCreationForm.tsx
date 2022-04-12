@@ -8,11 +8,13 @@ import {
     FormLabel,
     Select,
     Stack,
-    Text
+    Text,
+    useDisclosure
     } from '@chakra-ui/react';
 import { constants as etherConstants } from 'ethers';
 import { createNFT, ETH_PRECISION } from '../../../services/marketplace_contract';
 import {
+    FormConfirmationModal,
     FormErrorMessage,
     FormIconButton,
     FormModal,
@@ -60,6 +62,8 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
     const [isLoadingETHRate, setIsLoadingETHRate] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const {isOpen: isConfirmationModalOpen, onOpen: onConfirmationModalOpen, onClose: onConfirmationModalClose} = useDisclosure();
 
     const clearForm = () => {setFormValues(defaultForm)}
     const updateForm = (field: keyof typeof formValues, value: string | number | boolean | null) => {
@@ -130,7 +134,10 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
         <Flex width="full" style={{margin: '0'}} h={'100%'} justifyContent="center">
             <Box p={8} m={8} w={1000} h={'fit-content'} borderWidth={1} borderRadius={8} 
                     boxShadow="lg" borderColor="#b7e0ff ">
-                <form onSubmit={e => {e.preventDefault(); onSubmit()}}>
+                <FormConfirmationModal header='Confirm Submission' isOpen={isConfirmationModalOpen} onClose={onConfirmationModalClose}
+                        confrimationDialog='Once an NFT is minted, none of these values can be changed except sale price'
+                        submitButtonText={formValues.sellNFT ? 'Mint & List NFT' : 'Mint NFT'} submitButtonOnClick={onSubmit} />
+                <form onSubmit={e => {e.preventDefault(); onConfirmationModalOpen()}}>
                     <Stack spacing={4}>
                         {/* Error Message */}
                         {error !== null && <FormErrorMessage error={error} /> }

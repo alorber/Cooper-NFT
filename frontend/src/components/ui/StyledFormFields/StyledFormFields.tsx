@@ -1,7 +1,4 @@
-import React from 'react';
-import { DARK_SHADE_COLOR, LIGHT_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
-import { IconButton, Link } from '@chakra-ui/react';
-import { QuestionIcon, RepeatIcon } from '@chakra-ui/icons';
+import React, { useRef } from 'react';
 import {
     Alert,
     AlertDescription,
@@ -25,8 +22,20 @@ import {
     NumberInputStepper,
     Text,
     Tooltip,
-    useDisclosure,
-} from '@chakra-ui/react';
+    useDisclosure
+    } from '@chakra-ui/react';
+import {
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogOverlay,
+    IconButton,
+    Link
+    } from '@chakra-ui/react';
+import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+import { QuestionIcon, RepeatIcon } from '@chakra-ui/icons';
 
 /**
  * This file contains various form components with uniform styling.
@@ -229,6 +238,54 @@ export const FormModal = ({launcherText, modalHeader, modalText}: FormModalProps
             </ModalContent>
         </Modal>
     </>)
+}
+
+// Confirmation Modal
+export type FormConfirmationModalProps = {
+    isOpen: boolean,
+    onClose: () => void,
+    header: string,
+    confrimationDialog: string,
+    submitButtonText?: string,
+    submitButtonColor?: string,
+    submitButtonOnClick?: () => void
+}
+
+export const FormConfirmationModal = ({
+    isOpen, 
+    onClose, 
+    header, 
+    confrimationDialog, 
+    submitButtonText = 'Submit',
+    submitButtonColor = 'green',
+    submitButtonOnClick = () => {}
+}: FormConfirmationModalProps) => {
+    const cancelRef = useRef(null);
+    
+    return (
+        <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+            <AlertDialogOverlay>
+                <AlertDialogContent>
+                    <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                        {header}
+                    </AlertDialogHeader>
+                    <AlertDialogBody>
+                        {confrimationDialog}
+                    </AlertDialogBody>
+
+                    <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button colorScheme={submitButtonColor} ml={3}
+                                onClick={() => {onClose(); submitButtonOnClick();}}>
+                            {submitButtonText}
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialogOverlay>
+        </AlertDialog>
+    )
 }
 
 // Icon Button
