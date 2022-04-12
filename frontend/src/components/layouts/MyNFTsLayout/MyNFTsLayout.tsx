@@ -2,7 +2,7 @@ import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
 import { buildUserNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
 import { getETHToUSDRate } from '../../../services/ethereumValue';
-import { Stack } from '@chakra-ui/react';
+import { Heading, Stack } from '@chakra-ui/react';
 
 type MyNFTsLayoutProps = {
     address: string
@@ -48,7 +48,14 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
 
     return (
         <Stack align={'center'}>
-            <NFTCardGrid NFTList={userListedNFTs ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
+            {isLoadingNFTs ? (
+                <Heading>
+                    Loading...
+                </Heading>
+            ) : (
+                <NFTCardGrid NFTList={userListedNFTs ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
+            )}
+            
         </Stack>
         
     );
