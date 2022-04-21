@@ -44,7 +44,7 @@ const NFTCard = ({imageURL, title, owner, price, ethToUsdRate}: NFTCardLayoutPro
                             {price} ETH
                         </Text>
                         <Text as='i' textAlign='start' >
-                            (~ ${price * ethToUsdRate})
+                            (~ ${Math.round(price * ethToUsdRate * 100) / 100})
                         </Text>
                     </Stack>
                     <Stack w='50%' alignSelf={'center'} alignItems='flex-end' pr={6}>

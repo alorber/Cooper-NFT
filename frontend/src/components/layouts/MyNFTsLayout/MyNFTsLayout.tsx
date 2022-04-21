@@ -23,7 +23,7 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
             setUserListedNFTs(loadNFTListsResp.listedNFTs);
             setUserUnlistedNFTs(loadNFTListsResp.unlistedNFTs);
         } else {
-            console.log(loadNFTListsResp.error)
+            console.log(loadNFTListsResp.error);
         }
         setIsLoadingNFTs(false)
     }
