@@ -22,14 +22,6 @@ const FilterBox = ({nftList, setNftList}: FilterBoxProps) => {
         updateSearchResults();
     }, []);
 
-    // Updates search term as typed - includes empty string check
-    const updateSearchTerm = (search: string) => {
-        if(search === '') {
-            updateSearchResults('');
-        }
-        setSearchTerm(search);
-    }
-
     // Uses current search-term to update search results
     const updateSearchResults = (s: string | null = null) => {
         const search = s ?? searchTerm;
@@ -42,16 +34,38 @@ const FilterBox = ({nftList, setNftList}: FilterBoxProps) => {
         <Grid w='80%' templateColumns={'2fr repeat(2,1fr)'} px={6}>
             {/* Search Bar */}
             <GridItem>
-                <form onSubmit={e => {e.preventDefault(); updateSearchResults();}}>
-                    <InputGroup>
-                        <InputLeftElement pointerEvents={'none'} children={<SearchIcon />} />
-                        <Input type='search' placeholder='Search' value={searchTerm} 
-                            onChange={(v)=>{updateSearchTerm(v.target.value)}} />
-                    </InputGroup>
-                </form>
+                <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} 
+                    updateSearchResults={updateSearchResults} />
             </GridItem>
         </Grid>
     )
 }
 
 export default FilterBox;
+
+// Search Bar Component
+type SearchBarProps = {
+    searchTerm: string,
+    setSearchTerm: (s: string) => void,
+    updateSearchResults: (s?: string|null) => void
+}
+
+const SearchBar = ({searchTerm, setSearchTerm, updateSearchResults}: SearchBarProps) => {
+    // Updates search term as typed - includes empty string check
+    const updateSearchTerm = (search: string) => {
+        if(search === '') {
+            updateSearchResults('');
+        }
+        setSearchTerm(search);
+    }
+
+    return (
+        <form onSubmit={e => {e.preventDefault(); updateSearchResults();}}>
+            <InputGroup>
+                <InputLeftElement pointerEvents={'none'} children={<SearchIcon />} />
+                <Input type='search' placeholder='Search' value={searchTerm} 
+                    onChange={(v)=>{updateSearchTerm(v.target.value)}} />
+            </InputGroup>
+        </form>
+    )
+}
