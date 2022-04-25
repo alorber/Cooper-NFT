@@ -11,9 +11,10 @@ import { NFTMarketItem } from '../../../services/marketplace_contract';
 import { SearchIcon } from '@chakra-ui/icons';
 
 enum SortByOptions {
-    NAME = "Name",
-    PRICE = "Price",
-    SELLER = "Seller"
+    RECENTLY_ADDED = "Recently Added",
+    PRICE_ASC = "Price: Low to High",
+    PRICE_DESC = "Price: High to Low"
+    // MOST_VIEWED = "Most Viewed"
 };
 
 type FilterBoxProps = {
@@ -23,7 +24,7 @@ type FilterBoxProps = {
 
 const FilterBox = ({nftList, setNftList}: FilterBoxProps) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortKey, setSortKey] = useState<SortByOptions>(SortByOptions.NAME);
+    const [sortKey, setSortKey] = useState<SortByOptions>(SortByOptions.RECENTLY_ADDED);
 
     // Loads list on load
     useEffect(() => {
@@ -32,21 +33,21 @@ const FilterBox = ({nftList, setNftList}: FilterBoxProps) => {
 
     // Uses current search-term to update search results
     const updateSearchResults = (s: string | null = null) => {
-        console.log("UPDATING SEARCH: ", sortKey)
         const search = s ?? searchTerm;
 
-         // Sorts NFTs by sortBy value - Optional sortkey param
-        const sortNFTs = (nft1: NFTMarketItem, nft2: NFTMarketItem, key?: SortByOptions): number => {
-            key = key ?? sortKey;
+        // Sorts NFTs alphabetically
+        const sortByName = (nft1: NFTMarketItem, nft2: NFTMarketItem) => {
+            return nft1.name > nft2.name ? 1 : -1;
+        }
 
-            if(sortKey === SortByOptions.NAME) {
-                return nft1.name > nft2.name ? 1 : -1;
-            }
-            if(sortKey === SortByOptions.PRICE) {
-                return nft1.price > nft2.price ? 1 : nft1.price < nft2.price ? -1 : sortNFTs(nft1, nft2, SortByOptions.NAME);
-            }
-            if(sortKey === SortByOptions.SELLER) {
-                return nft1.owner > nft2.owner? 1 : -1;
+         // Sorts NFTs by sortBy value - Optional sortkey param
+        const sortNFTs = (nft1: NFTMarketItem, nft2: NFTMarketItem): number => {
+            if(sortKey === SortByOptions.RECENTLY_ADDED) {
+                // TODO
+            } else if(sortKey === SortByOptions.PRICE_ASC) {
+                return nft1.price > nft2.price ? 1 : nft1.price < nft2.price ? -1 : sortByName(nft1, nft2);
+            } else if(sortKey === SortByOptions.PRICE_DESC) {
+                return nft1.price > nft2.price ? -1 : nft1.price < nft2.price ? 1 : sortByName(nft1, nft2);
             }
             return 1;
         }
@@ -115,7 +116,7 @@ const SortBy = ({setSortKey}: SortByProps) => {
     }
 
     return (
-        <Select onChange={v => {setSortKey(getEnumValue(v.target.value))}}>
+        <Select onChange={v => {setSortKey(getEnumValue(v.target.value))}} w={180}>
             {(Object.keys(SortByOptions) as Array<keyof typeof SortByOptions>).map(sortOption => 
                 <option value={sortOption} key={sortOption}>
                     {SortByOptions[sortOption]}
