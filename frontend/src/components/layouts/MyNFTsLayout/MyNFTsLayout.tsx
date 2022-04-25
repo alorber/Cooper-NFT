@@ -13,6 +13,7 @@ type MyNFTsLayoutProps = {
 const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
     const [userListedNFTs, setUserListedNFTs] = useState<NFTMarketItem[] | null>(null);
     const [userUnlistedNFTs, setUserUnlistedNFTs] = useState<NFTMarketItem[] | null>(null);
+    const [searchResults, setSearchResults] = useState<NFTMarketItem[]>([]);
     const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
     const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
     const [isLoadingETHRate, setIsLoadingETHRate] = useState(false);
@@ -55,8 +56,8 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
                     Loading...
                 </Heading>
             ) : (<>
-                <FilterBox />
-                <NFTCardGrid NFTList={userListedNFTs ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
+                <FilterBox nftList={(userListedNFTs || []).concat(userUnlistedNFTs || [])} setNftList={setSearchResults} />
+                <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
             </>)}
             
         </Stack>
