@@ -1,7 +1,7 @@
 import NavbarLink from '../../ui/NavbarLink/NavbarLink';
 import NavbarToggleButton from '../../ui/NavbarToggleButton/NavbarToggleButton';
 import React from 'react';
-import ThemedButton from '../../ui/ThemedButton/ThemedButton';
+import ThemedLinkButton from '../../ui/ThemedLinkButton/ThemedLinkButton';
 import { BACKGROUND_COLOR, DARK_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
 import {
     Box,
@@ -56,7 +56,7 @@ const Navbar = ({isLoggedIn}: NavbarProps) => {
                 {/* Sign In Button on Mobile */}
                 {!isLoggedIn && (
                     <Flex alignItems='center' ml='auto' display={{base: 'flex', md: 'none'}}>
-                        <ThemedButton label={'Sign In'} routeTo={'/login'} onClick={closeNavbar} />
+                        <ThemedLinkButton label={'Sign In'} routeTo={'/login'} onClick={closeNavbar} />
                     </Flex>
                 )}
             </Flex>
@@ -112,7 +112,7 @@ const DesktopNavbarItems = ({ isLoggedIn }: NavbarProps) => {
             
             {/* If not logged in, shows login button */}
             {!isLoggedIn && (
-                <ThemedButton label={'Sign In'} routeTo={'/login'} />
+                <ThemedLinkButton label={'Sign In'} routeTo={'/login'} />
             )}
         </Stack>
     );

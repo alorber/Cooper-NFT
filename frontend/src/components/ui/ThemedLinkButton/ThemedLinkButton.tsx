@@ -7,14 +7,14 @@ import { MID_SHADE_COLOR } from '../../../COLORS';
  * Themed button to link pages
  */
 
-type ThemedButtonProps = {
+type ThemedLinkButtonProps = {
     label: string,
     routeTo: string,
     onClick?: () => void
     width?: string | number
 };
 
-const ThemedButton = ({label, routeTo, onClick, width}:  ThemedButtonProps) => {
+const ThemedLinkButton = ({label, routeTo, onClick, width}:  ThemedLinkButtonProps) => {
 
     return (
         <Button as={RouterLink} to={routeTo} onClick={onClick} boxShadow='sm' backgroundColor={MID_SHADE_COLOR} 
@@ -25,4 +25,4 @@ const ThemedButton = ({label, routeTo, onClick, width}:  ThemedButtonProps) => {
     );
 }
 
-export default ThemedButton;
+export default ThemedLinkButton;
