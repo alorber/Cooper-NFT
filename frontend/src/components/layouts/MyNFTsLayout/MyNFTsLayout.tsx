@@ -1,6 +1,8 @@
+import FilterBox from '../../ui/FilterBox/FilterBox';
 import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
 import { buildUserNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
+import { generateTestData } from '../../../services/testData';
 import { getETHToUSDRate } from '../../../services/ethereumValue';
 import { Heading, Stack } from '@chakra-ui/react';
 
@@ -52,9 +54,10 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
                 <Heading>
                     Loading...
                 </Heading>
-            ) : (
+            ) : (<>
+                <FilterBox />
                 <NFTCardGrid NFTList={userListedNFTs ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
-            )}
+            </>)}
             
         </Stack>
         
