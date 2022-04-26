@@ -56,7 +56,7 @@ const MyNFTsLayout = ({address}: MyNFTsLayoutProps) => {
                     Loading...
                 </Heading>
             ) : (<>
-                <FilterBox nftList={(userListedNFTs || []).concat(userUnlistedNFTs || [])} setNftList={setSearchResults} />
+                <FilterBox nftList={(userListedNFTs || []).concat(userUnlistedNFTs || [])} setNftList={setSearchResults} isMyNFTPage />
                 <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
             </>)}
             

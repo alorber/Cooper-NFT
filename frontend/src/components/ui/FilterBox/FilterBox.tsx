@@ -1,5 +1,6 @@
 import react, { useEffect, useState } from 'react';
 import {
+    ButtonGroup,
     Grid,
     GridItem,
     Input,
@@ -9,6 +10,7 @@ import {
     } from '@chakra-ui/react';
 import { NFTMarketItem } from '../../../services/marketplace_contract';
 import { SearchIcon } from '@chakra-ui/icons';
+import { ThemedToggleButton } from '../ThemedButtons/ThemedButtons';
 
 enum SortByOptions {
     RECENTLY_ADDED = "Recently Added",
@@ -19,12 +21,15 @@ enum SortByOptions {
 
 type FilterBoxProps = {
     nftList: NFTMarketItem[],
-    setNftList: (nfts: NFTMarketItem[]) => void
+    setNftList: (nfts: NFTMarketItem[]) => void,
+    isMyNFTPage?: boolean
 }
 
-const FilterBox = ({nftList, setNftList}: FilterBoxProps) => {
+const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortKey, setSortKey] = useState<SortByOptions>(SortByOptions.RECENTLY_ADDED);
+    const [showListedNFTs, setShowListedNFTs] = useState(true);
+    const [showUnlistedNFTs, setShowUnlistedNFTs] = useState(true);
 
     // Loads list on load
     useEffect(() => {
@@ -69,13 +74,21 @@ const FilterBox = ({nftList, setNftList}: FilterBoxProps) => {
             <GridItem>
                 <SortBy setSortKey={setSortKey} />
             </GridItem>
+            {isMyNFTPage && (
+                <GridItem>
+                    <MyNFTPageToggle showListed={showListedNFTs} toggleListed={() => {setShowListedNFTs(!showListedNFTs)}}
+                        showUnlisted={showUnlistedNFTs} toggleUnlisted={() => {setShowUnlistedNFTs(!showUnlistedNFTs)}} />
+                </GridItem>
+            )}
         </Grid>
     )
 }
 
 export default FilterBox;
 
-// Search Bar Component
+/*
+ * Search Bar Component
+ */
 type SearchBarProps = {
     searchTerm: string,
     setSearchTerm: (s: string) => void,
@@ -102,7 +115,9 @@ const SearchBar = ({searchTerm, setSearchTerm, updateSearchResults}: SearchBarPr
     );
 }
 
-// Sort-By Selector Component
+/*
+ * Sort-By Selector Component
+ */ 
 type SortByProps = {
     setSortKey: (s: SortByOptions) => void
 }
@@ -126,3 +141,23 @@ const SortBy = ({setSortKey}: SortByProps) => {
     );
 }
 
+/*
+ * Toggle buttons for listed / unlisted NFTs on MyNFT page
+ */
+
+type MyNFTPageToggleProps = {
+    showListed: boolean,
+    toggleListed: () => void,
+    showUnlisted: boolean,
+    toggleUnlisted: () => void
+}
+
+const MyNFTPageToggle = ({showListed, toggleListed, showUnlisted, toggleUnlisted}: MyNFTPageToggleProps) => {
+
+    return (
+        <ButtonGroup spacing={0}>
+            <ThemedToggleButton label='Listed' onClick={toggleListed} active={showListed} locationInGroup={'Left'} />
+            <ThemedToggleButton label='Unlisted' onClick={toggleUnlisted} active={showUnlisted} locationInGroup={'Right'}/>
+        </ButtonGroup>
+    )
+}
