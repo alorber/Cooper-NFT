@@ -1,15 +1,26 @@
 import react, { useEffect, useState } from 'react';
 import {
     ButtonGroup,
-    Grid,
-    GridItem,
+    Heading,
     HStack,
     Input,
     InputGroup,
     InputLeftElement,
-    Select
+    Modal,
+    ModalBody,
+    ModalCloseButton,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalOverlay,
+    NumberInput,
+    NumberInputField,
+    Select,
+    useDisclosure
     } from '@chakra-ui/react';
-import { NFTMarketItem } from '../../../services/marketplace_contract';
+import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
+import { ETH_PRECISION, NFTMarketItem } from '../../../services/marketplace_contract';
+import { FormIconButton, FormSubmitButton } from '../StyledFormFields/StyledFormFields';
 import { SearchIcon } from '@chakra-ui/icons';
 import { ThemedToggleButton } from '../ThemedButtons/ThemedButtons';
 
@@ -23,19 +34,23 @@ enum SortByOptions {
 type FilterBoxProps = {
     nftList: NFTMarketItem[],
     setNftList: (nfts: NFTMarketItem[]) => void,
-    isMyNFTPage?: boolean
+    isMyNFTPage?: boolean,
+    EthToUsdRate: number | null
 }
 
-const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) => {
+const FilterBox = ({nftList, setNftList, isMyNFTPage = false, EthToUsdRate}: FilterBoxProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortKey, setSortKey] = useState<SortByOptions>(SortByOptions.RECENTLY_ADDED);
     const [showListedNFTs, setShowListedNFTs] = useState(true);
     const [showUnlistedNFTs, setShowUnlistedNFTs] = useState(true);
+    const [minMoneyFilter, setMinMoneyFilter] = useState<number | string>('');
+    const [maxMoneyFilter, setMaxMoneyFilter] = useState<number | string>('');
+    const [moneyFilterUnit, setMoneyFilterUnit] = useState<MoneyUnit>("ETH");
 
     // Loads list on load
     useEffect(() => {
         updateSearchResults();
-    }, [sortKey, showListedNFTs, showUnlistedNFTs]);
+    }, [sortKey, showListedNFTs, showUnlistedNFTs, minMoneyFilter, maxMoneyFilter, moneyFilterUnit]);
 
     // If both toggle buttons are off, turn both back on (don't show 0 results)
     useEffect(() => {
@@ -50,6 +65,9 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
     // Uses current search-term to update search results
     const updateSearchResults = (s: string | null = null) => {
         const search = s ?? searchTerm;
+
+        /* HELPER FUNCTIONS */
+        /* ----------------- */
 
         // Sorts NFTs alphabetically
         const sortByName = (nft1: NFTMarketItem, nft2: NFTMarketItem) => {
@@ -68,7 +86,9 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
             return 1;
         }
 
-        // Filters NFT List
+        /* ----------------------- */
+
+        // Filters NFT List by search term
         let filteredList = nftList.filter(nft => nft.name.includes(search) || search === '')
         // If MyNFT page, filters based on toggle
         if(isMyNFTPage) {
@@ -76,6 +96,11 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
                 (showListedNFTs && nft.isListed) || (showUnlistedNFTs && !nft.isListed)
             );
         }
+        // Filters NFT list based on price
+        filteredList = filteredList.filter(nft => 
+            (minMoneyFilter === '' || EthToUsdRate == null || nft.price * (moneyFilterUnit === "USD" ? EthToUsdRate : 1) >= minMoneyFilter) 
+            && (maxMoneyFilter === '' || EthToUsdRate == null || nft.price * (moneyFilterUnit === "USD" ? EthToUsdRate : 1) <= maxMoneyFilter)
+        );
         // Sorts List
         filteredList.sort(sortNFTs)
         setNftList(filteredList);
@@ -91,6 +116,9 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
                 <MyNFTPageToggle showListed={showListedNFTs} toggleListed={() => {setShowListedNFTs(!showListedNFTs)}}
                     showUnlisted={showUnlistedNFTs} toggleUnlisted={() => {setShowUnlistedNFTs(!showUnlistedNFTs)}} />
             )}
+            <FiltersModal minMoney={minMoneyFilter} setMinMoney={setMinMoneyFilter} 
+                maxMoney={maxMoneyFilter} setMaxMoney={setMaxMoneyFilter} moneyUnit={moneyFilterUnit}
+                setMoneyUnit={setMoneyFilterUnit} />
         </HStack>
     );
 }
@@ -155,7 +183,6 @@ const SortBy = ({setSortKey}: SortByProps) => {
 /*
  * Toggle buttons for listed / unlisted NFTs on MyNFT page
  */
-
 type MyNFTPageToggleProps = {
     showListed: boolean,
     toggleListed: () => void,
@@ -171,4 +198,91 @@ const MyNFTPageToggle = ({showListed, toggleListed, showUnlisted, toggleUnlisted
             <ThemedToggleButton label='Unlisted' onClick={toggleUnlisted} active={showUnlisted} locationInGroup={'Right'}/>
         </ButtonGroup>
     )
+}
+
+/**
+ * Filter Modal
+ */
+type FiltersModalProps = {
+    minMoney: number | string,
+    setMinMoney: (m: number | string) => void,
+    maxMoney: number | string,
+    setMaxMoney: (m: number | string) => void,
+    moneyUnit: MoneyUnit,
+    setMoneyUnit: (u: MoneyUnit) => void
+}
+type MoneyUnit = 'USD' | 'ETH';
+const FiltersModal = ({minMoney, setMinMoney, maxMoney, setMaxMoney, moneyUnit, setMoneyUnit}: FiltersModalProps) => {
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    const [moneyUnitToggle, setMoneyUnitToggle] = useState<MoneyUnit>('ETH');
+    const [minVal, setMinVal] = useState<number | string>('');
+    const [maxVal, setMaxVal] = useState<number | string>('');
+
+    // Resets min/max values before showing modal
+    const showModal = () => {
+        setMinVal(minMoney);
+        setMaxVal(maxMoney);
+        setMoneyUnitToggle(moneyUnit);
+        onOpen();
+    }
+
+    const applyFilters = () => {
+        setMinMoney(minVal);
+        setMaxMoney(maxVal);
+        setMoneyUnit(moneyUnitToggle);
+        onClose();
+    }
+
+    // Check is min / max fields have error
+    const minMaxError = () => {
+        return minVal !== '' && maxVal !== '' && minVal > maxVal;
+    }
+
+    // True if error in form
+    const isSubmitDisabled = () => {
+        return minMaxError();
+    }
+
+    return (<>
+        <FormIconButton iconType='Filter' ariaLabel='Filter Modal' onClick={showModal} borderRadius={10} />
+    
+        <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+                <ModalHeader>
+                    Filters
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                    {/* Price Filter */}
+                    <HStack>
+                        <Heading size={'sm'}>
+                            Price:
+                        </Heading>
+                        <ButtonGroup spacing={0}>
+                            <ThemedToggleButton label='ETH' onClick={() => {setMoneyUnitToggle('ETH')}} 
+                                active={moneyUnitToggle === 'ETH'} locationInGroup={'Left'} />
+                            <ThemedToggleButton label='USD' onClick={() => {setMoneyUnitToggle('USD')}} 
+                                active={moneyUnitToggle === 'USD'} locationInGroup={'Right'}/>
+                        </ButtonGroup>
+                        <NumberInput min={0} borderColor={MID_SHADE_COLOR} value={minVal} onChange={setMinVal}
+                            _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
+                            precision={moneyUnitToggle === 'ETH' ? ETH_PRECISION : 2} defaultValue={minMoney} 
+                            isInvalid={minMaxError()} >
+                            <NumberInputField placeholder='Min' />
+                        </NumberInput>
+                        <NumberInput min={0} borderColor={MID_SHADE_COLOR} value={maxVal} onChange={setMaxVal}
+                            _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
+                            precision={moneyUnitToggle === 'ETH' ? ETH_PRECISION : 2} defaultValue={maxMoney}
+                            isInvalid={minMaxError()} >
+                            <NumberInputField placeholder='Max' />
+                        </NumberInput>
+                    </HStack>
+                </ModalBody>
+                <ModalFooter>
+                    <FormSubmitButton isLoading={false} label='Apply' onClick={applyFilters} isDisabled={isSubmitDisabled()} />
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    </>)
 }

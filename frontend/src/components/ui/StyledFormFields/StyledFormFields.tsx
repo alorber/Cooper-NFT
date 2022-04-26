@@ -34,6 +34,7 @@ import {
     IconButton,
     Link
     } from '@chakra-ui/react';
+import { BsFilter } from 'react-icons/bs';
 import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import { QuestionIcon, RepeatIcon } from '@chakra-ui/icons';
 
@@ -290,19 +291,28 @@ export const FormConfirmationModal = ({
 
 // Icon Button
 export type FormIconButtonProps = {
-    iconType: "Refresh",
+    iconType: "Refresh" | 'Filter',
     ariaLabel: string,
-    message: string,
+    message?: string,
     onClick: () => void,
-    isLoading?: boolean
+    isLoading?: boolean,
+    borderRadius?: number
 }
 
-export const FormIconButton = ({iconType, ariaLabel, message, onClick, isLoading = false}: FormIconButtonProps) => {
-    const icon = iconType === "Refresh" ? <RepeatIcon /> : undefined;
+export const FormIconButton = ({
+    iconType,
+    ariaLabel,
+    message,
+    onClick,
+    isLoading = false,
+    borderRadius = 100
+}: FormIconButtonProps) => {
+    const icon = iconType === "Refresh" ? <RepeatIcon /> : iconType === "Filter" ? <BsFilter /> : undefined;
     return (
         <Tooltip label={message} placement='top' hasArrow>
-            <IconButton variant={'outline'} aria-label={ariaLabel} icon={icon}
-                onClick={onClick} isLoading={isLoading} borderRadius={100} />
+            <IconButton variant={'outline'} aria-label={ariaLabel} icon={icon} _hover={{boxShadow: 'md'}}
+                _active={{boxShadow: 'lg'}} _focus={{outline: "none"}} onClick={onClick} isLoading={isLoading} 
+                borderRadius={borderRadius} />
         </Tooltip>
     );
 }
