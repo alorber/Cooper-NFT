@@ -11,6 +11,7 @@ import { getETHToUSDRate } from '../../services/ethereumValue';
 import { loadUserWallet, watchMetaMask } from '../../services/contracts';
 import { Stack } from '@chakra-ui/react';
 import './App.css';
+import ExplorePageLayout from '../layouts/ExplorePageLayout/ExplorePageLayout';
 
 const App = () => {
     // Metamask / Account tracking
@@ -69,6 +70,7 @@ const App = () => {
                 <Navbar isLoggedIn={isLoggedIn()} />
                 <Routes>
                     <Route path='/' element={<>Home Page</>} />
+                    <Route path='/explore' element={<ExplorePageLayout ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />} />
                     <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}
                         ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
                     <Route path='/sell' element={<SellPageLayout />} />
