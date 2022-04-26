@@ -1,7 +1,6 @@
 import NavbarLink from '../../ui/NavbarLink/NavbarLink';
 import NavbarToggleButton from '../../ui/NavbarToggleButton/NavbarToggleButton';
 import React from 'react';
-import ThemedLinkButton from '../../ui/ThemedLinkButton/ThemedLinkButton';
 import { BACKGROUND_COLOR, DARK_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
 import {
     Box,
@@ -17,6 +16,7 @@ import {
     } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
 import { NAVBAR_ITEMS, NavbarItem } from './NavbarItems';
+import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';
 
 /**
  * Navbar
