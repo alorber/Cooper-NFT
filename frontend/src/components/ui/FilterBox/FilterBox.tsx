@@ -35,7 +35,17 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
     // Loads list on load
     useEffect(() => {
         updateSearchResults();
-    }, [sortKey]);
+    }, [sortKey, showListedNFTs, showUnlistedNFTs]);
+
+    // If both toggle buttons are off, turn both back on (don't show 0 results)
+    useEffect(() => {
+        if(!showListedNFTs && !showUnlistedNFTs) {
+            setTimeout(() => {
+                setShowListedNFTs(true);
+                setShowUnlistedNFTs(true);
+            }, 500);
+        }
+    }, [showListedNFTs, showUnlistedNFTs]);
 
     // Uses current search-term to update search results
     const updateSearchResults = (s: string | null = null) => {
@@ -59,7 +69,13 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
         }
 
         // Filters NFT List
-        const filteredList = nftList.filter(nft => nft.name.includes(search) || search === '')
+        let filteredList = nftList.filter(nft => nft.name.includes(search) || search === '')
+        // If MyNFT page, filters based on toggle
+        if(isMyNFTPage) {
+            filteredList = filteredList.filter(nft => 
+                (showListedNFTs && nft.isListed) || (showUnlistedNFTs && !nft.isListed)
+            );
+        }
         // Sorts List
         filteredList.sort(sortNFTs)
         setNftList(filteredList);
