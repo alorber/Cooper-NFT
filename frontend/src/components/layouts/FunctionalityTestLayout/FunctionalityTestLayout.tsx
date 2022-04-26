@@ -75,7 +75,7 @@ const FunctionalityTestLayout = ({}: FunctionalityTestLayoutProps) => {
                         <Stack>
                             <Heading mb={4}>NFT Upload Test Form</Heading>
                             {accountContractRoles.includes(ContractRole.CURRENT_STUDENT) ? (
-                                <NFTCreationForm address={address} />
+                                <></>
                             ) : (
                                 <Heading size={'sm'}>
                                     Must be a current student to create an NFT

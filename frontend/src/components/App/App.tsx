@@ -7,12 +7,15 @@ import React, { useEffect, useState } from 'react';
 import SellPageLayout from '../layouts/SellPageLayout/SellPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContractRole } from '../../services/nft_contract';
+import { getETHToUSDRate } from '../../services/ethereumValue';
 import { loadUserWallet, watchMetaMask } from '../../services/contracts';
 import { Stack } from '@chakra-ui/react';
 import './App.css';
 
 const App = () => {
     // Metamask / Account tracking
+    // -----------------------------
+
     const [address, setAddress] = useState<string | null>(null);
     const [metaMaskError, setMetaMaskError] = useState<string | null>(null);
     const [accountContractRoles, setAccountContractRoles] = useState<ContractRole[] | null>(null);
@@ -43,16 +46,34 @@ const App = () => {
         )
     }
 
+    // ETH / USD Rate
+    // ---------------
+    const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
+    const [isLoadingETHRate, setIsLoadingETHRate] = useState(false);
+
+    // Gets ETH <-> USD conversion rate
+    const getETHRate = async () => {
+        setIsLoadingETHRate(true);
+        const ethRateResp = await getETHToUSDRate();
+        if(ethRateResp.status === "Success") {
+            setEthToUsdRate(ethRateResp.exchangeRate);
+        } else {
+            setEthToUsdRate(null);
+        }
+        setIsLoadingETHRate(false);
+    }
+
     return (
         <BrowserRouter>
             <Stack className='App' h={'100%'}>
                 <Navbar isLoggedIn={isLoggedIn()} />
                 <Routes>
                     <Route path='/' element={<>Home Page</>} />
-                    <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}/>} />
+                    <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}
+                        ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
                     <Route path='/sell' element={<SellPageLayout />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
-                    <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} />)} />
+                    <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
                 </Routes>
             </Stack>

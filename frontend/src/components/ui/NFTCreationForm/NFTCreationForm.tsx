@@ -22,11 +22,6 @@ import {
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
-import { getETHToUSDRate } from '../../../services/ethereumValue';
-
-type NFTCreationFormProps = {
-    address: string,
-};
 
 export type FormValuesType = {
     name: string, 
@@ -45,7 +40,14 @@ const enum RoyaltyRecipients {
     OTHER = "OTHER"
 }
 
-const NFTCreationForm = ({address}: NFTCreationFormProps) => {
+type NFTCreationFormProps = {
+    address: string,
+    ethToUsdRate: number | null,
+    isLoadingETHRate: boolean,
+    updateEthRate: () => void
+};
+
+const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate}: NFTCreationFormProps) => {
     const defaultForm = {
         name: '', 
         description: '', 
@@ -59,8 +61,6 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
     const [file, setFile] = useState<File | null>(null);
     const [formValues, setFormValues] = useState<FormValuesType>(defaultForm);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [ethToUsdRate, setEthToUsdRate] = useState<number | null>(null);
-    const [isLoadingETHRate, setIsLoadingETHRate] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const {isOpen: isConfirmationModalOpen, onOpen: onConfirmationModalOpen, onClose: onConfirmationModalClose} = useDisclosure();
@@ -112,22 +112,9 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
         setFile(null);
     }
 
-    const refreshETHRate = async () => {
-        setIsLoadingETHRate(true);
-        
-        const ethRateResp = await getETHToUSDRate();
-        if(ethRateResp.status === "Success") {
-            setEthToUsdRate(ethRateResp.exchangeRate);
-        } else {
-            setEthToUsdRate(null);
-        }
-
-        setIsLoadingETHRate(false);
-    }
-
     // Gets exchange rate, when user wants to list item
     useEffect(() => {
-        refreshETHRate();
+        updateEthRate();
     }, [formValues.sellNFT]);
 
     return (
@@ -203,7 +190,7 @@ const NFTCreationForm = ({address}: NFTCreationFormProps) => {
                                 <Flex alignItems='center'>
                                     <Text as='i' mr={2}>Roughly {formValues.price * ethToUsdRate} USD</Text>
                                     <FormIconButton iconType='Refresh' ariaLabel='ETH Refresh' message='Refresh ETH <-> USD Rate' 
-                                        onClick={refreshETHRate} isLoading={isLoadingETHRate} />
+                                        onClick={updateEthRate} isLoading={isLoadingETHRate} />
                                 </Flex>
                             )}
                             </Stack>

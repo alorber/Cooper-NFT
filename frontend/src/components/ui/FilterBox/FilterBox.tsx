@@ -31,6 +31,9 @@ enum SortByOptions {
     // MOST_VIEWED = "Most Viewed"
 };
 
+/**
+ * Filter Box Component - Comprised of other filter components in this file
+ */
 type FilterBoxProps = {
     nftList: NFTMarketItem[],
     setNftList: (nfts: NFTMarketItem[]) => void,

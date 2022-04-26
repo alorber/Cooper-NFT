@@ -11,10 +11,15 @@ import { FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
 
 type CreatePageLayoutProps = {
     metaMaskAddress: string | null,
-    accountRoles: ContractRole[] | null
+    accountRoles: ContractRole[] | null,
+    ethRateProps: {
+        ethToUsdRate: number | null,
+        isLoadingETHRate: boolean,
+        updateEthRate: () => void
+    }
 }
 
-const CreatePageLayout = ({metaMaskAddress, accountRoles}: CreatePageLayoutProps) => {
+const CreatePageLayout = ({metaMaskAddress, accountRoles, ethRateProps}: CreatePageLayoutProps) => {
     const [isStudent, setIsStudent] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +34,7 @@ const CreatePageLayout = ({metaMaskAddress, accountRoles}: CreatePageLayoutProps
             <Heading size={'md'}>Description here</Heading>
 
             {isStudent && accountRoles !== null && metaMaskAddress !== null ? (
-                <NFTCreationForm address={metaMaskAddress} />
+                <NFTCreationForm address={metaMaskAddress} {...ethRateProps} />
             ) : metaMaskAddress === null ? (
                 <Text>You must be logged in to mint NFTs</Text>
             ) : (
