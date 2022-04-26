@@ -3,6 +3,7 @@ import {
     ButtonGroup,
     Grid,
     GridItem,
+    HStack,
     Input,
     InputGroup,
     InputLeftElement,
@@ -65,23 +66,17 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false}: FilterBoxProps) =
     }
 
     return (
-        <Grid w='80%' templateColumns={'2fr repeat(2,1fr)'} px={6}>
+        <HStack w='80%' px={6}>
             {/* Search Bar */}
-            <GridItem>
-                <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} 
-                    updateSearchResults={updateSearchResults} />
-            </GridItem>
-            <GridItem>
-                <SortBy setSortKey={setSortKey} />
-            </GridItem>
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} 
+                updateSearchResults={updateSearchResults} />
+            <SortBy setSortKey={setSortKey} />
             {isMyNFTPage && (
-                <GridItem>
-                    <MyNFTPageToggle showListed={showListedNFTs} toggleListed={() => {setShowListedNFTs(!showListedNFTs)}}
-                        showUnlisted={showUnlistedNFTs} toggleUnlisted={() => {setShowUnlistedNFTs(!showUnlistedNFTs)}} />
-                </GridItem>
+                <MyNFTPageToggle showListed={showListedNFTs} toggleListed={() => {setShowListedNFTs(!showListedNFTs)}}
+                    showUnlisted={showUnlistedNFTs} toggleUnlisted={() => {setShowUnlistedNFTs(!showUnlistedNFTs)}} />
             )}
-        </Grid>
-    )
+        </HStack>
+    );
 }
 
 export default FilterBox;
