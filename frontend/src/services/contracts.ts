@@ -19,7 +19,7 @@ export type MetaMaskAccessResponse = {
 } | Failure;
 
 type ContractReadConnectionResponse = {
-    provider: ethers.providers.Web3Provider,
+    provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider,
     contract: ethers.Contract   
 };
 
@@ -116,7 +116,7 @@ export const loadUserWallet = async (
 export const initiateContractReadConnection = async (
     contractAddress: string, contractABI: ethers.ContractInterface
 ): Promise<ContractReadConnectionResponse> => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const provider = new ethers.providers.JsonRpcProvider();
     const contract = new ethers.Contract(contractAddress, contractABI, provider);
     return {provider, contract};
 }
