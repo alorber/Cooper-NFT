@@ -1,17 +1,17 @@
 import CreatePageLayout from '../layouts/CreatePageLayout/CreatePageLayout';
+import ExplorePageLayout from '../layouts/ExplorePageLayout/ExplorePageLayout';
 import FunctionalityTestLayout from '../layouts/FunctionalityTestLayout/FunctionalityTestLayout';
 import LoginPageLayout from '../layouts/LoginPageLayout/LoginPageLayout';
 import MyNFTsLayout from '../layouts/MyNFTsLayout/MyNFTsLayout';
 import Navbar from '../sections/Navbar/Navbar';
+import NFTPageLayout from '../layouts/NFTPageLayout/NFTPageLayout';
 import React, { useEffect, useState } from 'react';
-import SellPageLayout from '../layouts/SellPageLayout/SellPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContractRole } from '../../services/nft_contract';
 import { getETHToUSDRate } from '../../services/ethereumValue';
 import { loadUserWallet, watchMetaMask } from '../../services/contracts';
 import { Stack } from '@chakra-ui/react';
 import './App.css';
-import ExplorePageLayout from '../layouts/ExplorePageLayout/ExplorePageLayout';
 
 const App = () => {
     // Metamask / Account tracking
@@ -73,7 +73,7 @@ const App = () => {
                     <Route path='/explore' element={<ExplorePageLayout ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />} />
                     <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}
                         ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
-                    <Route path='/sell' element={<SellPageLayout />} />
+                    <Route path='/nft/:id' element={<NFTPageLayout />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
                     <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
