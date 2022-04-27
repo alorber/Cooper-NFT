@@ -11,8 +11,7 @@ type MyNFTsLayoutProps = {
 }
 
 const MyNFTsLayout = ({address, ethToUsdRate, updateEthRate}: MyNFTsLayoutProps) => {
-    const [userListedNFTs, setUserListedNFTs] = useState<NFTMarketItem[] | null>(null);
-    const [userUnlistedNFTs, setUserUnlistedNFTs] = useState<NFTMarketItem[] | null>(null);
+    const [usersNFTs, setUsersNFTs] = useState<NFTMarketItem[] | null>(null);
     const [searchResults, setSearchResults] = useState<NFTMarketItem[]>([]);
     const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
 
@@ -21,8 +20,7 @@ const MyNFTsLayout = ({address, ethToUsdRate, updateEthRate}: MyNFTsLayoutProps)
         setIsLoadingNFTs(true);
         const loadNFTListsResp = await buildUserNFTList();
         if(loadNFTListsResp.status === "Success") {
-            setUserListedNFTs(loadNFTListsResp.listedNFTs);
-            setUserUnlistedNFTs(loadNFTListsResp.unlistedNFTs);
+            setUsersNFTs(loadNFTListsResp.nftMarketItems);
         } else {
             console.log(loadNFTListsResp.error);
         }
@@ -42,7 +40,7 @@ const MyNFTsLayout = ({address, ethToUsdRate, updateEthRate}: MyNFTsLayoutProps)
                     Loading...
                 </Heading>
             ) : (<>
-                <FilterBox nftList={(userListedNFTs || []).concat(userUnlistedNFTs || [])} setNftList={setSearchResults} 
+                <FilterBox nftList={usersNFTs ?? []} setNftList={setSearchResults} 
                     isMyNFTPage EthToUsdRate={ethToUsdRate} />
                 <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
             </>)}

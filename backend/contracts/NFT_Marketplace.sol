@@ -173,45 +173,21 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         return items;
     }
 
-    // Gets NFTs owned by user (unlisted)
+    // Gets NFTs owned by user (listed & unlisted)
     function fetchMyNFTs() external view returns (MarketItem[] memory) {
         uint totalItemCount = _marketItemId.current();
         uint itemCount = 0;
         uint currentIndex = 0;
 
         for (uint i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i + 1].owner == msg.sender) {
+            if (idToMarketItem[i + 1].owner == msg.sender || idToMarketItem[i + 1].seller == msg.sender) {
                 itemCount += 1;
             }
         }
 
         MarketItem[] memory items = new MarketItem[](itemCount);
         for (uint i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i + 1].owner == msg.sender) {
-                uint currentId = i + 1;
-                MarketItem storage currentItem = idToMarketItem[currentId];
-                items[currentIndex] = currentItem;
-                currentIndex += 1;
-            }
-        }
-        return items;
-    }
-
-    // Gets NFTs listed by user
-    function fetchItemsListed() external view returns (MarketItem[] memory) {
-        uint totalItemCount = _marketItemId.current();
-        uint itemCount = 0;
-        uint currentIndex = 0;
-
-        for (uint i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i + 1].seller == msg.sender) {
-                itemCount += 1;
-            }
-        }
-
-        MarketItem[] memory items = new MarketItem[](itemCount);
-        for (uint i = 0; i < totalItemCount; i++) {
-            if (idToMarketItem[i + 1].seller == msg.sender) {
+            if (idToMarketItem[i + 1].owner == msg.sender || idToMarketItem[i + 1].seller == msg.sender) {
                 uint currentId = i + 1;
                 MarketItem storage currentItem = idToMarketItem[currentId];
                 items[currentIndex] = currentItem;
