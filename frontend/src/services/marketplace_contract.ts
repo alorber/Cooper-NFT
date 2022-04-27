@@ -36,7 +36,7 @@ export type ContractMarketItemCondensed = {
     price: number
 }
 
-export type ContractMarketItemCondensedResponse = {
+export type ContractMarketItemsCondensedResponse = {
     status: "Success", contractMarketItems: ContractMarketItemCondensed[]
 } | Failure;
 
@@ -51,6 +51,11 @@ export type NFTMarketItem = {
     isListed: boolean,
     price: number
 }
+
+export type NFTMarketItemResponse = {
+    status: "Success",
+    nftMarketItem: NFTMarketItem
+} | Failure;
 
 export type NFTMarketItemsResponse = {
     status: "Success", 
@@ -139,7 +144,7 @@ export const listMarketItem = async(marketItemId: string, tokenId: string, saleP
 }
 
 // Gets all active marketplace listings
-const fetchLiveListings = async (): Promise<ContractMarketItemCondensedResponse> => {
+const fetchLiveListings = async (): Promise<ContractMarketItemsCondensedResponse> => {
     
     try {
         const {contract} = await initiateMarketplaceContractReadConnection();
@@ -160,7 +165,7 @@ const fetchLiveListings = async (): Promise<ContractMarketItemCondensedResponse>
 }
 
 // Gets user's NFTs
-const fetchUsersNFTs = async (): Promise<ContractMarketItemCondensedResponse> => {
+const fetchUsersNFTs = async (): Promise<ContractMarketItemsCondensedResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -180,6 +185,25 @@ const fetchUsersNFTs = async (): Promise<ContractMarketItemCondensedResponse> =>
             })
         });
         return {status: "Success", contractMarketItems: nfts};
+    } catch(err: any) {
+        return {status: "Failure", error: err};
+    }
+}
+
+// Gets NFT by ItemId
+const fetchNFTByItemId = async (itemId: string): Promise<ContractMarketItemsCondensedResponse> => {
+    try {
+        const {contract} = await initiateMarketplaceContractReadConnection();
+        const response: ContractMarketItem = await contract.fetchNFTByItemId(itemId);
+        const isListed = response.seller !== etherConstants.AddressZero;
+        const nft: ContractMarketItemCondensed = {
+            itemId: response.itemId,
+            tokenId: response.tokenId,
+            owner: isListed ? response.seller : response.owner,
+            isListed: isListed,
+            price: isListed ? weiToEth(response.price) : 0,
+        };
+        return {status: "Success", contractMarketItems: [nft]};
     } catch(err: any) {
         return {status: "Failure", error: err};
     }
@@ -305,4 +329,23 @@ export const buildLiveNFTList = async (): Promise<NFTMarketItemsResponse> => {
     listedNFTs.push(...(listedNftsResp.nftMarketItems));
 
     return {status: "Success", nftMarketItems: listedNFTs};
+}
+
+// Retrieves NFT by Item Id & converts to displayable format
+export const getNFTbyItemId = async (itemId: string): Promise<NFTMarketItemResponse> => {
+    // Gets MarketItem
+    const marketItemsResp = await fetchNFTByItemId(itemId);
+    if(marketItemsResp.status === "Failure") {
+        return {status: "Failure", error: marketItemsResp.error};
+    }
+
+    // Converts to displayable NFTs
+    const nftsResp = await contractMarketItemsToNFTList(marketItemsResp.contractMarketItems);
+    if(nftsResp.status === "Failure") {
+        return {status: "Failure", error: nftsResp.error};
+    }
+
+    const nft = nftsResp.nftMarketItems[0];
+
+    return {status: "Success", nftMarketItem: nft};
 }

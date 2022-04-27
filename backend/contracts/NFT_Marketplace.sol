@@ -24,6 +24,9 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
     // Maps ItemIds to market items
     mapping(uint256 => MarketItem) private idToMarketItem;
 
+    // Custom error for fetching functions
+    error invalidItemId();
+
     struct MarketItem {
         uint256 itemId;
         uint256 tokenId;
@@ -195,6 +198,20 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
             }
         }
         return items;
+    }
+
+    // Gets single NFT by itemID
+    function fetchNFTByItemId(uint256 itemId) external view returns (MarketItem memory) {
+        uint totalItemCount = _marketItemId.current();
+        
+        for (uint i = 0; i < totalItemCount; i++) {
+            if (idToMarketItem[i+1].itemId == itemId) {
+                return idToMarketItem[i+1];
+            }
+        }
+
+        // None found
+        revert invalidItemId();
     }
 
     // Calculates listing fee given price
