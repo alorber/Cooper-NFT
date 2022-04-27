@@ -10,7 +10,9 @@ import {
     Tooltip
     } from '@chakra-ui/react';
 import { FiHeart } from 'react-icons/fi';
+import { generateNFTPageURL } from '../../../services/nftUrls';
 import { LIGHT_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
+import { Link as RouterLink } from 'react-router-dom';
 import { NFTMarketItem } from '../../../services/marketplace_contract';
 
 type NFTCardProps = {
@@ -20,12 +22,15 @@ type NFTCardProps = {
 
 const NFTCard = ({nft, ethToUsdRate}: NFTCardProps) => {
     const [isFavorited, setIsFavorited] = useState(false);
-    const {name: title, file, owner, isListed, price} = nft;
+    const {name: title, file, itemId, tokenId, owner, isListed, price} = nft;
     
     return (
-        <Box w="300px" rounded="20px" overflow="hidden" mt={10}>
-            <Image src= {URL.createObjectURL(file)} 
+        <Box w="300px" rounded="20px" overflow="hidden" mt={10} >
+            <Box as={RouterLink} to={`/nft/${generateNFTPageURL(tokenId, itemId)}`}>
+                <Image src= {URL.createObjectURL(file)}
                 boxSize="300px" objectFit={'contain'} backgroundColor={NAVBAR_BORDER_COLOR} />
+            </Box>
+            
             <Box p={5} backgroundColor={LIGHT_SHADE_COLOR} h={'100%'}>
                 <Stack>
                     <Heading size={'md'} textAlign='center'>
