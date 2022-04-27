@@ -40,7 +40,7 @@ const ExplorePageLayout = ({ethToUsdRate, updateEthRate}: ExplorePageLayoutProps
                 </Heading>
             ) : (<>
                 <FilterBox nftList={listedNFTs ?? []} setNftList={setSearchResults} 
-                    isMyNFTPage EthToUsdRate={ethToUsdRate} />
+                    EthToUsdRate={ethToUsdRate} />
                 <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
             </>)}
             
