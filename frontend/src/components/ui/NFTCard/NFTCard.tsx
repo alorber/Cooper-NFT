@@ -11,23 +11,22 @@ import {
     } from '@chakra-ui/react';
 import { FiHeart } from 'react-icons/fi';
 import { LIGHT_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
+import { NFTMarketItem } from '../../../services/marketplace_contract';
 
-type NFTCardLayoutProps = {
-    imageURL: string
-    title: string,
-    owner?: string,
-    price: number,
+type NFTCardProps = {
+    nft: NFTMarketItem
     ethToUsdRate: number
 }
 
-const NFTCard = ({imageURL, title, owner, price, ethToUsdRate}: NFTCardLayoutProps) => {
+const NFTCard = ({nft, ethToUsdRate}: NFTCardProps) => {
     const [isFavorited, setIsFavorited] = useState(false);
+    const {name: title, file, owner, isListed, price} = nft;
     
     return (
         <Box w="300px" rounded="20px" overflow="hidden" mt={10}>
-            <Image src= {imageURL} 
+            <Image src= {URL.createObjectURL(file)} 
                 boxSize="300px" objectFit={'contain'} backgroundColor={NAVBAR_BORDER_COLOR} />
-            <Box p={5} backgroundColor={LIGHT_SHADE_COLOR}>
+            <Box p={5} backgroundColor={LIGHT_SHADE_COLOR} h={'100%'}>
                 <Stack>
                     <Heading size={'md'} textAlign='center'>
                         {title}
@@ -38,16 +37,23 @@ const NFTCard = ({imageURL, title, owner, price, ethToUsdRate}: NFTCardLayoutPro
                         </Text> 
                     )}
                 </Stack>
-                <HStack alignSelf={'flex-start'} mt={4} mb={6}>
+                <HStack alignSelf={'flex-start'} mt={4} mb={2}>
                     <Stack w='50%' alignSelf={'flex-start'} >
-                        <Text textAlign='start' >
-                            {price} ETH
-                        </Text>
-                        <Text as='i' textAlign='start' >
-                            (~ ${Math.round(price * ethToUsdRate * 100) / 100})
-                        </Text>
+                        {isListed ? (<>
+                            <Text textAlign='start' >
+                                {price} ETH
+                            </Text>
+                            <Text as='i' textAlign='start' >
+                                (~ ${Math.round(price * ethToUsdRate * 100) / 100})
+                            </Text>
+                        </>) : (
+                            <Text textAlign='start' pt={4} >
+                                Unlisted
+                            </Text>
+                        )}
+                        
                     </Stack>
-                    <Stack w='50%' alignSelf={'center'} alignItems='flex-end' pr={6}>
+                    <Stack w='50%' alignSelf={'center'} alignItems='flex-end' pr={6} pt={isListed ? 0 : 4}>
                         <FavoriteIconButton isFavorited={isFavorited} onClick={() => {setIsFavorited(!isFavorited)}} />
                     </Stack>
                 </HStack>
