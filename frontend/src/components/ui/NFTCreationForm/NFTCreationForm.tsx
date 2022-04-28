@@ -63,6 +63,13 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Min value for price field
+    const [minEth, setMinEth] = useState<number>(.00001);
+    // Updates minimum possible ETH value (~ 1 cent)
+    useEffect(() => {
+        setMinEth(ethToUsdRate !== null ? (.015 / ethToUsdRate): .00001);
+    }, [ethToUsdRate]);
+
     const {isOpen: isConfirmationModalOpen, onOpen: onConfirmationModalOpen, onClose: onConfirmationModalClose} = useDisclosure();
 
     const clearForm = () => {setFormValues(defaultForm)}
@@ -74,7 +81,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
         const invalidRequiredFields = file === null || formValues.name === '' || formValues.description === '';
         const invalidRoyaltyInfo = !formValues.disableRoyalties && (formValues.royaltyAmount === null || formValues.royaltyAmount < 0.01 
             || formValues.royaltyRecipient === null || (formValues.royaltyRecipient === RoyaltyRecipients.OTHER && formValues.royaltyRecipientOther == null));
-        const invalidSellInfo = formValues.sellNFT && (formValues.price === null || formValues.price < 0.01);
+        const invalidSellInfo = formValues.sellNFT && (formValues.price === null || formValues.price < minEth);
         return invalidRequiredFields || invalidRoyaltyInfo || invalidSellInfo;
     }
 
@@ -183,7 +190,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
                             <Stack>
                             {/* Price Field in ETH */}
                             <FormNumberInput value={formValues.price} label={"Price"} type='ETH' step={.002} isRequired={formValues.sellNFT}
-                                onChange={(val) => {updateForm('price', val)}} min={ethToUsdRate !== null ? (.015 / ethToUsdRate): .00001} 
+                                onChange={(val) => {updateForm('price', val)}} min={minEth} 
                                 precision={ETH_PRECISION} />
                             {/* Conversion to USD */}
                             {formValues.price != null && ethToUsdRate !== null && (
