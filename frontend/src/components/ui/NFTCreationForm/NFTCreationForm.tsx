@@ -102,8 +102,8 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
         ) : formValues.royaltyRecipient === RoyaltyRecipients.OTHER ? (
             formValues.royaltyRecipientOther
         ) : (
-            '0x0'
-        )
+            etherConstants.AddressZero
+        );
         const royaltyAmount = formValues.disableRoyalties ? 0 : (formValues.royaltyAmount ?? 0) * 10;
         const price = formValues.sellNFT ? formValues.price ?? 0 : 0;
 

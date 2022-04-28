@@ -231,7 +231,7 @@ const fetchNFTByItemId = async (itemId: string): Promise<ContractMarketItemsCond
 // -------------------------
 
 const ethToWei = (eth: number): BigNumber => {
-    return BigNumber.from(eth * (10**ETH_PRECISION))
+    return BigNumber.from(Math.round(eth * (10**ETH_PRECISION)))
         .mul(etherConstants.WeiPerEther)
         .div(10**ETH_PRECISION);
 }
