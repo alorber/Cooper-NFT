@@ -14,10 +14,10 @@ import { parseNFTPageURL, URL_TOKEN_ID_LENGTH } from '../../../services/nftUrls'
 import { useParams } from 'react-router';
 
 type NFTPageLayoutProps = {
-
+    ethToUsdRate: number| null
 }
 
-const NFTPageLayout = ({}: NFTPageLayoutProps) => {
+const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
     // Gets NFT id from url
     const {ids} = useParams<'ids'>();
     const [tokenId, setTokenId] = useState<string | null>(null);
@@ -92,9 +92,20 @@ const NFTPageLayout = ({}: NFTPageLayoutProps) => {
             </GridItem>
 
             {/* Price */}
-            <GridItem colSpan={[2,2,1,1]} mt={6}>
-                Price Here
-            </GridItem>
+            {nft.isListed && (
+                <GridItem colSpan={[2,2,1,1]} mt={6}>
+                    <Stack my='auto' justifySelf={'center'} alignContent='center' height={'100%'}>
+                        <Text textAlign='center' >
+                            {nft.price} ETH
+                        </Text>
+                        {ethToUsdRate != null && (
+                            <Text as='i' textAlign='center' >
+                                (~ ${Math.round(nft.price * ethToUsdRate * 100) / 100})
+                            </Text>
+                        )}
+                    </Stack>
+                </GridItem>
+            )}
 
             {/* Purchase Button */}
             <GridItem colSpan={2} mt={6}>
