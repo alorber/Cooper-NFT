@@ -31,7 +31,7 @@ const MyNFTsLayout = ({address, ethToUsdRate, updateEthRate}: MyNFTsLayoutProps)
     useEffect(() => {
         loadNFTLists();
         updateEthRate();
-    }, []);
+    }, [address]);
 
     return (
         <Stack align={'center'}>
