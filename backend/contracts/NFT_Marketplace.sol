@@ -140,14 +140,16 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         require(msg.value == price, "Please submit the asking price in order to complete the purchase");
         
         // Pays listing fee to marketplace owner
+        uint256 messageFunds = msg.value;
         uint fee = _calculateFee(price);
         payable(_feeRecipient).transfer(fee);
+        messageFunds -= fee;
         // Pays royalties
         (address royaltyReceiver, uint256 royaltyAmount) = IERC2981(_nftContract).royaltyInfo(tokenId, price);
         payable(royaltyReceiver).transfer(royaltyAmount);
+        messageFunds -= royaltyAmount;
         // Pays remaining money to seller
-        payable(seller).transfer(msg.value);
-
+        payable(seller).transfer(messageFunds);
         // Transfers ownership of NFT to buyer
         ERC1155(_nftContract).safeTransferFrom(address(this), msg.sender, tokenId, 1, '');
 

@@ -144,7 +144,7 @@ const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: n
 }
 
 // Purchses item on marketplace
-const completeMarketSale = async (itemId: string, tokenId: string): Promise<TransactionResponse> => {
+const completeMarketSale = async (itemId: string, tokenId: string, price: BigNumber): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -152,10 +152,11 @@ const completeMarketSale = async (itemId: string, tokenId: string): Promise<Tran
 
     try {
         const {contract} = await initiateMarketplaceContractWriteConnection();
-        const transaction = await contract.createMarketSale(itemId, tokenId);
+        const transaction = await contract.createMarketSale(itemId, tokenId, {value: price._hex});
         await transaction.wait();
         return {status: "Success"}
     } catch(err: any) {
+        console.log(err)
         return {status: "Failure", error: err};
     }
 }
@@ -370,7 +371,10 @@ export const getNFTbyItemId = async (itemId: string): Promise<NFTMarketItemRespo
 // Buying NFTs
 // ------------
 
-const purchaseNFT = async (itemId: string, tokenId: string): Promise<TransactionResponse> => {
-    return await completeMarketSale(itemId, tokenId)
+export const purchaseNFT = async (itemId: string, tokenId: string, price: number): Promise<TransactionResponse> => {
+    // Converts price to WEI
+    const priceWei = ethToWei(price);
+
+    return await completeMarketSale(itemId, tokenId, priceWei)
 }
 
