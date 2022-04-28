@@ -1,7 +1,7 @@
 import react, { useEffect, useState } from 'react';
+import { getNFTbyItemId, NFTMarketItem } from '../../../services/marketplace_contract';
+import { parseNFTPageURL, URL_TOKEN_ID_LENGTH } from '../../../services/nftUrls';
 import { useParams } from 'react-router';
-import { getNFTbyItemId } from '../../../services/marketplace_contract';
-import { parseNFTPageURL } from '../../../services/nftUrls';
 
 type NFTPageLayoutProps = {
 
@@ -13,13 +13,21 @@ const NFTPageLayout = ({}: NFTPageLayoutProps) => {
     const [tokenId, setTokenId] = useState<string | null>(null);
     const [itemId, setItemId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [nft, setNft] = useState<NFTMarketItem | null>(null);
 
-    const printNft = async (itemId: string) => {
+    // Loads NFT
+    const loadNFT = async (tokenId: string, itemId: string) => {
         const nftResp = await getNFTbyItemId(itemId);
-        if(nftResp.status === "Failure") {
-            console.log("ERROR: ", nftResp.error);
+        if(nftResp.status === "Success") {
+            console.log(nftResp.nftMarketItem)
+            // Confirms that token Ids match
+            if(nftResp.nftMarketItem.tokenId.substring(2, 2 + URL_TOKEN_ID_LENGTH) !== tokenId) {
+                console.log('ERROR: Token Ids Do Not Match');
+            } else {
+                setNft(nftResp.nftMarketItem);
+            }
         } else {
-            console.log(nftResp.nftMarketItem);
+            console.log("ERROR: ", nftResp.error);
         }
     }
 
@@ -35,7 +43,7 @@ const NFTPageLayout = ({}: NFTPageLayoutProps) => {
             setTokenId(parsedUrl.tokenId);
             setItemId(parsedUrl.itemId);
             
-            printNft(parsedUrl.itemId);
+            loadNFT(parsedUrl.tokenId, parsedUrl.itemId);
         }
         
         setIsLoading(false);

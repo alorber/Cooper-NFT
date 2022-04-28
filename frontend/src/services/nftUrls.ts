@@ -24,6 +24,6 @@ export const generateNFTPageURL = (tokenId: string, itemId: string) =>{
 // Splits URL into Ids
 export const parseNFTPageURL = (url: string) => {
     const tokenId = url.substring(0, URL_TOKEN_ID_LENGTH);
-    const itemId = url.substring(URL_TOKEN_ID_LENGTH);
+    const itemId = '0x' + url.substring(URL_TOKEN_ID_LENGTH);
     return {tokenId: tokenId, itemId: itemId};
 }
