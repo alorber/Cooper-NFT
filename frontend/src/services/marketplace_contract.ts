@@ -19,8 +19,8 @@ import {
 
 // MarketItem type used in smart contract
 export type ContractMarketItem = {
-    itemId: string,
-    tokenId: string,
+    itemId: BigNumber,
+    tokenId: BigNumber,
     seller: string,
     owner: string,
     price: number,
@@ -151,8 +151,8 @@ const fetchLiveListings = async (): Promise<ContractMarketItemsCondensedResponse
         const response: ContractMarketItem[] = await contract.fetchMarketItems();
 
         const nfts = response.map((nft: ContractMarketItem) => ({
-            itemId: nft.itemId,
-            tokenId: nft.tokenId,
+            itemId: nft.itemId._hex,
+            tokenId: nft.tokenId._hex,
             owner: nft.seller,
             isListed: true,
             price: weiToEth(nft.price),
@@ -177,8 +177,8 @@ const fetchUsersNFTs = async (): Promise<ContractMarketItemsCondensedResponse> =
         const nfts = response.map((nft: ContractMarketItem) => {
             const isListed = nft.seller !== etherConstants.AddressZero;
             return ({
-                itemId: nft.itemId,
-                tokenId: nft.tokenId,
+                itemId: nft.itemId._hex,
+                tokenId: nft.tokenId._hex,
                 owner: isListed ? nft.seller : nft.owner,
                 isListed: isListed,
                 price: isListed ? weiToEth(nft.price) : 0,
@@ -197,8 +197,8 @@ const fetchNFTByItemId = async (itemId: string): Promise<ContractMarketItemsCond
         const response: ContractMarketItem = await contract.fetchNFTByItemId(itemId);
         const isListed = response.seller !== etherConstants.AddressZero;
         const nft: ContractMarketItemCondensed = {
-            itemId: response.itemId,
-            tokenId: response.tokenId,
+            itemId: response.itemId._hex,
+            tokenId: response.tokenId._hex,
             owner: isListed ? response.seller : response.owner,
             isListed: isListed,
             price: isListed ? weiToEth(response.price) : 0,
