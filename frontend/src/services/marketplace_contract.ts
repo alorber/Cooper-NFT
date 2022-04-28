@@ -127,7 +127,7 @@ const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royalt
 }
 
 // Lists item on marketplace
-export const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: number): Promise<TransactionResponse> => {
+const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: number): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -138,6 +138,23 @@ export const listMarketItem = async(marketItemId: string, tokenId: string, saleP
         const transaction = await contract.listMarketItem(marketItemId, tokenId, salePrice);
         await transaction.wait();    
         return {status: "Success"};
+    } catch(err: any) {
+        return {status: "Failure", error: err};
+    }
+}
+
+// Purchses item on marketplace
+const completeMarketSale = async (itemId: string, tokenId: string): Promise<TransactionResponse> => {
+    // Checks MetaMask Install
+    if (!isMetaMaskInstalled) {
+        return MetaMaskNotInstalledError;
+    }
+
+    try {
+        const {contract} = await initiateMarketplaceContractWriteConnection();
+        const transaction = await contract.createMarketSale(itemId, tokenId);
+        await transaction.wait();
+        return {status: "Success"}
     } catch(err: any) {
         return {status: "Failure", error: err};
     }
@@ -349,3 +366,11 @@ export const getNFTbyItemId = async (itemId: string): Promise<NFTMarketItemRespo
 
     return {status: "Success", nftMarketItem: nft};
 }
+
+// Buying NFTs
+// ------------
+
+const purchaseNFT = async (itemId: string, tokenId: string): Promise<TransactionResponse> => {
+    return await completeMarketSale(itemId, tokenId)
+}
+

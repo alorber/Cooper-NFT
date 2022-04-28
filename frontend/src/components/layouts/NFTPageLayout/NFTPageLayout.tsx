@@ -29,7 +29,6 @@ const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
     const loadNFT = async (tokenId: string, itemId: string) => {
         const nftResp = await getNFTbyItemId(itemId);
         if(nftResp.status === "Success") {
-            console.log(nftResp.nftMarketItem)
             // Confirms that token Ids match
             if(nftResp.nftMarketItem.tokenId.substring(2, 2 + URL_TOKEN_ID_LENGTH) !== tokenId) {
                 console.log('ERROR: Token Ids Do Not Match');
