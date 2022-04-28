@@ -9,7 +9,7 @@ import {
     Text
     } from '@chakra-ui/react';
 import { FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
-import { getNFTbyItemId, NFTMarketItem } from '../../../services/marketplace_contract';
+import { getNFTbyItemId, NFTMarketItem, purchaseNFT } from '../../../services/marketplace_contract';
 import { parseNFTPageURL, URL_TOKEN_ID_LENGTH } from '../../../services/nftUrls';
 import { useParams } from 'react-router';
 
@@ -24,6 +24,7 @@ const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
     const [itemId, setItemId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [nft, setNft] = useState<NFTMarketItem | null>(null);
+    const [isPendingPurchase, setIsPendingPurchase] = useState(false);
 
     // Loads NFT
     const loadNFT = async (tokenId: string, itemId: string) => {
@@ -56,6 +57,17 @@ const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
             loadNFT(parsedUrl.tokenId, parsedUrl.itemId);
         }
     }, [ids]);
+
+    // Purchases NFT
+    const submitPurchase = async () => {
+        if(nft == null) {
+            return;
+        }
+
+        setIsPendingPurchase(true);
+        await purchaseNFT(nft.itemId, nft.tokenId, nft.price);
+        setIsPendingPurchase(false);
+    }
 
     return isLoading ? (
         <Heading>Loading...</Heading>
@@ -109,7 +121,7 @@ const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
             {/* Purchase Button */}
             <GridItem colSpan={2} mt={6}>
                 <Box w={'50%'} maxW={'600px'} mx={'auto'}>
-                    <FormSubmitButton isLoading={false} label={'Purchase'} />
+                    <FormSubmitButton isLoading={isPendingPurchase} label={'Purchase'} onClick={submitPurchase} />
                 </Box>
             </GridItem>
         </Grid>
