@@ -1,6 +1,7 @@
 // Creates test data for NFT listings
 
 import { NFTMarketItem } from "./marketplace_contract"
+import { BigNumber } from 'ethers';
 
 export const generateTestData = async (numEntries = 20) => {
     const nftList: NFTMarketItem[] = [];
@@ -10,8 +11,8 @@ export const generateTestData = async (numEntries = 20) => {
             name: `Cooper Union #${i}`,
             description: `Image of The Cooper Union #${i}`,
             file: await getTestFile(),
-            itemId: `iid#${i}`,
-            tokenId: `tid#${i}`,
+            itemId: BigNumber.from(i)._hex,
+            tokenId: BigNumber.from(100 - i)._hex,
             owner: `Cooper_Student`,
             isListed: true,
             price: Math.random() * (randNum > .75 ? 10 : randNum < .25 ? .1 : 1)
