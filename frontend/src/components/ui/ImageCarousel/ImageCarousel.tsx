@@ -39,9 +39,9 @@ const ImageCarousel = ({title, nftsList}: ImageCarouselProps) => {
             <Heading size={'lg'}>
                 {title}
             </Heading>
-            <HStack w={'100%'}>
+            <HStack w={'100%'} justifyContent='center'>
                 <CarouselArrowButton type="Left" onClick={sliderRef.current?.slickPrev} />
-                <Box w={'80%'} style={{marginRight: 'auto', marginLeft: 'auto'}} overflow='hidden'>
+                <Box w={'80%'} overflow='hidden'>
                     <Slider slidesToShow={numImages} draggable={false} centerMode arrows autoplay ref={sliderRef}>
                         {carouselNFTsList.map((nft) => 
                             <RouterLink to={nft.nftPageUrl} key={nft.nftPageUrl}>
@@ -68,7 +68,7 @@ type CarouselArrowButtonProps = {
 
 const CarouselArrowButton = ({type, onClick}: CarouselArrowButtonProps) => {
     return (
-        <Link w='fit-content' onClick={onClick}>
+        <Link w='fit-content' onClick={onClick} m={4}>
             {type === 'Left' ? <BsChevronLeft size={24} />: <BsChevronRight size={24}/>}
         </Link>
     );
