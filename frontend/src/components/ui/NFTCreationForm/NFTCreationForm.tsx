@@ -188,18 +188,18 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
                         {/* Listing Info */}
                         {formValues.sellNFT && (
                             <Stack>
-                            {/* Price Field in ETH */}
-                            <FormNumberInput value={formValues.price} label={"Price"} type='ETH' step={.002} isRequired={formValues.sellNFT}
-                                onChange={(val) => {updateForm('price', val)}} min={minEth} 
-                                precision={ETH_PRECISION} />
-                            {/* Conversion to USD */}
-                            {formValues.price != null && ethToUsdRate !== null && (
-                                <Flex alignItems='center'>
-                                    <Text as='i' mr={2}>Roughly {formValues.price * ethToUsdRate} USD</Text>
-                                    <FormIconButton iconType='Refresh' ariaLabel='ETH Refresh' message='Refresh ETH <-> USD Rate' 
-                                        onClick={updateEthRate} isLoading={isLoadingETHRate} />
-                                </Flex>
-                            )}
+                                {/* Price Field in ETH */}
+                                <FormNumberInput value={formValues.price} label={"Price"} type='ETH' step={.002} isRequired={formValues.sellNFT}
+                                    onChange={(val) => {updateForm('price', val)}} min={minEth} 
+                                    precision={ETH_PRECISION} />
+                                {/* Conversion to USD */}
+                                {formValues.price != null && ethToUsdRate !== null && (
+                                    <Flex alignItems='center'>
+                                        <Text as='i' mr={2}>Roughly {formValues.price * ethToUsdRate} USD</Text>
+                                        <FormIconButton iconType='Refresh' ariaLabel='ETH Refresh' message='Refresh ETH <-> USD Rate' 
+                                            onClick={updateEthRate} isLoading={isLoadingETHRate} />
+                                    </Flex>
+                                )}
                             </Stack>
                         )}
 

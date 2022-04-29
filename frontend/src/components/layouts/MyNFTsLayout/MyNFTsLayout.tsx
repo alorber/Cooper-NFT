@@ -7,10 +7,11 @@ import { Heading, Stack } from '@chakra-ui/react';
 type MyNFTsLayoutProps = {
     address: string,
     ethToUsdRate: number | null,
+    isLoadingEthRate: boolean,
     updateEthRate: () => void
 }
 
-const MyNFTsLayout = ({address, ethToUsdRate, updateEthRate}: MyNFTsLayoutProps) => {
+const MyNFTsLayout = ({address, ethToUsdRate, isLoadingEthRate, updateEthRate}: MyNFTsLayoutProps) => {
     const [usersNFTs, setUsersNFTs] = useState<NFTMarketItem[] | null>(null);
     const [searchResults, setSearchResults] = useState<NFTMarketItem[]>([]);
     const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
@@ -42,7 +43,8 @@ const MyNFTsLayout = ({address, ethToUsdRate, updateEthRate}: MyNFTsLayoutProps)
             ) : (<>
                 <FilterBox nftList={usersNFTs ?? []} setNftList={setSearchResults} 
                     isMyNFTPage EthToUsdRate={ethToUsdRate} />
-                <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
+                <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate}
+                    isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} />
             </>)}
             
         </Stack>

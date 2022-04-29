@@ -18,10 +18,12 @@ import { NFTMarketItem } from '../../../services/marketplace_contract';
 
 type NFTCardProps = {
     nft: NFTMarketItem
-    ethToUsdRate: number
+    ethToUsdRate: number | null,
+    isLoadingEthRate?: boolean,
+    updateEthRate?: () => void
 }
 
-const NFTCard = ({nft, ethToUsdRate}: NFTCardProps) => {
+const NFTCard = ({nft, ethToUsdRate, isLoadingEthRate, updateEthRate}: NFTCardProps) => {
     const [isFavorited, setIsFavorited] = useState(false);
     const {name: title, file, itemId, tokenId, owner, isListed, price} = nft;
     
@@ -49,11 +51,18 @@ const NFTCard = ({nft, ethToUsdRate}: NFTCardProps) => {
                             <Text textAlign='start' >
                                 {price} ETH
                             </Text>
-                            <Text as='i' textAlign='start' >
-                                (~ ${Math.round(price * ethToUsdRate * 100) / 100})
+                            {ethToUsdRate && (
+                                <Text as='i' textAlign='start' >
+                                    (~ ${Math.round(price * ethToUsdRate * 100) / 100})
+                                </Text>
+                            )}
+                        </>) : isLoadingEthRate !== undefined && updateEthRate !== undefined ? (
+                            <NFTCardListButton ethToUsdRate={ethToUsdRate} 
+                                isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} />
+                        ) : (
+                            <Text>
+                                Unlisted
                             </Text>
-                        </>) : (
-                            <NFTCardListButton />
                         )}
                         
                     </Stack>

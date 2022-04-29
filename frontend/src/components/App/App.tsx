@@ -75,7 +75,8 @@ const App = () => {
                         ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
                     <Route path='/nft/:ids' element={<NFTPageLayout ethToUsdRate={ethToUsdRate} />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
-                    <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />)} />
+                    <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
+                        isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
                 </Routes>
             </Stack>
