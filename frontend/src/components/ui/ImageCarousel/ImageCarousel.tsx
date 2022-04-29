@@ -1,6 +1,7 @@
-import react, { useEffect, useState } from 'react';
-import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
+import react, { useEffect, useRef, useState } from 'react';
+import Slider from 'react-slick';
 import {
+    Box,
     Heading,
     HStack,
     Image,
@@ -8,7 +9,10 @@ import {
     Stack,
     useBreakpointValue
     } from '@chakra-ui/react';
+import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { Link as RouterLink } from 'react-router-dom';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 export type CarouselNFT = {
     nftImage: string,
@@ -22,37 +26,31 @@ export type ImageCarouselProps = {
 
 const ImageCarousel = ({title, nftsList}: ImageCarouselProps) => {
     const numImages = useBreakpointValue({base: 1, md: 2, lg: 3, xl: 4});
-    const [nftStartInd, setNftStartInd] = useState(0);
-    const [nftEndInd, setNftEndInd] = useState(numImages ?? 1);
     const [carouselNFTsList, setCarouselNFTsList] = useState<CarouselNFT[]>([]);
+    const sliderRef = useRef<Slider>(null);
 
-    // On load, appends list to itself to deal with looping.
+    // // On load, appends list to itself to deal with looping.
     useEffect(() => {
-        setCarouselNFTsList(nftsList.concat(nftsList));
+        setCarouselNFTsList(nftsList);
     }, [nftsList]);
-
-    // Updates number images
-    useEffect(() => {
-        setNftEndInd(nftStartInd + (numImages || 1));
-    }, [numImages]);
     
     return (
         <Stack spacing={8} pt={12}>
             <Heading size={'lg'}>
                 {title}
             </Heading>
-            <HStack w='100%' justifyContent={'center'}>
-                <CarouselArrowButton type='Left' startInd={nftStartInd} endInd={nftEndInd}
-                    setStartInd={setNftStartInd} setEndInd={setNftEndInd} numNFTs={nftsList.length} />
-                <HStack w='80%' justifyContent='center' alignContent={'center'}>
-                    {carouselNFTsList.slice(nftStartInd, nftEndInd).map((nft) => 
-                        <RouterLink to={nft.nftPageUrl} key={nft.nftPageUrl}>
-                            <Image src={nft.nftImage} maxW={300} borderRadius={5} objectFit='contain' />
-                        </RouterLink>  
-                    )}
-                </HStack>
-                <CarouselArrowButton type='Right' startInd={nftStartInd} endInd={nftEndInd}
-                    setStartInd={setNftStartInd} setEndInd={setNftEndInd} numNFTs={nftsList.length} />
+            <HStack w={'100%'}>
+                <CarouselArrowButton type="Left" onClick={sliderRef.current?.slickPrev} />
+                <Box w={'80%'} style={{marginRight: 'auto', marginLeft: 'auto'}} overflow='hidden'>
+                    <Slider slidesToShow={numImages} draggable={false} centerMode arrows autoplay ref={sliderRef}>
+                        {carouselNFTsList.map((nft) => 
+                            <RouterLink to={nft.nftPageUrl} key={nft.nftPageUrl}>
+                                <Image src={nft.nftImage} maxH={'250px'} borderRadius={15} objectFit='contain' />
+                            </RouterLink>  
+                        )}
+                    </Slider> 
+                </Box>
+                <CarouselArrowButton type={'Right'} onClick={sliderRef.current?.slickNext} />
             </HStack>
         </Stack>
     );
@@ -65,43 +63,12 @@ export default ImageCarousel;
  */
 type CarouselArrowButtonProps = {
     type: 'Right' | 'Left',
-    startInd: number,
-    endInd: number,
-    setStartInd: (i: number) => void,
-    setEndInd: (i: number) => void,
-    numNFTs: number
+    onClick?: () => void
 }
 
-const CarouselArrowButton = ({type, startInd, endInd, setStartInd, setEndInd, numNFTs}: CarouselArrowButtonProps) => {
-
-    const leftMove = () => {
-        let newStartInd = startInd - 1;
-        let newEndInd = endInd - 1;
-
-        if(newStartInd < 0) {
-            newStartInd += numNFTs;
-            newEndInd += numNFTs;
-        }
-
-        setStartInd(newStartInd);
-        setEndInd(newEndInd);
-    }
-
-    const rightMove = () => {
-        let newStartInd = startInd + 1;
-        let newEndInd = endInd + 1;
-
-        if(newStartInd > numNFTs) {
-            newStartInd -= numNFTs;
-            newEndInd -= numNFTs;
-        }
-
-        setStartInd(newStartInd);
-        setEndInd(newEndInd);
-    }
-
+const CarouselArrowButton = ({type, onClick}: CarouselArrowButtonProps) => {
     return (
-        <Link w='fit-content' onClick={type === 'Left' ? leftMove : rightMove}>
+        <Link w='fit-content' onClick={onClick}>
             {type === 'Left' ? <BsChevronLeft size={24} />: <BsChevronRight size={24}/>}
         </Link>
     );

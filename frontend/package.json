@@ -17,6 +17,7 @@
     "@types/react-dom": "^17.0.11",
     "@types/react-router": "^5.1.18",
     "@types/react-router-dom": "^5.3.3",
+    "@types/react-slick": "^0.23.8",
     "babel-core": "7.0.0-bridge.0",
     "ethers": "^5.5.4",
     "file-type": "16.5.3",
@@ -30,6 +31,8 @@
     "react-router": "^6.2.1",
     "react-router-dom": "^6.2.1",
     "react-scripts": "4.0.3",
+    "react-slick": "^0.29.0",
+    "slick-carousel": "^1.8.1",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
