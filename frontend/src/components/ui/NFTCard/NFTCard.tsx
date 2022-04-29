@@ -1,3 +1,4 @@
+import NFTCardListButton from '../NFTCardListButton/NFTCardListButton';
 import React, { useState } from 'react';
 import {
     Box,
@@ -42,8 +43,8 @@ const NFTCard = ({nft, ethToUsdRate}: NFTCardProps) => {
                         </Text> 
                     )}
                 </Stack>
-                <HStack alignSelf={'flex-start'} mt={4} mb={2}>
-                    <Stack w='50%' alignSelf={'flex-start'} >
+                <HStack alignSelf={'flex-start'} mt={isListed ? 4 : 6} mb={2}>
+                    <Stack w='50%' h='100%' alignSelf={'flex-start'} >
                         {isListed ? (<>
                             <Text textAlign='start' >
                                 {price} ETH
@@ -52,13 +53,11 @@ const NFTCard = ({nft, ethToUsdRate}: NFTCardProps) => {
                                 (~ ${Math.round(price * ethToUsdRate * 100) / 100})
                             </Text>
                         </>) : (
-                            <Text textAlign='start' pt={4} >
-                                Unlisted
-                            </Text>
+                            <NFTCardListButton />
                         )}
                         
                     </Stack>
-                    <Stack w='50%' alignSelf={'center'} alignItems='flex-end' pr={6} pt={isListed ? 0 : 4}>
+                    <Stack w='50%' h='100%' alignSelf={'center'} alignItems='flex-end' pr={6}>
                         <FavoriteIconButton isFavorited={isFavorited} onClick={() => {setIsFavorited(!isFavorited)}} />
                     </Stack>
                 </HStack>
