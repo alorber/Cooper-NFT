@@ -11,7 +11,9 @@ const NFTCardListButton = ({}: NFTCardListButtonProps) => {
     return (
         <Tooltip label={'List NFT on marketplace'} placement='top' hasArrow>
             <IconButton aria-label='List NFT' w='fit-content' borderRadius={'full'}
-                icon={<MdOutlineSell />} />
+                icon={<MdOutlineSell />} boxShadow='sm' backgroundColor={'white'}
+                _hover={{boxShadow: 'md'}} _active={{boxShadow: 'lg'}} 
+                _focus={{outline: "none"}} />
         </Tooltip>
     )
 }
