@@ -1,6 +1,7 @@
 import CreatePageLayout from '../layouts/CreatePageLayout/CreatePageLayout';
 import ExplorePageLayout from '../layouts/ExplorePageLayout/ExplorePageLayout';
 import FunctionalityTestLayout from '../layouts/FunctionalityTestLayout/FunctionalityTestLayout';
+import HomePageLayout from '../layouts/HomePageLayout/HomePageLayout';
 import LoginPageLayout from '../layouts/LoginPageLayout/LoginPageLayout';
 import MyNFTsLayout from '../layouts/MyNFTsLayout/MyNFTsLayout';
 import Navbar from '../sections/Navbar/Navbar';
@@ -69,7 +70,7 @@ const App = () => {
             <Stack className='App' h={'100%'}>
                 <Navbar isLoggedIn={isLoggedIn()} />
                 <Routes>
-                    <Route path='/' element={<>Home Page</>} />
+                    <Route path='/' element={<HomePageLayout />} />
                     <Route path='/explore' element={<ExplorePageLayout ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />} />
                     <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}
                         ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
