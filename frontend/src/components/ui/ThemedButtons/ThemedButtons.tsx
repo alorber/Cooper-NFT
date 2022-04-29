@@ -11,15 +11,17 @@ export type ThemedLinkButtonProps = {
     label: string,
     routeTo: string,
     onClick?: () => void
-    width?: string | number
+    width?: string | number | (string | number)[],
+    maxWidth?: string
+    borderRadius?: number
 };
 
-export const ThemedLinkButton = ({label, routeTo, onClick, width}:  ThemedLinkButtonProps) => {
+export const ThemedLinkButton = ({label, routeTo, onClick, width, maxWidth, borderRadius}:  ThemedLinkButtonProps) => {
 
     return (
         <Button as={RouterLink} to={routeTo} onClick={onClick} boxShadow='sm' backgroundColor={MID_SHADE_COLOR} 
                 _hover={{boxShadow: 'md'}} _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}
-                width={width}>
+                width={width} borderRadius={borderRadius} maxWidth={maxWidth}>
             {label}
         </Button>
     );
