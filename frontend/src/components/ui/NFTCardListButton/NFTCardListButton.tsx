@@ -14,7 +14,7 @@ import {
     Tooltip,
     useDisclosure
     } from '@chakra-ui/react';
-import { FormIconButton, FormNumberInput } from '../StyledFormFields/StyledFormFields';
+import { FormConfirmationModal, FormIconButton, FormNumberInput, FormSubmitButton } from '../StyledFormFields/StyledFormFields';
 import { MdOutlineSell } from 'react-icons/md';
 
 export type NFTCardListButtonProps = {
@@ -56,6 +56,7 @@ const NFTCardListModal = ({
     updateEthRate
 }: NFTCardListModalProps) => {
     const [salePrice, setSalePrice] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Min value for price field
     const [minEth, setMinEth] = useState<number>(.00001);
@@ -64,7 +65,18 @@ const NFTCardListModal = ({
         setMinEth(ethToUsdRate !== null ? (.015 / ethToUsdRate): .00001);
     }, [ethToUsdRate]);
 
-    return (
+    // Confirmation Modal
+    const {
+        isOpen: isConfirmationModalOpen,
+        onOpen: onConfirmationModalOpen,
+        onClose: onConfirmationModalClose
+    } = useDisclosure();
+
+    const listNFT = () => {
+
+    }
+
+    return (<>
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
             <ModalOverlay />
             <ModalContent>
@@ -73,24 +85,30 @@ const NFTCardListModal = ({
                 </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody mb={6}>
-                <Stack>
-                    {/* Price Field in ETH */}
-                    <FormNumberInput value={salePrice} label={"Price"} type='ETH' step={.002} isRequired
-                        onChange={(val) => {setSalePrice(typeof val === 'number' ?  val : parseInt(val))}} 
-                        min={minEth} precision={ETH_PRECISION} />
-                    {/* Conversion to USD */}
-                    {salePrice != null && ethToUsdRate !== null && (
-                        <Flex alignItems='center'>
-                            <Text as='i' mr={2}>Roughly {salePrice * ethToUsdRate} USD</Text>
-                            <FormIconButton iconType='Refresh' ariaLabel='ETH Refresh' message='Refresh ETH <-> USD Rate' 
-                                onClick={updateEthRate} isLoading={isLoadingEthRate} />
-                        </Flex>
-                    )}
-                </Stack>
+                    <Stack>
+                        {/* Price Field in ETH */}
+                        <FormNumberInput value={salePrice} label={"Price"} type='ETH' step={.002} isRequired
+                            onChange={(val) => {setSalePrice(typeof val === 'number' ?  val : parseInt(val))}} 
+                            min={minEth} precision={ETH_PRECISION} />
+                        {/* Conversion to USD */}
+                        {salePrice != null && ethToUsdRate !== null && (
+                            <Flex alignItems='center'>
+                                <Text as='i' mr={2}>Roughly {salePrice * ethToUsdRate} USD</Text>
+                                <FormIconButton iconType='Refresh' ariaLabel='ETH Refresh' message='Refresh ETH <-> USD Rate' 
+                                    onClick={updateEthRate} isLoading={isLoadingEthRate} />
+                            </Flex>
+                        )}
+                        <FormSubmitButton isLoading={isLoading} label={'List NFT'} isDisabled={salePrice === null}
+                            onClick={() => {onClose(); onConfirmationModalOpen()}} />
+                    </Stack>
                 </ModalBody>
             </ModalContent>
         </Modal>
-    );
+        
+        {/* Confirmation Modal */}
+        <FormConfirmationModal isOpen={isConfirmationModalOpen} onClose={onConfirmationModalClose} header={'Confirm Submission'}
+            confrimationDialog={'Once an NFT is listed, paying ETH will be required to unlist or edit.'} submitButtonOnClick={listNFT} />
+    </>);
 }
 
 export default NFTCardListButton;
