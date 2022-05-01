@@ -50,8 +50,7 @@ const HomePageLayout = ({}: HomePageLayoutProps) => {
             </Heading>
             <Box w='100%' justifyContent={'center'} pt={6}>
                 <ThemedLinkButton label={'Discover New Art'} routeTo='/explore' 
-                    width={['fit-content', 'fit-content', '20%']} borderRadius={20} 
-                    maxWidth={'270px'} hoverTextColor={BACKGROUND_COLOR} />
+                    width={['fit-content', 'fit-content', '20%']} borderRadius={20} maxWidth={'270px'} />
             </Box>
             <ImageCarousel title='Recent Listing' nftsList={nftList} isLoading={isLoadingNFTs} />
             <HowItWorksSection />

@@ -17,8 +17,15 @@ export type ThemedLinkButtonProps = {
     hoverTextColor?: string
 };
 
-export const ThemedLinkButton = ({label, routeTo, onClick, width, maxWidth, borderRadius, hoverTextColor = 'black'}:  ThemedLinkButtonProps) => {
-
+export const ThemedLinkButton = ({
+    label,
+    routeTo,
+    onClick,
+    width,
+    maxWidth,
+    borderRadius,
+    hoverTextColor = BACKGROUND_COLOR
+}:  ThemedLinkButtonProps) => {
     return (
         <Button as={RouterLink} to={routeTo} onClick={onClick} boxShadow='sm' backgroundColor={MID_SHADE_COLOR} 
                 _hover={{boxShadow: 'md', textColor: hoverTextColor}} _active={{boxShadow: 'lg'}} _focus={{outline: "none"}}
