@@ -1,3 +1,4 @@
+import LoadingText from '../LoadingText/LoadingText';
 import react, { useEffect, useRef, useState } from 'react';
 import Slider from 'react-slick';
 import { BACKGROUND_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
@@ -7,7 +8,6 @@ import {
     HStack,
     Image,
     Link,
-    Spinner,
     Stack,
     useBreakpointValue
     } from '@chakra-ui/react';
@@ -44,12 +44,7 @@ const ImageCarousel = ({title, nftsList, isLoading = false}: ImageCarouselProps)
                 {title}
             </Heading>
             {isLoading ? (
-                <HStack w={'100%'} justifyContent={'center'}>
-                    <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
-                        Loading Recent NFTs
-                    </Heading>
-                    <Spinner color={BACKGROUND_COLOR} />
-                </HStack>
+                <LoadingText />
             ) : nftsList.length === 0 ? (
                 <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
                         Unable to Load Recent NFTs
