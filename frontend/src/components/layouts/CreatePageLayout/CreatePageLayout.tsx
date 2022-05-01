@@ -1,5 +1,7 @@
+import LoadingText from '../../ui/LoadingText/LoadingText';
 import NFTCreationForm from '../../ui/NFTCreationForm/NFTCreationForm';
 import React, { useEffect, useState } from 'react';
+import { BACKGROUND_COLOR } from '../../../COLORS';
 import { ContractRole } from '../../../services/nft_contract';
 import {
     Flex,
@@ -8,7 +10,6 @@ import {
     Text
     } from '@chakra-ui/react';
 import { FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
-import LoadingText from '../../ui/LoadingText/LoadingText';
 
 type CreatePageLayoutProps = {
     metaMaskAddress: string | null,
@@ -48,7 +49,7 @@ const CreatePageLayout = ({metaMaskAddress, accountRoles, ethRateProps}: CreateP
                     <Text>You must be a current student to mint NFTs.</Text>
                     <Text>If you believe you should have access, click the button below.</Text>
                     <Flex w={'30%'} alignSelf='center' pt={6}>
-                        <FormSubmitButton isLoading={false} label={'Request Access'} onClick={() => {}} />
+                        <FormSubmitButton isLoading={false} label={'Request Access'} onClick={() => {}} textHoverColor={BACKGROUND_COLOR} />
                     </Flex>
                     
                 </Stack>
