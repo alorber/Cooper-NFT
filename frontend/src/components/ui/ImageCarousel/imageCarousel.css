@@ -1,0 +1,17 @@
+/* CSS for Slick Carousel Library */
+
+/* Adds margins to the slides */
+.slick-slide > div {
+    margin: 0 15px;
+}
+
+/* Fixes spacing issues in the list */
+.slick-list {
+    margin: 0 -15px;
+}
+
+/* Fixes overflow */
+.slick-slider {
+    overflow: hidden;
+  }
+
