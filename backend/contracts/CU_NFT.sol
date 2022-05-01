@@ -158,5 +158,8 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
         if(royaltyRecipient != address(0)) {
             _setTokenRoyalty(id, royaltyRecipient, royaltyValue);
         }
+
+        // Approves marketplace to transfer tokens
+        _setApprovalForAll(to, _marketplaceContract, true);
     }
 }

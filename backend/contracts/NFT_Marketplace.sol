@@ -116,7 +116,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         // Checks that Ids are correct
         require(idToMarketItem[marketItemId].tokenId == tokenId, "Ids do not match a listing");
         // Confirms item is being listed by seller
-        require(idToMarketItem[tokenId].owner == msg.sender, "Only item owner can perform this operation");
+        require(idToMarketItem[marketItemId].owner == msg.sender, "Only item owner can perform this operation");
 
         // Updates contract
         idToMarketItem[marketItemId].sold = false;
