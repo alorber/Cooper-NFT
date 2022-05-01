@@ -22,7 +22,7 @@ import {
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
-import { MID_SHADE_COLOR } from '../../../COLORS';
+import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 
 export type FormValuesType = {
     name: string, 
@@ -165,7 +165,8 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
                             <FormControl isRequired={!formValues.disableRoyalties}>
                                 <FormLabel>Royalty Recipient</FormLabel>
                                 <Select placeholder='Select Royalty Recipient' size={'md'} value={formValues.royaltyRecipient ?? 0} 
-                                        onChange={(v) => {updateForm('royaltyRecipient', v.target.value)}}>
+                                        borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}} 
+                                        focusBorderColor={DARK_SHADE_COLOR} onChange={(v) => {updateForm('royaltyRecipient', v.target.value)}} >
                                     <option value={RoyaltyRecipients.CURRENT_WALLET}>Current Wallet: ${address}</option>
                                     <option value={RoyaltyRecipients.COOPER_UNION}>Cooper Union</option>
                                     <option value={RoyaltyRecipients.OTHER}>Other</option>
