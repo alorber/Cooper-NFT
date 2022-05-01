@@ -37,7 +37,7 @@ const ImageCarousel = ({title, nftsList}: ImageCarouselProps) => {
     }, [nftsList]);
     
     return (
-        <Stack spacing={8} style={{marginTop: '2em'}} p={10} backgroundColor={MID_SHADE_COLOR}>
+        <Stack spacing={4} style={{marginTop: '3em'}} p={10} backgroundColor={MID_SHADE_COLOR}>
             <Heading size={'lg'} color={BACKGROUND_COLOR} mb={4}>
                 {title}
             </Heading>
