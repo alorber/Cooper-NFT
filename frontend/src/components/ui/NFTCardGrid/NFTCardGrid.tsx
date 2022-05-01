@@ -17,7 +17,7 @@ const NFTCardGrid = ({NFTList, ethToUsdRate, isLoadingEthRate, updateEthRate}: N
     return (
         <Grid templateColumns={GRID_COLUMNS_PER_BREAKPOINT.map(
                 (numColumns) => `repeat(${numColumns}, 1fr)`
-            )} gap={4} m={4} >
+            )} gap={4} mt={4} px={12} w={{base: 'fit-content', md: '100%'}} >
             {NFTList.map(nft => (
                 <NFTCard nft={nft} ethToUsdRate={ethToUsdRate} isLoadingEthRate={isLoadingEthRate}
                     updateEthRate={updateEthRate} key={nft.itemId} />

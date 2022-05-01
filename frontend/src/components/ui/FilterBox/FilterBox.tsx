@@ -110,7 +110,7 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false, EthToUsdRate}: Fil
     }
 
     return (
-        <HStack w='80%' px={6}>
+        <HStack px={12} w='100%' mt={6}>
             {/* Search Bar */}
             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} 
                 updateSearchResults={updateSearchResults} />
@@ -147,7 +147,7 @@ const SearchBar = ({searchTerm, setSearchTerm, updateSearchResults}: SearchBarPr
     }
 
     return (
-        <form onSubmit={e => {e.preventDefault(); updateSearchResults();}}>
+        <form onSubmit={e => {e.preventDefault(); updateSearchResults();}} style={{width: '100%'}}>
             <InputGroup>
                 <InputLeftElement pointerEvents={'none'} children={<SearchIcon />} />
                 <Input type='search' placeholder='Search' value={searchTerm} 
@@ -173,7 +173,7 @@ const SortBy = ({setSortKey}: SortByProps) => {
     }
 
     return (
-        <Select onChange={v => {setSortKey(getEnumValue(v.target.value))}} w={180}>
+        <Select onChange={v => {setSortKey(getEnumValue(v.target.value))}} w={'15em'}>
             {(Object.keys(SortByOptions) as Array<keyof typeof SortByOptions>).map(sortOption => 
                 <option value={sortOption} key={sortOption}>
                     {SortByOptions[sortOption]}
