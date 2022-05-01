@@ -4,12 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { BACKGROUND_COLOR } from '../../../COLORS';
 import { ContractRole } from '../../../services/nft_contract';
 import {
+    Box,
     Flex,
     Heading,
     Stack,
     Text
     } from '@chakra-ui/react';
 import { FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
+import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';
 
 type CreatePageLayoutProps = {
     metaMaskAddress: string | null,
@@ -43,7 +45,13 @@ const CreatePageLayout = ({metaMaskAddress, accountRoles, ethRateProps}: CreateP
             ) : isStudent && accountRoles !== null && metaMaskAddress !== null ? (
                 <NFTCreationForm address={metaMaskAddress} {...ethRateProps} />
             ) : metaMaskAddress === null ? (
-                <Text>You must be logged in to mint NFTs</Text>
+                <Stack width={'100%'}>
+                    <Text>You must be logged in to mint NFTs</Text>
+                    <Box justifySelf={'center'} pt={4}>
+                        <ThemedLinkButton label={'Sign In'} routeTo={'/login'} 
+                            width={['fit-content', 'fit-content', '20%']} maxWidth={'270px'} />
+                    </Box>
+                </Stack>
             ) : (
                 <Stack>
                     <Text>You must be a current student to mint NFTs.</Text>
