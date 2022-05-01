@@ -18,7 +18,7 @@ const HomePageLayout = ({}: HomePageLayoutProps) => {
             <Box w='100%' justifyContent={'center'} pt={6}>
                 <ThemedLinkButton label={'Discover New Art'} routeTo='/explore' 
                     width={['fit-content', 'fit-content', '20%']} borderRadius={20} 
-                    maxWidth={'270px'}/>
+                    maxWidth={'270px'} hoverTextColor={BACKGROUND_COLOR} />
             </Box>
         </Stack>
     );
