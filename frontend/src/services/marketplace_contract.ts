@@ -127,7 +127,7 @@ const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royalt
 }
 
 // Lists item on marketplace
-const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: number): Promise<TransactionResponse> => {
+const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: BigNumber): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if (!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -302,6 +302,14 @@ export const createNFT = async(
         console.log("Error Minting Token: ", mintResp.error)
         return;
     }
+}
+
+// Lists owned NFT on marketplace
+export const listNFT = async (itemId: string, tokenId: string, price: number): Promise<TransactionResponse> => {
+    // Converts price to WEI
+    const priceWei = ethToWei(price);
+
+    return await listMarketItem(itemId, tokenId, priceWei);
 }
 
 // Retrieving NFTs

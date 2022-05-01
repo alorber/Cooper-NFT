@@ -20,10 +20,11 @@ type NFTCardProps = {
     nft: NFTMarketItem
     ethToUsdRate: number | null,
     isLoadingEthRate?: boolean,
-    updateEthRate?: () => void
+    updateEthRate?: () => void,
+    updateNftList?: () => void
 }
 
-const NFTCard = ({nft, ethToUsdRate, isLoadingEthRate, updateEthRate}: NFTCardProps) => {
+const NFTCard = ({nft, ethToUsdRate, isLoadingEthRate, updateEthRate, updateNftList}: NFTCardProps) => {
     const [isFavorited, setIsFavorited] = useState(false);
     const {name: title, file, itemId, tokenId, owner, isListed, price} = nft;
     
@@ -57,8 +58,9 @@ const NFTCard = ({nft, ethToUsdRate, isLoadingEthRate, updateEthRate}: NFTCardPr
                                 </Text>
                             )}
                         </>) : isLoadingEthRate !== undefined && updateEthRate !== undefined ? (
-                            <NFTCardListButton ethToUsdRate={ethToUsdRate} 
-                                isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} />
+                            <NFTCardListButton ethToUsdRate={ethToUsdRate} isLoadingEthRate={isLoadingEthRate} 
+                                updateEthRate={updateEthRate} listingInfo={{itemId: itemId, tokenId: tokenId}}
+                                updateNftList={updateNftList ?? (() => {})} />
                         ) : (
                             <Text>
                                 Unlisted

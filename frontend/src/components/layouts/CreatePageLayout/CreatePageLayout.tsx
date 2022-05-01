@@ -35,7 +35,7 @@ const CreatePageLayout = ({metaMaskAddress, accountRoles, ethRateProps}: CreateP
     return (
         <Stack spacing={8}>
             <Heading size={'xl'} mt={6}>Create a unique piece of digital artwork</Heading>
-            <Heading size={'md'}>Turn your are into a one-of-a-kind NFT</Heading>
+            <Heading size={'md'}>Turn your art into a one-of-a-kind NFT</Heading>
 
             {isLoading ? (
                 <LoadingText loadingText='Determining Access...' textColor='black' textSize={'lg'} marginTop={4} />

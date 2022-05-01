@@ -43,7 +43,8 @@ const MyNFTsLayout = ({address, ethToUsdRate, isLoadingEthRate, updateEthRate}: 
                 <FilterBox nftList={usersNFTs ?? []} setNftList={setSearchResults} 
                     isMyNFTPage EthToUsdRate={ethToUsdRate} />
                 <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate}
-                    isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} />
+                    isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate}
+                    updateNftList={loadNFTLists} />
             </>)}
             
         </Stack>

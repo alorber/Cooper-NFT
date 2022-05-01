@@ -1,5 +1,5 @@
 import react, { useEffect, useState } from 'react';
-import { ETH_PRECISION } from '../../../services/marketplace_contract';
+import { ETH_PRECISION, listNFT } from '../../../services/marketplace_contract';
 import {
     Flex,
     IconButton,
@@ -20,10 +20,12 @@ import { MdOutlineSell } from 'react-icons/md';
 export type NFTCardListButtonProps = {
     ethToUsdRate: number | null,
     isLoadingEthRate: boolean,
-    updateEthRate: () => void
+    updateEthRate: () => void,
+    listingInfo: {itemId: string, tokenId: string},
+    updateNftList: () => void
 }
 
-const NFTCardListButton = ({ethToUsdRate, isLoadingEthRate, updateEthRate}: NFTCardListButtonProps) => {
+const NFTCardListButton = ({ethToUsdRate, isLoadingEthRate, updateEthRate, listingInfo, updateNftList}: NFTCardListButtonProps) => {
     const {isOpen, onOpen, onClose} = useDisclosure();
 
     return (<>
@@ -34,7 +36,8 @@ const NFTCardListButton = ({ethToUsdRate, isLoadingEthRate, updateEthRate}: NFTC
                 _focus={{outline: "none"}} onClick={onOpen} />
         </Tooltip>
         <NFTCardListModal isOpen={isOpen} onClose={onClose} ethToUsdRate={ethToUsdRate}
-            isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} />
+            isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} listingInfo={listingInfo}
+            updateNftList={updateNftList} />
     </>)
 }
 
@@ -46,14 +49,18 @@ type NFTCardListModalProps = {
     onClose: () => void,
     ethToUsdRate: number | null,
     isLoadingEthRate: boolean,
-    updateEthRate: () => void
+    updateEthRate: () => void,
+    listingInfo: {itemId: string, tokenId: string},
+    updateNftList: () => void
 }
 const NFTCardListModal = ({
     isOpen,
     onClose,
     ethToUsdRate,
     isLoadingEthRate,
-    updateEthRate
+    updateEthRate,
+    listingInfo,
+    updateNftList
 }: NFTCardListModalProps) => {
     const [salePrice, setSalePrice] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -72,8 +79,15 @@ const NFTCardListModal = ({
         onClose: onConfirmationModalClose
     } = useDisclosure();
 
-    const listNFT = () => {
-
+    // Lists NFT
+    const listNFTOnMarketplace = async () => {
+        if(salePrice === null) {return}
+        
+        setIsLoading(true);
+        const {itemId, tokenId} = listingInfo;
+        await listNFT(itemId, tokenId, salePrice);
+        setIsLoading(false);
+        updateNftList();
     }
 
     return (<>
@@ -107,7 +121,7 @@ const NFTCardListModal = ({
         
         {/* Confirmation Modal */}
         <FormConfirmationModal isOpen={isConfirmationModalOpen} onClose={onConfirmationModalClose} header={'Confirm Submission'}
-            confrimationDialog={'Once an NFT is listed, paying ETH will be required to unlist or edit.'} submitButtonOnClick={listNFT} />
+            confrimationDialog={'Once an NFT is listed, paying ETH will be required to unlist or edit.'} submitButtonOnClick={listNFTOnMarketplace} />
     </>);
 }
 
