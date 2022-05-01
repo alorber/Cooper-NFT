@@ -22,6 +22,7 @@ import {
     FormSubmitButton,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
+import { MID_SHADE_COLOR } from '../../../COLORS';
 
 export type FormValuesType = {
     name: string, 
@@ -127,7 +128,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
     return (
         <Flex width="full" style={{margin: '0'}} h={'100%'} justifyContent="center">
             <Box p={8} m={8} w={1000} h={'fit-content'} borderWidth={1} borderRadius={8} 
-                    boxShadow="lg" borderColor="#b7e0ff ">
+                    boxShadow="lg" borderColor={MID_SHADE_COLOR}>
                 <FormConfirmationModal header='Confirm Submission' isOpen={isConfirmationModalOpen} onClose={onConfirmationModalClose}
                         confrimationDialog='Once an NFT is minted, none of these values can be changed except sale price'
                         submitButtonText={formValues.sellNFT ? 'Mint & List NFT' : 'Mint NFT'} submitButtonOnClick={onSubmit} />

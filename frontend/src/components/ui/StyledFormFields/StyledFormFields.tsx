@@ -35,8 +35,11 @@ import {
     Link
     } from '@chakra-ui/react';
 import { BsFilter } from 'react-icons/bs';
-import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import { QuestionIcon, RepeatIcon } from '@chakra-ui/icons';
+import {
+    DARK_SHADE_COLOR,
+    MID_SHADE_COLOR,
+    } from '../../../COLORS';
 
 /**
  * This file contains various form components with uniform styling.

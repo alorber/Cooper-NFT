@@ -11,7 +11,6 @@ import {
     PopoverContent,
     PopoverTrigger,
     Stack,
-    Text,
     useDisclosure
     } from '@chakra-ui/react';
 import { FaUserCircle } from 'react-icons/fa';
@@ -96,7 +95,8 @@ const DesktopNavbarItems = ({ isLoggedIn }: NavbarProps) => {
 
                         {/* Subnav (if item has children) */}
                         {navbarItem.children && (
-                            <PopoverContent border={0} boxShadow={'xl'} p={4} rounded={'xl'} minW={'sm'}>
+                            <PopoverContent border={`1px solid ${NAVBAR_BORDER_COLOR}`} boxShadow={'xl'} p={4} rounded={'xl'} minW={'sm'} 
+                                    backgroundColor={BACKGROUND_COLOR}>
                                 <Stack>
                                     {navbarItem.children.map((child) => (
                                         <NavbarLink key={child.label} linkTo={child.href ?? '#'} isSubNav={true}>
