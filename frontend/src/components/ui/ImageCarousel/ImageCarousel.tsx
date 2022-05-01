@@ -1,5 +1,6 @@
 import react, { useEffect, useRef, useState } from 'react';
 import Slider from 'react-slick';
+import { BACKGROUND_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import {
     Box,
     Heading,
@@ -36,8 +37,8 @@ const ImageCarousel = ({title, nftsList}: ImageCarouselProps) => {
     }, [nftsList]);
     
     return (
-        <Stack spacing={8} pt={12}>
-            <Heading size={'lg'}>
+        <Stack spacing={8} style={{marginTop: '2em'}} p={10} backgroundColor={MID_SHADE_COLOR}>
+            <Heading size={'lg'} color={BACKGROUND_COLOR} mb={4}>
                 {title}
             </Heading>
             <HStack w={'100%'} justifyContent='center'>
@@ -70,7 +71,7 @@ type CarouselArrowButtonProps = {
 const CarouselArrowButton = ({type, onClick}: CarouselArrowButtonProps) => {
     return (
         <Link w='fit-content' onClick={onClick} m={4}>
-            {type === 'Left' ? <BsChevronLeft size={24} />: <BsChevronRight size={24}/>}
+            {type === 'Left' ? <BsChevronLeft size={24} color={BACKGROUND_COLOR} />: <BsChevronRight size={24} color={BACKGROUND_COLOR} />}
         </Link>
     );
 }
