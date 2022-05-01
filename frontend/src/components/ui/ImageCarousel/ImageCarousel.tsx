@@ -7,6 +7,7 @@ import {
     HStack,
     Image,
     Link,
+    Spinner,
     Stack,
     useBreakpointValue
     } from '@chakra-ui/react';
@@ -23,10 +24,11 @@ export type CarouselNFT = {
 
 export type ImageCarouselProps = {
     title: string
-    nftsList: CarouselNFT[]
+    nftsList: CarouselNFT[],
+    isLoading?: boolean
 };
 
-const ImageCarousel = ({title, nftsList}: ImageCarouselProps) => {
+const ImageCarousel = ({title, nftsList, isLoading = false}: ImageCarouselProps) => {
     const numImages = useBreakpointValue({base: 1, md: 2, lg: 3, xl: 4});
     const [carouselNFTsList, setCarouselNFTsList] = useState<CarouselNFT[]>([]);
     const sliderRef = useRef<Slider>(null);
@@ -41,19 +43,32 @@ const ImageCarousel = ({title, nftsList}: ImageCarouselProps) => {
             <Heading size={'lg'} color={BACKGROUND_COLOR} mb={4}>
                 {title}
             </Heading>
-            <HStack w={'100%'} justifyContent='center'>
+            {isLoading ? (
+                <HStack w={'100%'} justifyContent={'center'}>
+                    <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
+                        Loading Recent NFTs
+                    </Heading>
+                    <Spinner color={BACKGROUND_COLOR} />
+                </HStack>
+            ) : nftsList.length === 0 ? (
+                <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
+                        Unable to Load Recent NFTs
+                </Heading>
+            ) : (
+                <HStack w={'100%'} justifyContent='center'>
                 <CarouselArrowButton type="Left" onClick={sliderRef.current?.slickPrev} />
-                <Box w={'80%'} overflow='hidden'>
-                    <Slider slidesToShow={numImages} draggable={false} arrows={false} autoplay ref={sliderRef}>
-                        {carouselNFTsList.map((nft) => 
-                            <RouterLink to={nft.nftPageUrl} key={nft.nftPageUrl}>
-                                <Image src={nft.nftImage} maxH={'250px'} borderRadius={15} objectFit='contain' />
-                            </RouterLink>  
-                        )}
-                    </Slider> 
-                </Box>
-                <CarouselArrowButton type={'Right'} onClick={sliderRef.current?.slickNext} />
-            </HStack>
+                    <Box w={'80%'} overflow='hidden'>
+                        <Slider slidesToShow={numImages} draggable={false} arrows={false} autoplay ref={sliderRef}>
+                            {carouselNFTsList.map((nft) => 
+                                <RouterLink to={nft.nftPageUrl} key={nft.nftPageUrl}>
+                                    <Image src={nft.nftImage} maxH={'250px'} borderRadius={15} objectFit='contain' />
+                                </RouterLink>  
+                            )}
+                        </Slider> 
+                    </Box>
+                    <CarouselArrowButton type={'Right'} onClick={sliderRef.current?.slickNext} />
+                </HStack>
+            )}
         </Stack>
     );
 }

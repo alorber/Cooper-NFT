@@ -23,14 +23,17 @@ type HomePageLayoutProps = {
 }
 const HomePageLayout = ({}: HomePageLayoutProps) => {
     const [nftList, setNftList] = useState<CarouselNFT[]>([]);
+    const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
 
     const getNFTs = async () => {
+        setIsLoadingNFTs(true);
         const testData = await generateTestData();
         const carouselList: CarouselNFT[] = testData.nftList.map((nft) => ({
             nftImage: URL.createObjectURL(nft.file),
             nftPageUrl: generateNFTPageURL(nft.tokenId, nft.itemId)
         }));
         setNftList(carouselList);
+        setIsLoadingNFTs(false);
     }
 
     useEffect(() => {
@@ -50,7 +53,7 @@ const HomePageLayout = ({}: HomePageLayoutProps) => {
                     width={['fit-content', 'fit-content', '20%']} borderRadius={20} 
                     maxWidth={'270px'} hoverTextColor={BACKGROUND_COLOR} />
             </Box>
-            <ImageCarousel title='Recent Listing' nftsList={nftList} />
+            <ImageCarousel title='Recent Listing' nftsList={nftList} isLoading={isLoadingNFTs} />
             <HowItWorksSection />
         </Stack>
     );
