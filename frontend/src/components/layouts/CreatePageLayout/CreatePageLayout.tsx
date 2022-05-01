@@ -8,6 +8,7 @@ import {
     Text
     } from '@chakra-ui/react';
 import { FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
+import LoadingText from '../../ui/LoadingText/LoadingText';
 
 type CreatePageLayoutProps = {
     metaMaskAddress: string | null,
@@ -22,18 +23,23 @@ type CreatePageLayoutProps = {
 const CreatePageLayout = ({metaMaskAddress, accountRoles, ethRateProps}: CreatePageLayoutProps) => {
     const [isStudent, setIsStudent] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Checks if student on load
     useEffect(() => {
-        setIsStudent(accountRoles?.includes(ContractRole.CURRENT_STUDENT) ?? false)
+        setIsLoading(true);
+        setIsStudent(accountRoles?.includes(ContractRole.CURRENT_STUDENT) ?? false);
+        setIsLoading(false);
     }, [accountRoles]);
 
     return (
         <Stack spacing={8}>
             <Heading size={'xl'} mt={6}>Create a unique piece of digital artwork</Heading>
-            <Heading size={'md'}>Description here</Heading>
+            <Heading size={'md'}>Turn your are into a one-of-a-kind NFT</Heading>
 
-            {isStudent && accountRoles !== null && metaMaskAddress !== null ? (
+            {isLoading ? (
+                <LoadingText loadingText='Determining Access...' textColor='black' textSize={'lg'} marginTop={4} />
+            ) : isStudent && accountRoles !== null && metaMaskAddress !== null ? (
                 <NFTCreationForm address={metaMaskAddress} {...ethRateProps} />
             ) : metaMaskAddress === null ? (
                 <Text>You must be logged in to mint NFTs</Text>
@@ -46,7 +52,7 @@ const CreatePageLayout = ({metaMaskAddress, accountRoles, ethRateProps}: CreateP
                     </Flex>
                     
                 </Stack>
-            ) }
+            )}
         </Stack>
     );
 }

@@ -1,8 +1,9 @@
 import FilterBox from '../../ui/FilterBox/FilterBox';
+import LoadingText from '../../ui/LoadingText/LoadingText';
 import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
 import { buildLiveNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
-import { Heading, Stack } from '@chakra-ui/react';
+import { Stack } from '@chakra-ui/react';
 
 type ExplorePageLayoutProps = {
     ethToUsdRate: number | null,
@@ -35,9 +36,7 @@ const ExplorePageLayout = ({ethToUsdRate, updateEthRate}: ExplorePageLayoutProps
     return (
         <Stack align={'center'}>
             {isLoadingNFTs ? (
-                <Heading>
-                    Loading...
-                </Heading>
+                <LoadingText loadingText='Loading Live Listing...' textColor='black' textSize={'lg'} marginTop={4} />
             ) : (<>
                 <FilterBox nftList={listedNFTs ?? []} setNftList={setSearchResults} 
                     EthToUsdRate={ethToUsdRate} />

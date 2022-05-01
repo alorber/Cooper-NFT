@@ -3,6 +3,7 @@ import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
 import { buildUserNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
 import { Heading, Stack } from '@chakra-ui/react';
+import LoadingText from '../../ui/LoadingText/LoadingText';
 
 type MyNFTsLayoutProps = {
     address: string,
@@ -37,9 +38,7 @@ const MyNFTsLayout = ({address, ethToUsdRate, isLoadingEthRate, updateEthRate}: 
     return (
         <Stack align={'center'}>
             {isLoadingNFTs ? (
-                <Heading>
-                    Loading...
-                </Heading>
+                <LoadingText loadingText='Loading My NFTs...' textColor='black' textSize={'lg'} marginTop={4} />
             ) : (<>
                 <FilterBox nftList={usersNFTs ?? []} setNftList={setSearchResults} 
                     isMyNFTPage EthToUsdRate={ethToUsdRate} />

@@ -3,13 +3,16 @@ import { BACKGROUND_COLOR } from '../../../COLORS';
 import { Heading, HStack, Spinner } from '@chakra-ui/react';
 
 type LoadingTextProps = {
-    textColor?: string
+    loadingText: string,
+    textColor?: string,
+    textSize?: 'xl' | 'lg' | 'md'
+    marginTop?: number
 }
-const LoadingText = ({textColor}: LoadingTextProps) => {
+const LoadingText = ({loadingText, textColor, textSize, marginTop}: LoadingTextProps) => {
     return (
-        <HStack w={'100%'} justifyContent={'center'}>
-            <Heading size={'md'} color={textColor || BACKGROUND_COLOR} pr={2}>
-                Loading Recent NFTs
+        <HStack w={'100%'} justifyContent={'center'} mt={marginTop}>
+            <Heading size={textSize || 'md'} color={textColor || BACKGROUND_COLOR} pr={2}>
+                {loadingText}
             </Heading>
             <Spinner color={textColor || BACKGROUND_COLOR} />
         </HStack>

@@ -44,7 +44,7 @@ const ImageCarousel = ({title, nftsList, isLoading = false}: ImageCarouselProps)
                 {title}
             </Heading>
             {isLoading ? (
-                <LoadingText />
+                <LoadingText loadingText='Loading Recent NFTs' />
             ) : nftsList.length === 0 ? (
                 <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
                         Unable to Load Recent NFTs
