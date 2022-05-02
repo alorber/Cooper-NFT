@@ -13,6 +13,7 @@ import {
     } from '@chakra-ui/react';
 import { constants as etherConstants } from 'ethers';
 import { createNFT, ETH_PRECISION } from '../../../services/marketplace_contract';
+import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import {
     FormConfirmationModal,
     FormErrorMessage,
@@ -20,9 +21,9 @@ import {
     FormModal,
     FormNumberInput,
     FormSubmitButton,
+    FormTextAreaInput,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
-import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 
 export type FormValuesType = {
     name: string, 
@@ -147,9 +148,8 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
                         <FormTextInput value={formValues.name} onChange={(val) => {updateForm('name', val)}}
                             label={"NFT Name"} type={"text"} placeholder={"My NFT"} ariaLabel={"NFT_Name"} />
 
-                        {/* Description Field */}
-                        <FormTextInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
-                            label={"NFT Description"} type={"text"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
+                        <FormTextAreaInput value={formValues.description} onChange={(val) => {updateForm('description', val)}}
+                            label={"NFT Description"} placeholder={"About My NFT"} ariaLabel={"NFT_Description"} />
 
                         {/* Royalty Info */}
                         <FormModal launcherText='What are royalties?' modalHeader='NFT Royalties' modalText={royaltiesModalText}/>

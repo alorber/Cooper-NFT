@@ -21,6 +21,7 @@ import {
     NumberInputField,
     NumberInputStepper,
     Text,
+    Textarea,
     Tooltip,
     useDisclosure
     } from '@chakra-ui/react';
@@ -78,6 +79,41 @@ export const FormTextInput = ({
             </Flex>
             <Input type={type} placeholder={placeholder} value={value}
                 aria-label={ariaLabel}  borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
+                onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR} />
+        </FormControl>
+    );
+}
+
+// Text Area Input
+export type FormTextAreaInputProps = {
+    value: string,
+    onChange: (v: string) => void,
+    label: string,
+    placeholder: string,
+    ariaLabel: string
+    isRequired?: boolean,
+    tooltipMessage?: string,
+}
+
+export const FormTextAreaInput = ({
+    value, 
+    onChange, 
+    label, 
+    placeholder, 
+    ariaLabel, 
+    isRequired = true, 
+    tooltipMessage
+}: FormTextAreaInputProps) => {
+    return (
+        <FormControl isRequired={isRequired}>
+            <Flex>
+                <FormLabel>{label}</FormLabel>
+                {tooltipMessage && (
+                    <FormTooltip message={tooltipMessage} />     
+                )}
+            </Flex>
+            <Textarea placeholder={placeholder} value={value} aria-label={ariaLabel} 
+                borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
                 onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR} />
         </FormControl>
     );
