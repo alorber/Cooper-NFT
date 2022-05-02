@@ -1,7 +1,7 @@
 import { base16 } from 'multiformats/bases/base16';
 import { CID, create as ipfsHttpClient } from 'ipfs-http-client';
 import { ContractMarketItemCondensed, NFTMarketItem, NFTMarketItemsResponse } from './marketplace_contract';
-import { Failure } from './contracts';
+import { Failure, TransactionResponse } from './contracts';
 import { FileExtension, fromBuffer, MimeType } from 'file-type';
 import { getNFTuri } from './nft_contract';
 import { IPFS_PROJECT_ID, IPFS_PROJECT_SECRET } from './IPFS_AUTH';
@@ -14,6 +14,11 @@ export type NFTMetadata = {
     description: string,
     image: string
 }
+
+export type IpfsCidResponse = {
+    status: "Success",
+    cid: CID
+} | Failure;
 
 export type IpfsMetadataResponse = {
     status: "Success",
@@ -37,10 +42,13 @@ const client = ipfsHttpClient({
 });
 
 // Uploads file to IPFS & returns CID
-export const uploadFileToIPFS = async (file: File, hash: string = 'blake2b-208') => {
-    const addedFile = await client.add(file, {cidVersion: 1, hashAlg: hash, pin: true, wrapWithDirectory: false});
-    const cid = addedFile.cid;
-    return cid;
+export const uploadFileToIPFS = async (file: File, hash: string = 'blake2b-208'): Promise<IpfsCidResponse> => {
+    try {
+        const addedFile = await client.add(file, {cidVersion: 1, hashAlg: hash, pin: true, wrapWithDirectory: false});
+        return {status: "Success", cid: addedFile.cid};
+    } catch(err: any) {
+        return {status: "Failure", error: err};
+    }
 }
 
 // Converts CID to base 16

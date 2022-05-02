@@ -274,46 +274,43 @@ export const createNFT = async(
     royaltyRecipient: string,
     price: number,
     address: string
-) => {
+): Promise<TransactionResponse> => {
     // Converts price to WEI
     const priceWei = ethToWei(price);
 
     // Uploads file to IPFS
-    console.log("Uploading file to IPFS....");
-    const fileCID = await uploadFileToIPFS(nftFile);
-    console.log("SUCCESS: File uploaded with CID ", fileCID.toString());
+    const fileCIDResp = await uploadFileToIPFS(nftFile);
+    if(fileCIDResp.status === "Failure") {
+        return fileCIDResp;
+    }
+    const fileCID = fileCIDResp.cid;
 
     // Creates NFT Metadata
-    console.log("\nCreating NFT Metadata...");
     const nftMetadata = buildNFTMetadata({
         name: nftName, 
         description: nftDescription,
         image: fileCID.toString()
     });
-    console.log("SUCCESS: NFT metadata created")
-    console.log(nftMetadata)
 
     // Uploads Metadata to IPFS
-    console.log("\nUploading Metadata to IPFS...");
     const metadataFile = new File([new Blob([nftMetadata], {type: 'application/json'})], 
         `${nftName.trim().split(' ').join('_')}_metadata.json`, {type: 'application/json'});
-    const metadataCID = await uploadFileToIPFS(metadataFile);
-    console.log("SUCCESS: Metadata uploaded with CID ", metadataCID.toString());
+    const metadataCIDResp = await uploadFileToIPFS(metadataFile);
+    if(metadataCIDResp.status === "Failure") {
+        return metadataCIDResp;
+    }
+    const metadataCID = metadataCIDResp.cid;
     
-    // Creates TokenID
-    console.log("\nCreating TokenID from CID...");
+    // Creates TokenID from CID
     const tokenID = cidToTokenID(metadataCID);
-    console.log("SUCCESS: Created tokenID ", tokenID);
 
     // Mints
-    console.log("\nMinting Token...")
     const mintResp = await mintAndCreateMarketItem(address, tokenID, royaltyRecipient, royaltyAmount, priceWei);
 
     if(mintResp.status === "Success") {
-        console.log("SUCCESS: Successfully Minted Token")
+        return {status: "Success"}
     } else {
-        console.log("Error Minting Token: ", mintResp.error)
-        return;
+        return mintResp;
     }
 }
 
