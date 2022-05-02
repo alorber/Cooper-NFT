@@ -128,6 +128,9 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         // Confirms item is being listed by seller
         require(idToMarketItem[marketItemId].owner == msg.sender, "Only item owner can perform this operation");
 
+        // Gives marketplace approval to transfer token
+        CU_NFT(_nftContract).setApproval(msg.sender);
+
         // Updates contract
         idToMarketItem[marketItemId].sold = false;
         idToMarketItem[marketItemId].price = price;
