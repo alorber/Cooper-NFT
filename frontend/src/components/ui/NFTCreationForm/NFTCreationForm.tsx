@@ -21,6 +21,7 @@ import {
     FormModal,
     FormNumberInput,
     FormSubmitButton,
+    FormSuccessMessage,
     FormTextAreaInput,
     FormTextInput
     } from '../../ui/StyledFormFields/StyledFormFields';
@@ -64,6 +65,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
     const [formValues, setFormValues] = useState<FormValuesType>(defaultForm);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     // Min value for price field
     const [minEth, setMinEth] = useState<number>(.00001);
@@ -110,7 +112,15 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
         const royaltyAmount = formValues.disableRoyalties ? 0 : (formValues.royaltyAmount ?? 0) * 10;
         const price = formValues.sellNFT ? formValues.price ?? 0 : 0;
 
-        await createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
+        const createNFTResp = await createNFT(file, formValues.name, formValues.description, royaltyAmount, royaltyRecipientAddress, price, address);
+        console.log(createNFTResp)
+        if(createNFTResp.status === "Success") {
+            setError(null);
+            setShowSuccess(true);
+        } else {
+            setShowSuccess(false);
+            setError(createNFTResp.error);
+        }
 
         showNewForm();
 
@@ -138,6 +148,11 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
                     <Stack spacing={4}>
                         {/* Error Message */}
                         {error !== null && <FormErrorMessage error={error} /> }
+
+                        {/* Success Message */}
+                        {showSuccess && (
+                            <FormSuccessMessage message={'Success'} />
+                        )}
 
                         {/* NFT File Upload Field */}
                         <Flex w='100%' justifyContent={'center'}>
