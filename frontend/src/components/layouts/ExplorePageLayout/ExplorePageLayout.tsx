@@ -3,7 +3,7 @@ import LoadingText from '../../ui/LoadingText/LoadingText';
 import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
 import { buildLiveNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
-import { Stack } from '@chakra-ui/react';
+import { Heading, Stack } from '@chakra-ui/react';
 
 type ExplorePageLayoutProps = {
     ethToUsdRate: number | null,
@@ -37,10 +37,30 @@ const ExplorePageLayout = ({ethToUsdRate, updateEthRate}: ExplorePageLayoutProps
         <Stack align={'center'}>
             {isLoadingNFTs ? (
                 <LoadingText loadingText='Loading Live Listing...' textColor='black' textSize={'lg'} marginTop={4} />
+            ) : listedNFTs === null ? (
+                <Stack pt={4}>
+                    <Heading size='lg' pt={6}>
+                        We seem to be having some trouble loading your NFTs
+                    </Heading>
+                    <Heading size='md' pt={6}>
+                        Please try again later
+                    </Heading> 
+                </Stack>
             ) : (<>
                 <FilterBox nftList={listedNFTs ?? []} setNftList={setSearchResults} 
                     EthToUsdRate={ethToUsdRate} />
-                <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
+                {listedNFTs.length === 0 ? (
+                    <Stack pt={4}>
+                        <Heading size='lg' pt={6}>
+                            We can't seem to find any NFTs
+                        </Heading>
+                        <Heading size='md' pt={6}>
+                            List some NFTs to fill our storeroom
+                        </Heading> 
+                    </Stack>
+                ) : (
+                    <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate ?? 1} />
+                )}
             </>)}
             
         </Stack>
