@@ -84,7 +84,7 @@ type FavoriteIconButtonProps = {
 const FavoriteIconButton = ({isFavorited, onClick}: FavoriteIconButtonProps) => {
     
     return (
-        <Tooltip label={isFavorited ? 'Remove from favorites' : 'Add to favorites'} placement='top' hasArrow>
+        <Tooltip label={isFavorited ? 'Remove from favorites' : 'Add to favorites'} placement='top'>
             <Link w='fit-content'>
                 <FiHeart color='red' fill={isFavorited ? 'red' : LIGHT_SHADE_COLOR} size={24} 
                     onClick={onClick} /> 
