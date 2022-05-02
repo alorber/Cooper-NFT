@@ -1,8 +1,8 @@
 import CU_NFT from '../artifacts/contracts/CU_NFT.sol/CU_NFT.json';
 import { CID } from 'ipfs-http-client';
 import { cidToBase16 } from './ipfs';
-import { CU_NFT_ADDRESS } from './CONTRACT_ADDRESSES';
 import {
+    ContractError,
     Failure,
     initiateContractReadConnection,
     initiateContractWriteConnection,
@@ -10,6 +10,7 @@ import {
     MetaMaskNotInstalledError,
     TransactionResponse
     } from './contracts';
+import { CU_NFT_ADDRESS } from './CONTRACT_ADDRESSES';
 // Functions to Access NFT Contract
 
 // Type Declarations
@@ -58,7 +59,7 @@ export const setContractAdmin = async (address: string): Promise<TransactionResp
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
-        return {status: "Failure", error: err}
+        return {status: "Failure", error: (err as ContractError).message}
     }
 }
 
@@ -75,7 +76,7 @@ export const removeContractAdmin = async (address: string): Promise<TransactionR
         await transaction.wait();
         return {status: "Success"};
     }  catch(err: any) {
-        return {status: "Failure", error: err}
+        return {status: "Failure", error: (err as ContractError).message}
     }
 }
 
@@ -92,7 +93,7 @@ export const setContractStudent = async (address: string): Promise<TransactionRe
         await transaction.wait();
         return {status: "Success"};    
     }  catch(err: any) {
-        return {status: "Failure", error: err}
+        return {status: "Failure", error: (err as ContractError).message}
     }
 }
 
@@ -109,7 +110,7 @@ export const removeContractStudent = async (address: string): Promise<Transactio
         await transaction.wait();
         return {status: "Success"};    
     }  catch(err: any) {
-        return {status: "Failure", error: err}
+        return {status: "Failure", error: (err as ContractError).message}
     }
 }
 
@@ -126,7 +127,7 @@ export const setContractPreviousStudent = async (address: string): Promise<Trans
         await transaction.wait();
         return {status: "Success"};
     }  catch(err: any) {
-        return {status: "Failure", error: err}
+        return {status: "Failure", error: (err as ContractError).message}
     }
 }
 
@@ -169,6 +170,6 @@ export const getNFTuri = async (tokenID: string): Promise<ContractURIResponse> =
         const uriResp = await contract.uri(tokenID);
         return {status: "Success", uri: uriResp};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 } 

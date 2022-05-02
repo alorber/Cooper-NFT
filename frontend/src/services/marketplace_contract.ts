@@ -2,8 +2,8 @@ import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Mark
 import { BigNumber, constants as etherConstants } from 'ethers';
 import { buildNFTMetadata, contractMarketItemsToNFTList, uploadFileToIPFS } from './ipfs';
 import { cidToTokenID } from './nft_contract';
-import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
 import {
+    ContractError,
     Failure,
     initiateContractReadConnection,
     initiateContractWriteConnection,
@@ -11,6 +11,7 @@ import {
     MetaMaskNotInstalledError,
     TransactionResponse
     } from './contracts';
+import { CU_MARKETPLACE_ADDRESS } from './CONTRACT_ADDRESSES';
 
 // Functions to Access Marketplace Contract
 
@@ -98,7 +99,7 @@ export const updateListingFee = async (newFeePercentage: number): Promise<Transa
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -109,7 +110,7 @@ export const getListingFee = async (): Promise<{status: "Success", listingFee: n
         const listingFee = await contract.getListingFee();   
         return {status: "Success", listingFee: listingFee};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -129,7 +130,7 @@ const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royalt
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -146,7 +147,7 @@ const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: B
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -163,8 +164,7 @@ const completeMarketSale = async (itemId: string, tokenId: string, price: BigNum
         await transaction.wait();
         return {status: "Success"}
     } catch(err: any) {
-        console.log(err)
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -187,7 +187,7 @@ const fetchLiveListings = async (): Promise<ContractMarketItemsCondensedResponse
 
         return {status: "Success", contractMarketItems: nfts};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -215,7 +215,7 @@ const fetchUsersNFTs = async (): Promise<ContractMarketItemsCondensedResponse> =
         });
         return {status: "Success", contractMarketItems: nfts};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 
@@ -236,7 +236,7 @@ const fetchNFTByItemId = async (itemId: string): Promise<ContractMarketItemsCond
         };
         return {status: "Success", contractMarketItems: [nft]};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: (err as ContractError).message};
     }
 }
 

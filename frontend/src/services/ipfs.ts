@@ -47,7 +47,7 @@ export const uploadFileToIPFS = async (file: File, hash: string = 'blake2b-208')
         const addedFile = await client.add(file, {cidVersion: 1, hashAlg: hash, pin: true, wrapWithDirectory: false});
         return {status: "Success", cid: addedFile.cid};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: 'Error: Unable to add file to IPFS'};
     }
 }
 
@@ -71,7 +71,7 @@ export const getMetadataFromIPFS = async (uri: string): Promise<IpfsMetadataResp
         }
         return {status: "Success", metadata: JSON.parse(decodedMetadata)};
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: 'Error: Unable to retrieve metadata from IPFS'};
     }
     
 }
@@ -97,7 +97,7 @@ export const getNftFromIPFS = async(uri: string, fileName: string = 'a'): Promis
         const file = new File(blobs, `${fileName}.${fileType?.ext}`, {type: fileType.mime});
         return {status: "Success", file: file}
     } catch(err: any) {
-        return {status: "Failure", error: err};
+        return {status: "Failure", error: "Error: Unable to retrieve NFT from IPFS"};
     }
 }
 

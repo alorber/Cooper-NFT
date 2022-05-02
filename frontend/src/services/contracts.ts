@@ -1,12 +1,19 @@
-// Functions to Access Ethereum Contracts
 import { ContractRole, getContractRole } from './nft_contract';
 import { ethers } from 'ethers';
+// Functions to Access Ethereum Contracts
 
 // Fixes MetaMask TypeScript Issue
 declare let window: any;
 
 // Type Declarations
 // -------------------
+
+export type ContractError = {
+    code: number,
+    message: string,
+    data?: unknown,
+    stack?: string
+}
 
 export type Failure = {
     status: "Failure",
@@ -47,7 +54,7 @@ export const getMetaMaskWallet = async (request: boolean = true): Promise<MetaMa
             });    
             return {status: "Success", address: addresses[0]}
         } catch(err: any) {
-            return {status: "Failure", error: err.message}
+            return {status: "Failure", error: (err as ContractError).message}
         }
     } else {
         return MetaMaskNotInstalledError;
