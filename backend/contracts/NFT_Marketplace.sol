@@ -34,6 +34,8 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         address payable owner;
         uint256 price;
         bool sold;
+        uint256 timeBought;
+        uint256 timeListed;
     }
 
     event MarketItemCreated (
@@ -42,7 +44,9 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         address seller,
         address owner,
         uint256 price,
-        bool sold
+        bool sold,
+        uint256 timeBought,
+        uint256 timeListed
     );
 
     modifier onlyStudent {
@@ -68,24 +72,25 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
     // Creates Market Item - Mints NFT & adds to system
     // If price is > 0 wei, will list also
     function mintAndCreateMarketItem(address nftOwner, uint256 tokenId, address royaltyRecipient, 
-            uint96 royaltyValue, uint256 price) public onlyStudent {
+            uint96 royaltyValue, uint256 price, uint256 boughtTimestamp, uint256 listedTimeStamp) public onlyStudent {
         // Mints token (gives ownership to marketplace, if being listed)
         CU_NFT(_nftContract).mint(price > 0 ? address(this) : nftOwner, tokenId, 1, royaltyRecipient, royaltyValue);
         
         // Determines if item is being listed
         if(price > 0) {
             // Lists on marketplace
-            _createMarketItem(tokenId, _msgSender(), address(this), price, false);
+            _createMarketItem(tokenId, _msgSender(), address(this), price, false, boughtTimestamp, listedTimeStamp);
         } else {
             // Adds token to system, but doesn't list
-            _createMarketItem(tokenId, address(0), _msgSender(), 0, true);
+            _createMarketItem(tokenId, address(0), _msgSender(), 0, true, boughtTimestamp, 0);
             _itemsSold.increment();
         }
     }
 
     // Internal function to create market item (doesn't list)
     function _createMarketItem(
-        uint256 tokenId, address seller, address owner, uint256 price, bool isSold
+        uint256 tokenId, address seller, address owner, uint256 price, 
+        bool isSold, uint256 boughtTimestamp, uint256 listedTimeStamp
     ) internal {
         // Get new item ID
         _marketItemId.increment();
@@ -98,7 +103,9 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
                 payable(seller),
                 payable(owner),
                 price,
-                isSold
+                isSold,
+                boughtTimestamp,
+                listedTimeStamp
         );
         
         emit MarketItemCreated(
@@ -107,12 +114,15 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
                 payable(seller),
                 payable(owner),
                 price,
-                isSold
+                isSold,
+                boughtTimestamp,
+                listedTimeStamp
         );
     }
 
     // List marketplace item on marketplace
-    function listMarketItem(uint256 marketItemId, uint256 tokenId, uint256 price) external payable {
+    function listMarketItem(uint256 marketItemId, uint256 tokenId, uint256 price, uint256 listedTimeStamp
+    ) external payable {
         // Checks that Ids are correct
         require(idToMarketItem[marketItemId].tokenId == tokenId, "Ids do not match a listing");
         // Confirms item is being listed by seller
@@ -123,6 +133,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         idToMarketItem[marketItemId].price = price;
         idToMarketItem[marketItemId].seller = payable(msg.sender);
         idToMarketItem[marketItemId].owner = payable(address(this));
+        idToMarketItem[marketItemId].timeListed = listedTimeStamp;
         _itemsSold.decrement();
 
         // Transfers token to marketplace
@@ -130,7 +141,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
     }
 
     // Creates sale
-    function createMarketSale(uint256 marketItemId, uint256 tokenId) external payable {
+    function createMarketSale(uint256 marketItemId, uint256 tokenId, uint256 boughtTimeStamp) external payable {
         // Checks that Ids are correct
         require(idToMarketItem[marketItemId].tokenId == tokenId, "Ids do not match a listing");
 
@@ -157,6 +168,8 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         idToMarketItem[marketItemId].owner = payable(msg.sender);
         idToMarketItem[marketItemId].sold = true;
         idToMarketItem[marketItemId].seller = payable(address(0));
+        idToMarketItem[marketItemId].timeBought = boughtTimeStamp;
+        idToMarketItem[marketItemId].timeListed = 0;
         _itemsSold.increment();
     }
 

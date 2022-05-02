@@ -15,7 +15,9 @@ export const generateTestData = async (numEntries = 20) => {
             tokenId: BigNumber.from(100 - i)._hex,
             owner: `Cooper_Student`,
             isListed: true,
-            price: Math.random() * (randNum > .75 ? 10 : randNum < .25 ? .1 : 1)
+            price: Math.random() * (randNum > .75 ? 10 : randNum < .25 ? .1 : 1),
+            timeBought: Date.now(),
+            timeListed: Date.now()
         })
     }
     return {nftList: nftList};

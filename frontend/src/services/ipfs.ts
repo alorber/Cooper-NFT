@@ -133,7 +133,9 @@ export const contractMarketItemsToNFTList = async (contractMarketItems: Contract
             tokenId: contractMarketItem.tokenId,
             owner: contractMarketItem.owner,
             isListed: contractMarketItem.isListed,
-            price: contractMarketItem.price
+            price: contractMarketItem.price,
+            timeBought: contractMarketItem.timeBought,
+            timeListed: contractMarketItem.timeListed
         });
     }
 

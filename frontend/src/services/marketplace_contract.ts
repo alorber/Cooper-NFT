@@ -24,7 +24,9 @@ export type ContractMarketItem = {
     seller: string,
     owner: string,
     price: number,
-    sold: boolean
+    sold: boolean,
+    timeBought: number,
+    timeListed: number
 };
 
 // Consolidated ContractMarketItem
@@ -33,7 +35,9 @@ export type ContractMarketItemCondensed = {
     tokenId: string,
     owner: string,  // Set to seller if listed
     isListed: boolean,
-    price: number
+    price: number,
+    timeBought: number,
+    timeListed: number
 }
 
 export type ContractMarketItemsCondensedResponse = {
@@ -49,7 +53,9 @@ export type NFTMarketItem = {
     tokenId: string,
     owner: string,
     isListed: boolean,
-    price: number
+    price: number,
+    timeBought: number,
+    timeListed: number
 }
 
 export type NFTMarketItemResponse = {
@@ -118,7 +124,8 @@ const mintAndCreateMarketItem = async(toAddress: string, tokenId: string, royalt
 
     try {
         const {contract} = await initiateMarketplaceContractWriteConnection();
-        const transaction = await contract.mintAndCreateMarketItem(toAddress, tokenId, royaltyReciever, royaltyValue, salePrice.toString());
+        const transaction = await contract.mintAndCreateMarketItem(toAddress, tokenId, royaltyReciever, 
+            royaltyValue, salePrice.toString(), Date.now(), Date.now());
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
@@ -135,7 +142,7 @@ const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: B
 
     try {
         const {contract} = await initiateMarketplaceContractWriteConnection();
-        const transaction = await contract.listMarketItem(marketItemId, tokenId, salePrice);
+        const transaction = await contract.listMarketItem(marketItemId, tokenId, salePrice, Date.now());
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
@@ -152,7 +159,7 @@ const completeMarketSale = async (itemId: string, tokenId: string, price: BigNum
 
     try {
         const {contract} = await initiateMarketplaceContractWriteConnection();
-        const transaction = await contract.createMarketSale(itemId, tokenId, {value: price._hex});
+        const transaction = await contract.createMarketSale(itemId, tokenId, Date.now(), {value: price._hex});
         await transaction.wait();
         return {status: "Success"}
     } catch(err: any) {
@@ -174,6 +181,8 @@ const fetchLiveListings = async (): Promise<ContractMarketItemsCondensedResponse
             owner: nft.seller,
             isListed: true,
             price: weiToEth(nft.price),
+            timeBought: nft.timeBought,
+            timeListed: nft.timeListed
         }));
 
         return {status: "Success", contractMarketItems: nfts};
@@ -200,6 +209,8 @@ const fetchUsersNFTs = async (): Promise<ContractMarketItemsCondensedResponse> =
                 owner: isListed ? nft.seller : nft.owner,
                 isListed: isListed,
                 price: isListed ? weiToEth(nft.price) : 0,
+                timeBought: nft.timeBought,
+                timeListed: nft.timeListed
             })
         });
         return {status: "Success", contractMarketItems: nfts};
@@ -220,6 +231,8 @@ const fetchNFTByItemId = async (itemId: string): Promise<ContractMarketItemsCond
             owner: isListed ? response.seller : response.owner,
             isListed: isListed,
             price: isListed ? weiToEth(response.price) : 0,
+            timeBought: response.timeBought,
+            timeListed: response.timeListed
         };
         return {status: "Success", contractMarketItems: [nft]};
     } catch(err: any) {
