@@ -30,9 +30,11 @@ const NFTCard = ({nft, ethToUsdRate, isLoadingEthRate, updateEthRate, updateNftL
     
     return (
         <Box w="300px" rounded="20px" overflow="hidden" mt={10} >
-            <Box as={RouterLink} to={`/nft/${generateNFTPageURL(tokenId, itemId)}`}>
-                <Image src= {URL.createObjectURL(file)}
-                boxSize="300px" objectFit={'contain'} backgroundColor={NAVBAR_BORDER_COLOR} />
+            <Box boxSize='300px' overflow={'hidden'}>
+                <RouterLink to={`/nft/${generateNFTPageURL(tokenId, itemId)}`}>
+                    <Image src= {URL.createObjectURL(file)} _hover={{transform: 'scale(1.2)'}} transition={'transform .25s'}
+                        boxSize="300px" objectFit={'contain'} backgroundColor={NAVBAR_BORDER_COLOR} />
+                </RouterLink>
             </Box>
             
             <Box p={5} backgroundColor={LIGHT_SHADE_COLOR} h={'100%'}>
