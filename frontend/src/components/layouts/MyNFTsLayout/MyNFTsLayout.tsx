@@ -1,9 +1,9 @@
 import FilterBox from '../../ui/FilterBox/FilterBox';
+import LoadingText from '../../ui/LoadingText/LoadingText';
 import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
 import React, { useEffect, useState } from 'react';
 import { buildUserNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
 import { Heading, Stack } from '@chakra-ui/react';
-import LoadingText from '../../ui/LoadingText/LoadingText';
 
 type MyNFTsLayoutProps = {
     address: string,
@@ -39,12 +39,32 @@ const MyNFTsLayout = ({address, ethToUsdRate, isLoadingEthRate, updateEthRate}: 
         <Stack align={'center'}>
             {isLoadingNFTs ? (
                 <LoadingText loadingText='Loading My NFTs...' textColor='black' textSize={'lg'} marginTop={4} />
-            ) : (<>
+            ) : usersNFTs === null ? (
+                <Stack pt={4}>
+                    <Heading size='lg' pt={6}>
+                        We seem to be having some trouble loading your NFTs
+                    </Heading>
+                    <Heading size='md' pt={6}>
+                        Please try again later
+                    </Heading> 
+                </Stack>
+        ) : (<>
                 <FilterBox nftList={usersNFTs ?? []} setNftList={setSearchResults} 
                     isMyNFTPage EthToUsdRate={ethToUsdRate} />
-                <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate}
-                    isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate}
-                    updateNftList={loadNFTLists} />
+                {usersNFTs.length === 0 ? (
+                    <Stack pt={4}>
+                        <Heading size='lg' pt={6}>
+                            You don't appear to have any NFTs
+                        </Heading>
+                        <Heading size='md' pt={6}>
+                            Buy or create some NFTs to add to your collection
+                        </Heading> 
+                    </Stack>
+                ) : (
+                    <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate}
+                        isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate}
+                        updateNftList={loadNFTLists} />
+                )}
             </>)}
             
         </Stack>
