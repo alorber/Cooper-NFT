@@ -96,7 +96,7 @@ const NFTCardListModal = ({
                 <Stack>
                     {/* Price Field in ETH */}
                     <FormNumberInput value={salePrice} label={"Price"} type='ETH' step={.002} isRequired
-                        onChange={(val) => {setSalePrice(typeof val === 'number' ?  val : parseInt(val))}} 
+                        onChange={(val) => {setSalePrice(typeof val === 'number' ?  val : parseFloat(val))}} 
                         min={minEth} precision={ETH_PRECISION} />
                     {/* Conversion to USD */}
                     {salePrice != null && ethToUsdRate !== null && (
