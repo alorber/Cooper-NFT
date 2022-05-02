@@ -1,21 +1,19 @@
 import ImageCarousel, { CarouselNFT } from '../../ui/ImageCarousel/ImageCarousel';
 import react, { useEffect, useState } from 'react';
 import { AiOutlinePicture } from 'react-icons/ai';
-import { BACKGROUND_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import {
     Box,
     ButtonGroup,
     Heading,
-    HStack,
     Stack,
     Text
     } from '@chakra-ui/react';
 import { generateNFTPageURL } from '../../../services/nftUrls';
-import { generateTestData } from '../../../services/testData';
+import { getRecentNFTListings } from '../../../services/marketplace_contract';
 import { IoStorefront } from 'react-icons/io5';
 import { MdAccountBalanceWallet } from 'react-icons/md';
+import { MID_SHADE_COLOR } from '../../../COLORS';
 import { ThemedLinkButton, ThemedToggleButton } from '../../ui/ThemedButtons/ThemedButtons';
-import { getRecentNFTListings } from '../../../services/marketplace_contract';
 
 const CENTER_STYLING = {marginLeft: 'auto', marginRight: 'auto'};
 

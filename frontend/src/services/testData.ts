@@ -20,7 +20,7 @@ export const generateTestData = async (numEntries = 20) => {
             timeListed: Date.now()
         })
     }
-    return {nftList: nftList};
+    return {nftMarketItems: nftList};
 }
 
 const getTestFile = async () => {
