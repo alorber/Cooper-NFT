@@ -80,7 +80,11 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false, EthToUsdRate}: Fil
          // Sorts NFTs by sortBy value - Optional sortkey param
         const sortNFTs = (nft1: NFTMarketItem, nft2: NFTMarketItem): number => {
             if(sortKey === SortByOptions.RECENTLY_ADDED) {
-                // TODO
+                return isMyNFTPage ? (
+                    nft1.timeBought > nft2.timeBought ? -1 : nft1.timeBought < nft2.timeBought ? 1 : sortByName(nft1,nft2)
+                ) : (
+                    nft1.timeListed > nft2.timeListed ? -1 : nft1.timeListed < nft2.timeListed ? 1 : sortByName(nft1,nft2)
+                );
             } else if(sortKey === SortByOptions.PRICE_ASC) {
                 return nft1.price > nft2.price ? 1 : nft1.price < nft2.price ? -1 : sortByName(nft1, nft2);
             } else if(sortKey === SortByOptions.PRICE_DESC) {
