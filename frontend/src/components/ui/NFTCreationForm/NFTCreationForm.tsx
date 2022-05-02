@@ -81,7 +81,8 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
     const isFormInvalid = () => {
         const invalidRequiredFields = file === null || formValues.name === '' || formValues.description === '';
         const invalidRoyaltyInfo = !formValues.disableRoyalties && (formValues.royaltyAmount === null || formValues.royaltyAmount < 0.01 
-            || formValues.royaltyRecipient === null || (formValues.royaltyRecipient === RoyaltyRecipients.OTHER && formValues.royaltyRecipientOther == null));
+            || formValues.royaltyRecipient === null 
+            || (formValues.royaltyRecipient === RoyaltyRecipients.OTHER && !(/^0x[a-fA-F0-9]{40}$/.test(formValues.royaltyRecipientOther))));
         const invalidSellInfo = formValues.sellNFT && (formValues.price === null || formValues.price < minEth);
         return invalidRequiredFields || invalidRoyaltyInfo || invalidSellInfo;
     }
@@ -178,7 +179,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
                                 <FormTextInput value={formValues.royaltyRecipientOther} onChange={(val) => {updateForm('royaltyRecipientOther', val)}}
                                     label={"Royalty Recipent Address"} placeholder="Wallet Address" type={"text"} ariaLabel={"Royalty Recipent Address"} 
                                     isRequired={!formValues.disableRoyalties && formValues.royaltyRecipient === RoyaltyRecipients.OTHER} 
-                                    tooltipMessage="Ethereum addresses must be of form: '0x' followed by 40 characters." isAddress />
+                                    tooltipMessage="Ethereum addresses must be of form: '0x' followed by 40 characters." />
                             )}
                         </>)}
 

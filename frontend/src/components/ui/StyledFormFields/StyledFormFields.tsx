@@ -56,7 +56,6 @@ export type FormTextInputProps = {
     ariaLabel: string
     isRequired?: boolean,
     tooltipMessage?: string,
-    isAddress?: boolean
 }
 
 export const FormTextInput = ({
@@ -67,8 +66,7 @@ export const FormTextInput = ({
     placeholder, 
     ariaLabel, 
     isRequired = true, 
-    tooltipMessage,
-    isAddress
+    tooltipMessage
 }: FormTextInputProps) => {
     return (
         <FormControl isRequired={isRequired}>
@@ -80,8 +78,7 @@ export const FormTextInput = ({
             </Flex>
             <Input type={type} placeholder={placeholder} value={value}
                 aria-label={ariaLabel}  borderColor={MID_SHADE_COLOR} _hover={{borderColor: DARK_SHADE_COLOR}}
-                onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR} 
-                pattern={isAddress ? "/^0x[a-fA-F0-9]{40}$/" : undefined}/>
+                onChange={e => onChange(e.currentTarget.value)} focusBorderColor={DARK_SHADE_COLOR} />
         </FormControl>
     );
 }
@@ -154,15 +151,23 @@ export type FormSubmitButtonProps = {
     label: string,
     onClick?: () => void,
     isDisabled?: boolean,
-    textHoverColor?: string
+    textHoverColor?: string,
+    maxWidth?: string
 }
 
-export const FormSubmitButton = ({isLoading, label, onClick, isDisabled=false, textHoverColor}: FormSubmitButtonProps) => {
+export const FormSubmitButton = ({
+    isLoading,
+    label,
+    onClick,
+    isDisabled=false,
+    textHoverColor,
+    maxWidth
+}: FormSubmitButtonProps) => {
     return (
         <Button width="full" type="submit" boxShadow='sm' isDisabled={isDisabled}
                 backgroundColor={MID_SHADE_COLOR} _hover={{boxShadow: 'md', textColor: textHoverColor || 'black'}}
                 _active={{boxShadow: 'lg'}} _focus={{outline: "none"}} 
-                isLoading={isLoading} onClick={onClick} >
+                isLoading={isLoading} onClick={onClick} maxWidth={maxWidth} >
             {label}
         </Button>
     );
