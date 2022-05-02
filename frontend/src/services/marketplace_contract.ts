@@ -25,8 +25,8 @@ export type ContractMarketItem = {
     owner: string,
     price: number,
     sold: boolean,
-    timeBought: number,
-    timeListed: number
+    timeBought: BigNumber,
+    timeListed: BigNumber
 };
 
 // Consolidated ContractMarketItem
@@ -36,8 +36,8 @@ export type ContractMarketItemCondensed = {
     owner: string,  // Set to seller if listed
     isListed: boolean,
     price: number,
-    timeBought: number,
-    timeListed: number
+    timeBought: BigNumber,
+    timeListed: BigNumber
 }
 
 export type ContractMarketItemsCondensedResponse = {
@@ -328,7 +328,7 @@ export const listNFT = async (itemId: string, tokenId: string, price: number): P
 // Retrieving NFTs
 // ----------------
 
-// Builds user nft list containing one or both of: 1) User's listed NFTs 2) User's unlisted NFTs
+// Builds user nft list containing user's nfts
 export const buildUserNFTList = async (): Promise<NFTMarketItemsResponse> => {
     // Builds list of user's NFTs
     const usersNFTs: NFTMarketItem[] = [];
@@ -387,6 +387,31 @@ export const getNFTbyItemId = async (itemId: string): Promise<NFTMarketItemRespo
     const nft = nftsResp.nftMarketItems[0];
 
     return {status: "Success", nftMarketItem: nft};
+}
+
+// Returns N most recently listed NFTs
+export const getRecentNFTListings = async (numNFTs: number = 20): Promise<NFTMarketItemsResponse> => {
+    const recentNFTs: NFTMarketItem[] = [];
+
+    // Gets MarketItems
+    const listedMarketItemsResp = await fetchLiveListings();
+    if(listedMarketItemsResp.status === "Failure") {
+        return {status: "Failure", error: listedMarketItemsResp.error};
+    }
+
+    // Sorts by time listed
+    const liveListings: ContractMarketItemCondensed[] = listedMarketItemsResp.contractMarketItems;
+    liveListings.sort((nft1, nft2) => nft2.timeListed.toNumber() - nft1.timeListed.toNumber());
+
+    // Converts to displayable NFTs
+    const recentNFTsResp = await contractMarketItemsToNFTList(liveListings.slice(0, numNFTs));
+    if(recentNFTsResp.status === "Failure") {
+        return {status: "Failure", error: recentNFTsResp.error};
+    }
+    recentNFTs.push(...(recentNFTsResp.nftMarketItems));
+    console.log(recentNFTs)
+
+    return {status: "Success", nftMarketItems: recentNFTs};
 }
 
 // Buying NFTs

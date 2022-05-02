@@ -15,6 +15,7 @@ import { generateTestData } from '../../../services/testData';
 import { IoStorefront } from 'react-icons/io5';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import { ThemedLinkButton, ThemedToggleButton } from '../../ui/ThemedButtons/ThemedButtons';
+import { getRecentNFTListings } from '../../../services/marketplace_contract';
 
 const CENTER_STYLING = {marginLeft: 'auto', marginRight: 'auto'};
 
@@ -27,12 +28,14 @@ const HomePageLayout = ({}: HomePageLayoutProps) => {
 
     const getNFTs = async () => {
         setIsLoadingNFTs(true);
-        const testData = await generateTestData();
-        const carouselList: CarouselNFT[] = testData.nftList.map((nft) => ({
-            nftImage: URL.createObjectURL(nft.file),
-            nftPageUrl: generateNFTPageURL(nft.tokenId, nft.itemId)
-        }));
-        setNftList(carouselList);
+        const recentNFTsResp = await getRecentNFTListings();
+        if(recentNFTsResp.status === "Success") {
+            const carouselList: CarouselNFT[] = recentNFTsResp.nftMarketItems.map((nft) => ({
+                nftImage: URL.createObjectURL(nft.file),
+                nftPageUrl: generateNFTPageURL(nft.tokenId, nft.itemId)
+            }));
+            setNftList(carouselList);
+        }
         setIsLoadingNFTs(false);
     }
 
