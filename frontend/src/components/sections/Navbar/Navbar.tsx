@@ -1,6 +1,6 @@
 import NavbarLink from '../../ui/NavbarLink/NavbarLink';
 import NavbarToggleButton from '../../ui/NavbarToggleButton/NavbarToggleButton';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BACKGROUND_COLOR, DARK_SHADE_COLOR, NAVBAR_BORDER_COLOR } from '../../../COLORS';
 import {
     Box,
@@ -13,6 +13,7 @@ import {
     Stack,
     useDisclosure
     } from '@chakra-ui/react';
+import { ContractRole } from '../../../services/nft_contract';
 import { FaUserCircle } from 'react-icons/fa';
 import { NAVBAR_ITEMS, NavbarItem } from './NavbarItems';
 import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';
@@ -24,11 +25,18 @@ import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';
  */
 
 type NavbarProps = {
-    isLoggedIn: boolean
+    isLoggedIn: boolean,
+    accountRoles: ContractRole[] | null
 };
 
-const Navbar = ({isLoggedIn}: NavbarProps) => {
+const Navbar = ({isLoggedIn, accountRoles}: NavbarProps) => {
+    const [isAdmin, setIsAdmin] = useState(false);
     const { isOpen: isNavbarOpen, onToggle: toggleNavbar, onClose: closeNavbar } = useDisclosure();
+
+    // Determines admin status
+    useEffect(() => {
+        setIsAdmin(accountRoles?.includes(ContractRole.ADMIN || ContractRole.COOPER) ?? false);
+    },[accountRoles]);
 
     return (
         <Box>
@@ -49,7 +57,7 @@ const Navbar = ({isLoggedIn}: NavbarProps) => {
 
                 {/* Desktop Links */}
                 <Flex ml='auto' display={{ base: 'none', md: 'flex' }} h='fill'>
-                    <DesktopNavbarItems isLoggedIn={isLoggedIn} />
+                    <DesktopNavbarItems isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
                 </Flex>
 
                 {/* Sign In Button on Mobile */}
@@ -62,7 +70,7 @@ const Navbar = ({isLoggedIn}: NavbarProps) => {
   
             {/* Mobile Dropdown Menu */}
             <Collapse in={isNavbarOpen} animateOpacity>
-                <MobileNavbarItems closeNavbar={closeNavbar} isLoggedIn={isLoggedIn} />
+                <MobileNavbarItems closeNavbar={closeNavbar} isLoggedIn={isLoggedIn} isAdmin={isAdmin} />
             </Collapse>
       </Box>
     );    
@@ -71,12 +79,17 @@ const Navbar = ({isLoggedIn}: NavbarProps) => {
 /**
  * Navbar items for desktop
  */
-const DesktopNavbarItems = ({ isLoggedIn }: NavbarProps) => {
+type DesktopNavbarItemsProps = {
+    isLoggedIn: boolean,
+    isAdmin: boolean
+}
+const DesktopNavbarItems = ({ isLoggedIn, isAdmin }: DesktopNavbarItemsProps) => {
     return (
         <Stack spacing={[4, 4, 10, 20]} align="center" justify={"flex-end"}
                 direction={"row"} pr={4}>
             {/* Shows navbar items - Only shows "My Account" if logged in */}
-            {NAVBAR_ITEMS.filter(n => (isLoggedIn || n.label !== "My Account")).map((navbarItem: NavbarItem) => (
+            {NAVBAR_ITEMS.filter(n => (isLoggedIn || n.label !== "My Account"))
+            .map((navbarItem: NavbarItem) => (
                 <Box key={navbarItem.label}>
                     <Popover trigger={'hover'} placement={'bottom-start'}>
                         {/* Navbar Item */}
@@ -98,7 +111,9 @@ const DesktopNavbarItems = ({ isLoggedIn }: NavbarProps) => {
                             <PopoverContent border={`1px solid ${NAVBAR_BORDER_COLOR}`} boxShadow={'xl'} p={4} rounded={'xl'} minW={'sm'} 
                                     backgroundColor={BACKGROUND_COLOR}>
                                 <Stack>
-                                    {navbarItem.children.map((child) => (
+                                    {/* Only shows "Admin Settings" if admin */}
+                                    {navbarItem.children.filter(n => (isAdmin || n.label !== 'Admin Settings'))
+                                    .map((child) => (
                                         <NavbarLink key={child.label} linkTo={child.href ?? '#'} isSubNav={true}>
                                             {child.label}
                                         </NavbarLink>
@@ -121,11 +136,18 @@ const DesktopNavbarItems = ({ isLoggedIn }: NavbarProps) => {
 /**
  * Navbar items for mobile
  */
-const MobileNavbarItems = ({ closeNavbar, isLoggedIn }: { closeNavbar: () => void, isLoggedIn: boolean }) => (
+ type MobileNavbarItemsProps = {
+    closeNavbar: () => void,
+    isLoggedIn: boolean,
+    isAdmin: boolean
+}
+const MobileNavbarItems = ({ closeNavbar, isLoggedIn, isAdmin }: MobileNavbarItemsProps) => (
     <Stack p={4} display={{ md: 'none' }}>
         {/* Only shows "My Account" if logged in */}
-        {NAVBAR_ITEMS.filter(n => (isLoggedIn || n.label !== "My Account")).map((navbarItem: NavbarItem) => (
-            <MobileNavbarItem key={navbarItem.label} navbarItem={navbarItem} closeNavbar={closeNavbar} />
+        {NAVBAR_ITEMS.filter(n => (isLoggedIn || n.label !== "My Account"))
+        .map((navbarItem: NavbarItem) => (
+            <MobileNavbarItem key={navbarItem.label} navbarItem={navbarItem} 
+                closeNavbar={closeNavbar} isAdmin={isAdmin} />
         ))}
     </Stack>
 )
@@ -135,7 +157,12 @@ const MobileNavbarItems = ({ closeNavbar, isLoggedIn }: { closeNavbar: () => voi
  * 
  * Needs separate inner component for useDisclosure()
  */
-const MobileNavbarItem = ({ navbarItem, closeNavbar }: { navbarItem: NavbarItem, closeNavbar: () => void }) => {
+ type MobileNavbarItemProps = {
+    navbarItem: NavbarItem,
+    closeNavbar: () => void,
+    isAdmin: boolean
+}
+const MobileNavbarItem = ({ navbarItem, closeNavbar, isAdmin }: MobileNavbarItemProps) => {
     const { isOpen, onToggle, onClose: closeSubmenu } = useDisclosure();
     const hasChildren = (navbarItem.children ?? []).length > 0;
 
@@ -152,7 +179,9 @@ const MobileNavbarItem = ({ navbarItem, closeNavbar }: { navbarItem: NavbarItem,
         <Collapse in={isOpen} animateOpacity>
             <Stack pl={4} borderLeft={`solid ${NAVBAR_BORDER_COLOR} .5px`} align='start'>
                 {navbarItem.children && (
-                    navbarItem.children.map((child) => (
+                    /* Only shows "Admin Settings" if admin */
+                    navbarItem.children.filter(n => (isAdmin || n.label !== 'Admin Settings'))
+                    .map((child) => (
                         <NavbarLink key={child.label} linkTo={child.href ?? '#'} isSubNav={true} 
                                 onPageChange={() => { closeNavbar(); closeSubmenu() }}>
                             {child.label}

@@ -40,8 +40,8 @@ export const NAVBAR_ITEMS: Array<NavbarItem> = [
                 href: '/my_nfts'
             },
             {
-                label: 'Settings',
-                href: '/settings'
+                label: 'Admin Settings',
+                href: '/admin_settings'
             }
         ]
     }

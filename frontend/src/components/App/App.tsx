@@ -7,6 +7,7 @@ import MyNFTsLayout from '../layouts/MyNFTsLayout/MyNFTsLayout';
 import Navbar from '../sections/Navbar/Navbar';
 import NFTPageLayout from '../layouts/NFTPageLayout/NFTPageLayout';
 import React, { useEffect, useState } from 'react';
+import SettingsPageLayout from '../layouts/SettingsPageLayout/SettingsPageLayout';
 import WatchPageLayout from '../layouts/WatchPageLayout/WatchPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContractRole } from '../../services/nft_contract';
@@ -70,7 +71,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <Stack className='App' h={'100%'}>
-                <Navbar isLoggedIn={isLoggedIn()} />
+                <Navbar isLoggedIn={isLoggedIn()} accountRoles={accountContractRoles} />
                 <Routes>
                     <Route path='/' element={<HomePageLayout />} />
                     <Route path='/explore' element={<ExplorePageLayout ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />} />
@@ -84,6 +85,7 @@ const App = () => {
                     <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
                         isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
+                    <Route path='/admin_settings' element={<SettingsPageLayout />} />
                 </Routes>
             </Stack>
         </BrowserRouter>
