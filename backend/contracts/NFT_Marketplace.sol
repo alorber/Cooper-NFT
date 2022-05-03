@@ -143,6 +143,37 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         ERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
     }
 
+    // Edits market item listing
+    function editMarketItemListing(uint256 marketItemId, uint256 tokenId, uint256 price, uint256 listedTimeStamp) external payable {
+        // Checks that Ids are correct
+        require(idToMarketItem[marketItemId].tokenId == tokenId, "Ids do not match a listing");
+        // Confirms item is being edited by owner
+        require(idToMarketItem[marketItemId].seller == msg.sender, "Only item owner can perform this operation");
+
+        idToMarketItem[marketItemId].price = price;
+        idToMarketItem[marketItemId].timeListed = listedTimeStamp;
+    }
+
+    // Unlists market item
+    function unlistMarketItem(uint256 marketItemId, uint256 tokenId) external payable {
+        // Checks that Ids are correct
+        require(idToMarketItem[marketItemId].tokenId == tokenId, "Ids do not match a listing");
+        // Confirms item is listed
+        require(idToMarketItem[marketItemId].owner == address(this), "Item is not currently listed on marketplace");
+        // Confirms item is being unlisted by owner
+        require(idToMarketItem[marketItemId].seller == msg.sender, "Only item owner can perform this operation");
+
+        // Updates contract
+        idToMarketItem[marketItemId].owner = idToMarketItem[marketItemId].seller;
+        idToMarketItem[marketItemId].sold = true;
+        idToMarketItem[marketItemId].seller = payable(address(0));
+        idToMarketItem[marketItemId].timeListed = 0;
+        _itemsSold.increment();
+
+        // Transfers ownership of NFT back to owner
+        ERC1155(_nftContract).safeTransferFrom(address(this), idToMarketItem[marketItemId].owner, tokenId, 1, '');
+    }
+
     // Creates sale
     function createMarketSale(uint256 marketItemId, uint256 tokenId, uint256 boughtTimeStamp) external payable {
         // Checks that Ids are correct

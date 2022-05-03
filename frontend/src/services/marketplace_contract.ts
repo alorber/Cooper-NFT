@@ -151,6 +151,40 @@ const listMarketItem = async(marketItemId: string, tokenId: string, salePrice: B
     }
 }
 
+// Edits item on marketplace
+const editMarketItem = async(itemId: string, tokenId: string, price: BigNumber): Promise<TransactionResponse> => {
+    // Checks MetaMask Install
+    if (!isMetaMaskInstalled) {
+        return MetaMaskNotInstalledError;
+    }
+
+    try {
+        const {contract} = await initiateMarketplaceContractWriteConnection();
+        const transaction = await contract.editMarketItemListing(itemId, tokenId, price, Date.now());
+        await transaction.wait();
+        return {status: "Success"}
+    } catch(err: any) {
+        return {status: "Failure", error: (err as ContractError).message};
+    }
+}
+
+// Unlists item on marketplace
+const unlistMarketItem = async(itemId: string, tokenId: string): Promise<TransactionResponse> => {
+    // Checks MetaMask Install
+    if (!isMetaMaskInstalled) {
+        return MetaMaskNotInstalledError;
+    }
+
+    try {
+        const {contract} = await initiateMarketplaceContractWriteConnection();
+        const transaction = await contract.unlistMarketItem(itemId, tokenId);
+        await transaction.wait();
+        return {status: "Success"}
+    } catch(err: any) {
+        return {status: "Failure", error: (err as ContractError).message};
+    }
+}
+
 // Purchses item on marketplace
 const completeMarketSale = async (itemId: string, tokenId: string, price: BigNumber): Promise<TransactionResponse> => {
     // Checks MetaMask Install
@@ -322,6 +356,19 @@ export const listNFT = async (itemId: string, tokenId: string, price: number): P
     return await listMarketItem(itemId, tokenId, priceWei);
 }
 
+// Edits listed NFT
+export const editListing = async(itemId: string, tokenId: string, price: number): Promise<TransactionResponse> => {
+    // Converts price to WEI
+    const priceWei = ethToWei(price);
+
+    return await editMarketItem(itemId, tokenId, priceWei);
+}
+
+// Cancels listing
+export const cancelListing = async(itemId: string, tokenId: string): Promise<TransactionResponse> => {
+    return await unlistMarketItem(itemId, tokenId);
+}
+
 // Retrieving NFTs
 // ----------------
 
@@ -406,7 +453,6 @@ export const getRecentNFTListings = async (numNFTs: number = 20): Promise<NFTMar
         return {status: "Failure", error: recentNFTsResp.error};
     }
     recentNFTs.push(...(recentNFTsResp.nftMarketItems));
-    console.log(recentNFTs)
 
     return {status: "Success", nftMarketItems: recentNFTs};
 }

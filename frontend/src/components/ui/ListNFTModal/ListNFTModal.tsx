@@ -1,9 +1,8 @@
 import ModalForm from '../ModalForm/ModalForm';
 import react, { useEffect, useState } from 'react';
-import { ETH_PRECISION, listNFT } from '../../../services/marketplace_contract';
+import { editListing, ETH_PRECISION, listNFT } from '../../../services/marketplace_contract';
 import {
     Flex,
-    Modal,
     Stack,
     Text,
     useDisclosure
@@ -22,9 +21,10 @@ export type ListNFTModalProps = {
     isLoadingEthRate: boolean,
     updateEthRate: () => void,
     listingInfo: {itemId: string, tokenId: string},
-    updateNftList?: () => void,
+    updateNftList: () => void,
     isEditForm?: boolean  // Used if modal is for editing listing,
-    defaultPrice?: number | null
+    defaultPrice?: number | null,
+    setParentLoading?: (v: boolean) => void
 }
 
 const ListNFTModal = ({
@@ -34,9 +34,10 @@ const ListNFTModal = ({
     isLoadingEthRate,
     updateEthRate,
     listingInfo,
-    updateNftList = () => {},
+    updateNftList,
     isEditForm = false,
-    defaultPrice = null
+    defaultPrice = null,
+    setParentLoading = (v: boolean) => {}
 }: ListNFTModalProps) => {
     const [salePrice, setSalePrice] = useState<number | null>(defaultPrice);
     const [isLoading, setIsLoading] = useState(false);
@@ -60,9 +61,16 @@ const ListNFTModal = ({
         if(salePrice === null) {return}
         
         setIsLoading(true);
+        setParentLoading(true);
         const {itemId, tokenId} = listingInfo;
-        await listNFT(itemId, tokenId, salePrice);
+        
+        if(isEditForm) {
+            await editListing(itemId, tokenId, salePrice);
+        } else {
+            await listNFT(itemId, tokenId, salePrice);
+        }
         setIsLoading(false);
+        setParentLoading(false);
         updateNftList();
     }
 
