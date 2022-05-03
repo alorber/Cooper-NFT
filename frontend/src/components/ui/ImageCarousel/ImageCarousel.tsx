@@ -49,9 +49,13 @@ const ImageCarousel = ({title, nftsList, isLoading = false}: ImageCarouselProps)
                 <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
                         Unable to Load Recent NFTs
                 </Heading>
+            ) : nftsList.length < (numImages ?? 4) ? (
+                <Heading size={'md'} color={BACKGROUND_COLOR} pr={2}>
+                        Not enough NFTs available to display
+                </Heading>
             ) : (
                 <HStack w={'100%'} justifyContent='center'>
-                <CarouselArrowButton type="Left" onClick={sliderRef.current?.slickPrev} />
+                    <CarouselArrowButton type="Left" onClick={sliderRef.current?.slickPrev} />
                     <Box w={'80%'} overflow='hidden'>
                         <Slider slidesToShow={numImages} draggable={false} autoplay arrows={false} ref={sliderRef}>
                             {carouselNFTsList.map((nft) => 
