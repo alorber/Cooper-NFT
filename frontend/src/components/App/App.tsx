@@ -74,7 +74,7 @@ const App = () => {
                     <Route path='/explore' element={<ExplorePageLayout ethToUsdRate={ethToUsdRate} updateEthRate={getETHRate} />} />
                     <Route path='/create' element={<CreatePageLayout metaMaskAddress={address} accountRoles={accountContractRoles}
                         ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
-                    <Route path='/nft/:ids' element={<NFTPageLayout ethToUsdRate={ethToUsdRate} />} />
+                    <Route path='/nft/:ids' element={<NFTPageLayout ethToUsdRate={ethToUsdRate} address={address ?? ''} />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
                     <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
                         isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />

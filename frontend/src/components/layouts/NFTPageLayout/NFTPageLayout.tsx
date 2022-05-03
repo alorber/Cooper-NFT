@@ -1,4 +1,5 @@
 import react, { useEffect, useState } from 'react';
+import { BACKGROUND_COLOR } from '../../../COLORS';
 import {
     Box,
     Grid,
@@ -14,10 +15,11 @@ import { parseNFTPageURL, URL_TOKEN_ID_LENGTH } from '../../../services/nftUrls'
 import { useParams } from 'react-router';
 
 type NFTPageLayoutProps = {
-    ethToUsdRate: number| null
+    ethToUsdRate: number| null,
+    address: string
 }
 
-const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
+const NFTPageLayout = ({ethToUsdRate, address}: NFTPageLayoutProps) => {
     // Gets NFT id from url
     const {ids} = useParams<'ids'>();
     const [tokenId, setTokenId] = useState<string | null>(null);
@@ -74,55 +76,68 @@ const NFTPageLayout = ({ethToUsdRate}: NFTPageLayoutProps) => {
     ) : nft == null ? (
         <Heading>Unable to load NFT. Try again later.</Heading>
     ) : (
-        <Grid templateColumns={'repeat(2,auto)'} w='100%' mt={4} p={6}>
+        <Grid templateColumns={'repeat(2,auto)'} w='100%' maxW={'2000px'} pt={14} px={6} pb={6}
+                style={{marginLeft: 'auto', marginRight: 'auto'}}>
             {/* NFT Image */}
             <GridItem colSpan={[2,2,1,1]} justifySelf='center'>
                 <Image borderRadius={5} src={URL.createObjectURL(nft.file)}
-                    alt={nft.name} width={["20em","20em","24em", "30em", "40em"]} 
+                    alt={nft.name} width={["20em","20em","24em", "35em", "40em"]} 
                     fit="contain" maxW={"1200px"} />
             </GridItem>
 
             {/* Title & Description */}
-            <GridItem colSpan={[2,2,1,1]}>
+            <GridItem colSpan={[2,2,1,1]} justifySelf='center' px={10} pt={[6,6,0,0]}>
                 <Stack alignItems={'center'} h='100%' justifyContent={'center'}
                         spacing={6}>
                     <Heading>
                         {nft.name}
                     </Heading>
-                    <Text>
+                    <Heading size={'md'} display={{base: 'none', xl: 'block'}}>
                         {nft.description}
+                    </Heading>
+                </Stack>
+            </GridItem>
+            {/* Description on smaller screens */}
+            <GridItem colSpan={2} justifySelf='center' display={{base: 'block', xl: 'none'}} px={10} pt={6}>
+                <Heading size={'md'} textAlign={'justify'}>
+                    {nft.description}
+                </Heading>
+            </GridItem>
+
+            {/* Owner & Price */}
+            <GridItem colSpan={2} pt={6}>
+                <Stack spacing={6}>
+                    <Text>
+                        <b>{nft.isListed ? ('Listed By') : 'Owner'}:</b> {nft.owner}
                     </Text>
+                    {nft.isListed && (
+                       <Text textAlign='center' >
+                            <b>Sale Price:</b> {nft.price} ETH {ethToUsdRate != null && 
+                                (<i>(~ ${Math.round(nft.price * ethToUsdRate * 100) / 100})</i>)}
+                        </Text> 
+                    )}        
                 </Stack>
             </GridItem>
 
-            {/* Owner */}
-            <GridItem colSpan={[2,2,1,1]} mt={6}>
-                <Text>
-                    {nft.owner}
-                </Text>
-            </GridItem>
-
-            {/* Price */}
-            {nft.isListed && (
-                <GridItem colSpan={[2,2,1,1]} mt={6}>
-                    <Stack my='auto' justifySelf={'center'} alignContent='center' height={'100%'}>
-                        <Text textAlign='center' >
-                            {nft.price} ETH
-                        </Text>
-                        {ethToUsdRate != null && (
-                            <Text as='i' textAlign='center' >
-                                (~ ${Math.round(nft.price * ethToUsdRate * 100) / 100})
-                            </Text>
-                        )}
-                    </Stack>
-                </GridItem>
-            )}
-
-            {/* Purchase Button */}
             <GridItem colSpan={2} mt={6}>
-                <Box w={'50%'} maxW={'600px'} mx={'auto'}>
-                    <FormSubmitButton isLoading={isPendingPurchase} label={'Purchase'} onClick={submitPurchase} />
-                </Box>
+                {/* Purchase Button */}
+                {nft.isListed && nft.owner !== address && (
+                    <Box w={'50%'} maxW={'600px'} mx={'auto'}>
+                        <FormSubmitButton isLoading={isPendingPurchase} label={'Purchase'} 
+                            onClick={submitPurchase} textHoverColor={BACKGROUND_COLOR} />
+                    </Box>
+                )}
+
+                {/* List Button */}
+                {!nft.isListed && nft.owner === address && (
+                    <></>
+                )}
+
+                {/* Owner Edit Listing Button */}
+                {nft.isListed && nft.owner === address && (
+                    <></>
+                )}
+                
             </GridItem>
         </Grid>
     );
