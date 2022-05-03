@@ -1,69 +1,67 @@
 import FilterBox from '../../ui/FilterBox/FilterBox';
 import LoadingText from '../../ui/LoadingText/LoadingText';
 import NFTCardGrid from '../../ui/NFTCardGrid/NFTCardGrid';
-import React, { useEffect, useState } from 'react';
-import { buildLiveNFTList, NFTMarketItem } from '../../../services/marketplace_contract';
+import react, { useEffect, useState } from 'react';
 import { Heading, Stack } from '@chakra-ui/react';
+import { NFTMarketItem } from '../../../services/marketplace_contract';
 
-type ExplorePageLayoutProps = {
+export type WatchPageLayoutProps = {
+    address: string,
     ethToUsdRate: number | null,
+    isLoadingEthRate: boolean,
     updateEthRate: () => void
 }
 
-const ExplorePageLayout = ({ethToUsdRate, updateEthRate}: ExplorePageLayoutProps) => {
-    const [listedNFTs, setlistedNFTs] = useState<NFTMarketItem[] | null>(null);
+const WatchPageLayout = ({address, ethToUsdRate, isLoadingEthRate, updateEthRate}: WatchPageLayoutProps) => {
+    const [watchedNFTs, setWatchedNFTs] = useState<NFTMarketItem[] | null>(null);
     const [searchResults, setSearchResults] = useState<NFTMarketItem[]>([]);
     const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
 
     // Loads User's NFT lists
-    const loadNFTLists = async () => {
+    const loadWatchedList = async () => {
         setIsLoadingNFTs(true);
-        const loadNFTListsResp = await buildLiveNFTList();
-        if(loadNFTListsResp.status === "Success") {
-            setlistedNFTs(loadNFTListsResp.nftMarketItems);
-        } else {
-            console.log(loadNFTListsResp.error);
-        }
+        setWatchedNFTs([]);
         setIsLoadingNFTs(false)
     }
 
     // Loads NFTs & ETH Rate on page-load
     useEffect(() => {
-        loadNFTLists();
+        loadWatchedList();
         updateEthRate();
-    }, []);
+    }, [address]);
 
     return (
         <Stack align={'center'}>
             {isLoadingNFTs ? (
-                <LoadingText loadingText='Loading Live Listings...' textColor='black' textSize={'lg'} marginTop={4} />
-            ) : listedNFTs === null ? (
+                <LoadingText loadingText='Loading Watched Listings...' textColor='black' textSize={'lg'} marginTop={4} />
+            ) : watchedNFTs === null ? (
                 <Stack pt={4}>
                     <Heading size='lg' pt={6}>
-                        We seem to be having some trouble loading your NFTs
+                        We seem to be having some trouble loading your watched NFTs
                     </Heading>
                     <Heading size='md' pt={6}>
                         Please try again later
                     </Heading> 
                 </Stack>
             ) : (<>
-                <FilterBox nftList={listedNFTs ?? []} setNftList={setSearchResults} 
+                <FilterBox nftList={watchedNFTs ?? []} setNftList={setSearchResults} 
                     EthToUsdRate={ethToUsdRate} />
-                {listedNFTs.length === 0 ? (
+                {watchedNFTs.length === 0 ? (
                     <Stack pt={4}>
                         <Heading size='lg' pt={6}>
                             We can't seem to find any NFTs
                         </Heading>
                         <Heading size='md' pt={6}>
-                            List some NFTs to fill our storeroom
+                            Watch some NFTs to view them here
                         </Heading> 
                     </Stack>
                 ) : (
-                    <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate} />
+                    <NFTCardGrid NFTList={searchResults ?? []} ethToUsdRate={ethToUsdRate} isLoadingEthRate={isLoadingEthRate}
+                        updateEthRate={updateEthRate} updateNftList={loadWatchedList} />
                 )}
             </>)}
         </Stack>
     );
 }
 
-export default ExplorePageLayout;
+export default WatchPageLayout;

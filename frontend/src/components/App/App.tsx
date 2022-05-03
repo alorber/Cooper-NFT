@@ -7,6 +7,7 @@ import MyNFTsLayout from '../layouts/MyNFTsLayout/MyNFTsLayout';
 import Navbar from '../sections/Navbar/Navbar';
 import NFTPageLayout from '../layouts/NFTPageLayout/NFTPageLayout';
 import React, { useEffect, useState } from 'react';
+import WatchPageLayout from '../layouts/WatchPageLayout/WatchPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContractRole } from '../../services/nft_contract';
 import { getETHToUSDRate } from '../../services/ethereumValue';
@@ -78,6 +79,8 @@ const App = () => {
                     <Route path='/nft/:ids' element={<NFTPageLayout ethToUsdRate={ethToUsdRate} isLoadingEthRate={isLoadingETHRate} 
                         updateEthRate={getETHRate} address={address ?? ''} />} />
                     <Route path='/test' element={<FunctionalityTestLayout />} />
+                    <Route path='/watch_list' element={showIfLoggedIn(<WatchPageLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
+                        isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />
                     <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
                         isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
