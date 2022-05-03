@@ -22,7 +22,9 @@ export type ListNFTModalProps = {
     isLoadingEthRate: boolean,
     updateEthRate: () => void,
     listingInfo: {itemId: string, tokenId: string},
-    updateNftList: () => void
+    updateNftList?: () => void,
+    isEditForm?: boolean  // Used if modal is for editing listing,
+    defaultPrice?: number | null
 }
 
 const ListNFTModal = ({
@@ -32,9 +34,11 @@ const ListNFTModal = ({
     isLoadingEthRate,
     updateEthRate,
     listingInfo,
-    updateNftList
+    updateNftList = () => {},
+    isEditForm = false,
+    defaultPrice = null
 }: ListNFTModalProps) => {
-    const [salePrice, setSalePrice] = useState<number | null>(null);
+    const [salePrice, setSalePrice] = useState<number | null>(defaultPrice);
     const [isLoading, setIsLoading] = useState(false);
 
     // Min value for price field
@@ -63,7 +67,8 @@ const ListNFTModal = ({
     }
 
     return (<>
-        <ModalForm isOpen={isOpen} onClose={onClose} headerText={'List NFT on Marketplace'}
+        <ModalForm isOpen={isOpen} onClose={onClose} 
+            headerText={isEditForm ? 'Edit Listed NFT' : 'List NFT on Marketplace'}
             modalBody={
                 <Stack>
                     {/* Price Field in ETH */}
@@ -80,12 +85,13 @@ const ListNFTModal = ({
                     )}
                 </Stack>
             } isCentered={true} modalFooter={
-                <FormSubmitButton isLoading={isLoading} label={'List NFT'} isDisabled={salePrice === null}
-                    onClick={() => {onClose(); onConfirmationModalOpen()}} />
+                <FormSubmitButton isLoading={isLoading} label={isEditForm ? 'Update NFT' : 'List NFT'} 
+                    isDisabled={salePrice === null} onClick={() => {onClose(); onConfirmationModalOpen()}} />
             } />
         {/* Confirmation Modal */}
-        <FormConfirmationModal isOpen={isConfirmationModalOpen} onClose={onConfirmationModalClose} header={'Confirm Submission'}
-            confrimationDialog={'Once an NFT is listed, paying ETH will be required to unlist or edit.'} submitButtonOnClick={listNFTOnMarketplace} />
+        <FormConfirmationModal isOpen={isConfirmationModalOpen} onClose={onConfirmationModalClose} 
+            header={isEditForm ? 'Confirm Edit' : 'Confirm Submission'} submitButtonOnClick={listNFTOnMarketplace}
+            confrimationDialog={`Once an ${isEditForm ? ('edit is submitted') : ('NFT is listed')}, paying ETH will be required to unlist or edit.`} />
     </>);
 }
 

@@ -1,32 +1,44 @@
+import ListNFTModal from '../../ui/ListNFTModal/ListNFTModal';
 import react, { useEffect, useState } from 'react';
 import { BACKGROUND_COLOR } from '../../../COLORS';
 import {
     Box,
+    ButtonGroup,
     Grid,
     GridItem,
     Heading,
     Image,
     Stack,
-    Text
+    Text,
+    useDisclosure
     } from '@chakra-ui/react';
-import { FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
+import { FormConfirmationModal, FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
 import { getNFTbyItemId, NFTMarketItem, purchaseNFT } from '../../../services/marketplace_contract';
 import { parseNFTPageURL, URL_TOKEN_ID_LENGTH } from '../../../services/nftUrls';
 import { useParams } from 'react-router';
 
 type NFTPageLayoutProps = {
     ethToUsdRate: number| null,
+    isLoadingEthRate: boolean,
+    updateEthRate: () => void,
     address: string
 }
 
-const NFTPageLayout = ({ethToUsdRate, address}: NFTPageLayoutProps) => {
+const NFTPageLayout = ({
+    ethToUsdRate,
+    isLoadingEthRate,
+    updateEthRate,
+    address
+}: NFTPageLayoutProps) => {
     // Gets NFT id from url
     const {ids} = useParams<'ids'>();
-    const [tokenId, setTokenId] = useState<string | null>(null);
-    const [itemId, setItemId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [nft, setNft] = useState<NFTMarketItem | null>(null);
     const [isPendingPurchase, setIsPendingPurchase] = useState(false);
+    const [isOwned, setIsOwned] = useState(false);
+
+    const {isOpen: isListModalOpen, onOpen: onListModalOpen, onClose: onListModalClose} = useDisclosure();
+    const {isOpen: isUnlistConfirmModalOpen, onOpen: onUnlistConfirmModalOpen, onClose: onUnlistConfirmModalClose} = useDisclosure();
 
     // Loads NFT
     const loadNFT = async (tokenId: string, itemId: string) => {
@@ -53,12 +65,18 @@ const NFTPageLayout = ({ethToUsdRate, address}: NFTPageLayoutProps) => {
             console.log('Could not load nft');
         } else {
             const parsedUrl = parseNFTPageURL(ids);
-            setTokenId(parsedUrl.tokenId);
-            setItemId(parsedUrl.itemId);
-            
             loadNFT(parsedUrl.tokenId, parsedUrl.itemId);
         }
     }, [ids]);
+
+    // Determines if user owns this NFT
+    useEffect(() => {
+        if(nft === null || address === null) {
+            setIsOwned(false);
+        } else {
+            setIsOwned(nft.owner.toLowerCase() === address.toLowerCase());
+        }
+    }, [nft, address]);
 
     // Purchases NFT
     const submitPurchase = async () => {
@@ -105,7 +123,7 @@ const NFTPageLayout = ({ethToUsdRate, address}: NFTPageLayoutProps) => {
             </GridItem>
 
             {/* Owner & Price */}
-            <GridItem colSpan={2} pt={6}>
+            <GridItem colSpan={2} pt={6} pb={4}>
                 <Stack spacing={6}>
                     <Text>
                         <b>{nft.isListed ? ('Listed By') : 'Owner'}:</b> {nft.owner}
@@ -121,7 +139,7 @@ const NFTPageLayout = ({ethToUsdRate, address}: NFTPageLayoutProps) => {
 
             <GridItem colSpan={2} mt={6}>
                 {/* Purchase Button */}
-                {nft.isListed && nft.owner !== address && (
+                {nft.isListed && !isOwned && (
                     <Box w={'50%'} maxW={'600px'} mx={'auto'}>
                         <FormSubmitButton isLoading={isPendingPurchase} label={'Purchase'} 
                             onClick={submitPurchase} textHoverColor={BACKGROUND_COLOR} />
@@ -129,16 +147,38 @@ const NFTPageLayout = ({ethToUsdRate, address}: NFTPageLayoutProps) => {
                 )}
 
                 {/* List Button */}
-                {!nft.isListed && nft.owner === address && (
-                    <></>
+                {!nft.isListed && isOwned && (
+                    <Box w={'50%'} maxW={'600px'} mx={'auto'}>
+                        <FormSubmitButton isLoading={false} label={'List NFT'} 
+                            onClick={onListModalOpen} textHoverColor={BACKGROUND_COLOR} />
+                    </Box>
                 )}
 
                 {/* Owner Edit Listing Button */}
-                {nft.isListed && nft.owner === address && (
-                    <></>
+                {nft.isListed && isOwned && (
+                    <ButtonGroup width={'80%'} maxW={'800px'} spacing={4}>
+                        <FormSubmitButton isLoading={false} label={'Cancel Listing'} 
+                                onClick={onUnlistConfirmModalOpen} textHoverColor={BACKGROUND_COLOR}
+                                backgroundColor={'#FF6A4A'} />
+                        <FormSubmitButton isLoading={false} label={'Edit Listing'} 
+                            onClick={onListModalOpen} textHoverColor={BACKGROUND_COLOR} />
+                    </ButtonGroup>
                 )}
                 
             </GridItem>
+            
+            {/* List Modal */}
+            <ListNFTModal isOpen={isListModalOpen} onClose={onListModalClose} ethToUsdRate={ethToUsdRate}
+                isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} 
+                listingInfo={{itemId: nft.itemId, tokenId: nft.tokenId}} />
+            {/* Edit Modal */}
+            <ListNFTModal isOpen={isListModalOpen} onClose={onListModalClose} ethToUsdRate={ethToUsdRate}
+                isLoadingEthRate={isLoadingEthRate} updateEthRate={updateEthRate} isEditForm={true}
+                listingInfo={{itemId: nft.itemId, tokenId: nft.tokenId}} defaultPrice={nft.price} />
+            {/* Unlist Confirmation Modal */}
+            <FormConfirmationModal isOpen={isUnlistConfirmModalOpen} onClose={onUnlistConfirmModalClose} 
+                header={'Confirm Listing Removal'} submitButtonOnClick={() => {}}
+                confrimationDialog={`Once an NFT is unlisted, paying ETH will be required to relist.`} />
         </Grid>
     );
 }

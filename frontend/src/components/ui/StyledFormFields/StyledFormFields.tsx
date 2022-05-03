@@ -187,6 +187,7 @@ export type FormSubmitButtonProps = {
     label: string,
     onClick?: () => void,
     isDisabled?: boolean,
+    backgroundColor?: string,
     textHoverColor?: string,
     maxWidth?: string
 }
@@ -195,13 +196,14 @@ export const FormSubmitButton = ({
     isLoading,
     label,
     onClick,
-    isDisabled=false,
+    isDisabled = false,
+    backgroundColor = MID_SHADE_COLOR,
     textHoverColor,
     maxWidth
 }: FormSubmitButtonProps) => {
     return (
         <Button width="full" type="submit" boxShadow='sm' isDisabled={isDisabled}
-                backgroundColor={MID_SHADE_COLOR} _hover={{boxShadow: 'md', textColor: textHoverColor || 'black'}}
+                backgroundColor={backgroundColor} _hover={{boxShadow: 'md', textColor: textHoverColor || 'black'}}
                 _active={{boxShadow: 'lg'}} _focus={{outline: "none"}} 
                 isLoading={isLoading} onClick={onClick} maxWidth={maxWidth} >
             {label}
