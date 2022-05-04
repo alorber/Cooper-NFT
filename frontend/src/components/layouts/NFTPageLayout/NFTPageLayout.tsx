@@ -71,6 +71,11 @@ const NFTPageLayout = ({
         }
     }
 
+    // Retrieves ETH rate on load
+    useEffect(() => {
+        updateEthRate();
+    }, []);
+
     // Parses url on load
     useEffect(() => {
         setIsLoading(true);

@@ -28,7 +28,6 @@ const App = () => {
     useEffect(() => {
         loadWallet(false);
         watchMetaMask(setAddress, setAccountContractRoles, setMetaMaskError);
-        getETHRate();
     }, [])
 
     // Loads user's wallet
