@@ -16,6 +16,7 @@ import {
     NumberInput,
     NumberInputField,
     Select,
+    Stack,
     useDisclosure
     } from '@chakra-ui/react';
 import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
@@ -113,19 +114,27 @@ const FilterBox = ({nftList, setNftList, isMyNFTPage = false, EthToUsdRate}: Fil
         setNftList(filteredList);
     }
 
+    // Resets filters
+    const resetFilter = () => {
+        setSearchTerm('');
+        setShowListedNFTs(true);
+        setShowUnlistedNFTs(true);
+        setMinMoneyFilter('');
+        setMaxMoneyFilter('');
+        setMoneyFilterUnit("ETH");
+    }
+
     return (
         <HStack px={12} w='100%' mt={6}>
             {/* Search Bar */}
             <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} 
                 updateSearchResults={updateSearchResults} />
             <SortBy setSortKey={setSortKey} />
-            {isMyNFTPage && (
-                <MyNFTPageToggle showListed={showListedNFTs} toggleListed={() => {setShowListedNFTs(!showListedNFTs)}}
-                    showUnlisted={showUnlistedNFTs} toggleUnlisted={() => {setShowUnlistedNFTs(!showUnlistedNFTs)}} />
-            )}
             <FiltersModal minMoney={minMoneyFilter} setMinMoney={setMinMoneyFilter} 
                 maxMoney={maxMoneyFilter} setMaxMoney={setMaxMoneyFilter} moneyUnit={moneyFilterUnit}
-                setMoneyUnit={setMoneyFilterUnit} />
+                setMoneyUnit={setMoneyFilterUnit} isMyNFTPage={isMyNFTPage} showListedNFTs={showListedNFTs}
+                setShowListedNFTs={setShowListedNFTs} showUnlistedNFTs={showUnlistedNFTs} setShowUnlistedNFTs={setShowUnlistedNFTs}  />
+            <FormIconButton iconType='Refresh' ariaLabel='Reset Filters' onClick={resetFilter} borderRadius={10} message={'Reset Filters'} />
         </HStack>
     );
 }
@@ -216,20 +225,40 @@ type FiltersModalProps = {
     maxMoney: number | string,
     setMaxMoney: (m: number | string) => void,
     moneyUnit: MoneyUnit,
-    setMoneyUnit: (u: MoneyUnit) => void
+    setMoneyUnit: (u: MoneyUnit) => void,
+    isMyNFTPage: boolean,
+    showListedNFTs: boolean,
+    setShowListedNFTs: (v: boolean) => void,
+    showUnlistedNFTs: boolean,
+    setShowUnlistedNFTs: (v: boolean) => void
 }
 type MoneyUnit = 'USD' | 'ETH';
-const FiltersModal = ({minMoney, setMinMoney, maxMoney, setMaxMoney, moneyUnit, setMoneyUnit}: FiltersModalProps) => {
+const FiltersModal = ({minMoney,
+    setMinMoney,
+    maxMoney,
+    setMaxMoney,
+    moneyUnit,
+    setMoneyUnit,
+    isMyNFTPage,
+    showListedNFTs,
+    setShowListedNFTs,
+    showUnlistedNFTs,
+    setShowUnlistedNFTs
+}: FiltersModalProps) => {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const [moneyUnitToggle, setMoneyUnitToggle] = useState<MoneyUnit>('ETH');
     const [minVal, setMinVal] = useState<number | string>('');
     const [maxVal, setMaxVal] = useState<number | string>('');
+    const [showListedToggle, setShowListedToggle] = useState(false);
+    const [showUnlistedToggle, setShowUnlistedToggle] = useState(false);
 
-    // Resets min/max values before showing modal
+    // Resets values before showing modal
     const showModal = () => {
         setMinVal(minMoney);
         setMaxVal(maxMoney);
         setMoneyUnitToggle(moneyUnit);
+        setShowListedToggle(showListedNFTs);
+        setShowUnlistedToggle(showUnlistedNFTs);
         onOpen();
     }
 
@@ -237,6 +266,8 @@ const FiltersModal = ({minMoney, setMinMoney, maxMoney, setMaxMoney, moneyUnit, 
         setMinMoney(minVal);
         setMaxMoney(maxVal);
         setMoneyUnit(moneyUnitToggle);
+        setShowListedNFTs(showListedToggle);
+        setShowUnlistedNFTs(showUnlistedToggle);
         onClose();
     }
 
@@ -251,7 +282,7 @@ const FiltersModal = ({minMoney, setMinMoney, maxMoney, setMaxMoney, moneyUnit, 
     }
 
     return (<>
-        <FormIconButton iconType='Filter' ariaLabel='Filter Modal' onClick={showModal} borderRadius={10} />
+        <FormIconButton iconType='Filter' ariaLabel='Filter Modal' onClick={showModal} borderRadius={10} message={'More Filters'} />
     
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -261,30 +292,43 @@ const FiltersModal = ({minMoney, setMinMoney, maxMoney, setMaxMoney, moneyUnit, 
                 </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    {/* Price Filter */}
-                    <HStack>
-                        <Heading size={'sm'}>
-                            Price:
-                        </Heading>
-                        <ButtonGroup spacing={0}>
-                            <ThemedToggleButton label='ETH' onClick={() => {setMoneyUnitToggle('ETH')}} 
-                                active={moneyUnitToggle === 'ETH'} locationInGroup={'Left'} />
-                            <ThemedToggleButton label='USD' onClick={() => {setMoneyUnitToggle('USD')}} 
-                                active={moneyUnitToggle === 'USD'} locationInGroup={'Right'}/>
-                        </ButtonGroup>
-                        <NumberInput min={0} borderColor={MID_SHADE_COLOR} value={minVal} onChange={setMinVal}
-                            _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
-                            precision={moneyUnitToggle === 'ETH' ? ETH_PRECISION : 2} defaultValue={minMoney} 
-                            isInvalid={minMaxError()} >
-                            <NumberInputField placeholder='Min' />
-                        </NumberInput>
-                        <NumberInput min={0} borderColor={MID_SHADE_COLOR} value={maxVal} onChange={setMaxVal}
-                            _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
-                            precision={moneyUnitToggle === 'ETH' ? ETH_PRECISION : 2} defaultValue={maxMoney}
-                            isInvalid={minMaxError()} >
-                            <NumberInputField placeholder='Max' />
-                        </NumberInput>
-                    </HStack>
+                    <Stack>
+                        {/* Price Filter */}
+                        <HStack>
+                            <Heading size={'sm'} pr={4}>
+                                Price:
+                            </Heading>
+                            <ButtonGroup spacing={0}>
+                                <ThemedToggleButton label='ETH' onClick={() => {setMoneyUnitToggle('ETH')}} 
+                                    active={moneyUnitToggle === 'ETH'} locationInGroup={'Left'} />
+                                <ThemedToggleButton label='USD' onClick={() => {setMoneyUnitToggle('USD')}} 
+                                    active={moneyUnitToggle === 'USD'} locationInGroup={'Right'}/>
+                            </ButtonGroup>
+                            <NumberInput min={0} borderColor={MID_SHADE_COLOR} value={minVal} onChange={setMinVal}
+                                _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
+                                precision={moneyUnitToggle === 'ETH' ? ETH_PRECISION : 2} defaultValue={minMoney} 
+                                isInvalid={minMaxError()} >
+                                <NumberInputField placeholder='Min' />
+                            </NumberInput>
+                            <NumberInput min={0} borderColor={MID_SHADE_COLOR} value={maxVal} onChange={setMaxVal}
+                                _hover={{borderColor: DARK_SHADE_COLOR}} focusBorderColor={DARK_SHADE_COLOR} 
+                                precision={moneyUnitToggle === 'ETH' ? ETH_PRECISION : 2} defaultValue={maxMoney}
+                                isInvalid={minMaxError()} >
+                                <NumberInputField placeholder='Max' />
+                            </NumberInput>
+                        </HStack>
+
+                        {/* Listed / Unlisted Toggle */}
+                        {isMyNFTPage && (
+                            <HStack pt={2}>
+                                <Heading size='sm' pr={4}>
+                                    Listing Status:
+                                </Heading>           
+                                <MyNFTPageToggle showListed={showListedToggle} toggleListed={() => {setShowListedToggle(!showListedToggle)}}
+                                    showUnlisted={showUnlistedToggle} toggleUnlisted={() => {setShowUnlistedToggle(!showUnlistedToggle)}} />    
+                            </HStack>
+                        )}
+                    </Stack>
                 </ModalBody>
                 <ModalFooter>
                     <FormSubmitButton isLoading={false} label='Apply' onClick={applyFilters} isDisabled={isSubmitDisabled()} />
