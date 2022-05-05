@@ -24,8 +24,10 @@ import {
     } from '../../../services/nft_contract';
 import {
     FormConfirmationModal,
+    FormErrorMessage,
     FormIconButton,
     FormSubmitButton,
+    FormSuccessMessage,
     FormTooltip
     } from '../../ui/StyledFormFields/StyledFormFields';
 import { isValidAddress } from '../../../services/marketplace_contract';
@@ -91,6 +93,8 @@ const ChangeRoleForm = ({isCooper}: ChangeRoleFormProps) => {
     const [formActions, setFormActions] = useState<RoleChangeAction[]>([]);
     const [selectedAction, setSelectedAction] = useState<RoleChangeAction | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
     const {isOpen: isConfirmationModalOpen, onOpen: onConfirmationModalOpen, onClose: onConfirmationModalClose} = useDisclosure();
 
 
@@ -109,6 +113,8 @@ const ChangeRoleForm = ({isCooper}: ChangeRoleFormProps) => {
         if(commonRolesResp.status === "Failure") {
             console.log(commonRolesResp.error);
             setFormActions([]);
+            setError(commonRolesResp.error);
+            setShowSuccess(false);
             return;
         }
 
@@ -181,7 +187,14 @@ const ChangeRoleForm = ({isCooper}: ChangeRoleFormProps) => {
         }
         setIsLoading(true);
         const changeFunction = formActionsToFncs[selectedAction];
-        changeFunction(formAddresses);
+        const changeResp = await changeFunction(formAddresses);
+        if(changeResp.status === "Failure") {
+            setError(changeResp.error);
+            console.log(changeResp.error);
+            setShowSuccess(false);
+        } else {
+            setShowSuccess(true);
+        }
         setIsLoading(false);
     }
 
@@ -194,6 +207,14 @@ const ChangeRoleForm = ({isCooper}: ChangeRoleFormProps) => {
                 </Heading>
                 <form onSubmit={e => {e.preventDefault(); onConfirmationModalOpen()}}>
                     <Stack>
+                        {/* Error Message */}
+                        {error !== null && <FormErrorMessage error={error} /> }
+
+                        {/* Success Message */}
+                        {showSuccess && (
+                            <FormSuccessMessage message={'Success'} />
+                        )}
+                        
                         {/* Wallet Addresses Field */}
                         <FormControl isRequired>
                             <Flex>
