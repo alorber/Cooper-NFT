@@ -467,3 +467,9 @@ export const purchaseNFT = async (itemId: string, tokenId: string, price: number
     return await completeMarketSale(itemId, tokenId, priceWei)
 }
 
+// Helper Functions
+// -----------------
+
+export const isValidAddress = (address: string) => {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+}

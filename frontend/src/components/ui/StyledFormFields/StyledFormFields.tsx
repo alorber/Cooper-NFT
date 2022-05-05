@@ -36,7 +36,12 @@ import {
     Link
     } from '@chakra-ui/react';
 import { BsFilter } from 'react-icons/bs';
-import { QuestionIcon, RepeatIcon } from '@chakra-ui/icons';
+import {
+    QuestionIcon,
+    RepeatIcon,
+    SmallAddIcon,
+    SmallCloseIcon
+    } from '@chakra-ui/icons';
 import {
     DARK_SHADE_COLOR,
     MID_SHADE_COLOR,
@@ -338,7 +343,7 @@ export const FormConfirmationModal = ({
 
 // Icon Button
 export type FormIconButtonProps = {
-    iconType: "Refresh" | 'Filter',
+    iconType: "Refresh" | 'Filter' | 'Delete' | 'Add',
     ariaLabel: string,
     message?: string,
     onClick: () => void,
@@ -354,7 +359,13 @@ export const FormIconButton = ({
     isLoading = false,
     borderRadius = 100
 }: FormIconButtonProps) => {
-    const icon = iconType === "Refresh" ? <RepeatIcon /> : iconType === "Filter" ? <BsFilter /> : undefined;
+    const icons = {
+        "Refresh": <RepeatIcon />,
+        "Filter" : <BsFilter />,
+        'Delete' : <SmallCloseIcon />,
+        "Add": <SmallAddIcon />
+    }
+    const icon = Object.keys(icons).includes(iconType) ? icons[iconType] : undefined;
     return (
         <Tooltip label={message} placement='top' hasArrow>
             <IconButton variant={'outline'} aria-label={ariaLabel} icon={icon} _hover={{boxShadow: 'md'}}

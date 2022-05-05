@@ -12,7 +12,7 @@ import {
     useDisclosure
     } from '@chakra-ui/react';
 import { constants as etherConstants } from 'ethers';
-import { createNFT, ETH_PRECISION } from '../../../services/marketplace_contract';
+import { createNFT, ETH_PRECISION, isValidAddress } from '../../../services/marketplace_contract';
 import { DARK_SHADE_COLOR, MID_SHADE_COLOR } from '../../../COLORS';
 import {
     FormConfirmationModal,
@@ -85,7 +85,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
         const invalidRequiredFields = file === null || formValues.name === '' || formValues.description === '';
         const invalidRoyaltyInfo = !formValues.disableRoyalties && (formValues.royaltyAmount === null || formValues.royaltyAmount < 0.01 
             || formValues.royaltyRecipient === null 
-            || (formValues.royaltyRecipient === RoyaltyRecipients.OTHER && !(/^0x[a-fA-F0-9]{40}$/.test(formValues.royaltyRecipientOther))));
+            || (formValues.royaltyRecipient === RoyaltyRecipients.OTHER && !isValidAddress(formValues.royaltyRecipientOther)));
         const invalidSellInfo = formValues.sellNFT && (formValues.price === null || formValues.price < minEth);
         return invalidRequiredFields || invalidRoyaltyInfo || invalidSellInfo;
     }

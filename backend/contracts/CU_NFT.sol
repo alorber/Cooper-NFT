@@ -58,29 +58,39 @@ contract CU_NFT is ERC1155, ERC2981, AccessControl {
     // ------ Role Functions ------
 
     // Adds current student
-    function addStudent(address student) external virtual onlyRole(_ADMIN) {
-        grantRole(_CURRENT_STUDENT, student);
+    function addStudent(address[] calldata students) external virtual onlyRole(_ADMIN) {
+        for(uint i = 0; i < students.length; i++) {
+            grantRole(_CURRENT_STUDENT, students[i]);
+        }
     }
 
     // Changes current student to previous student
-    function expireStudent(address student) external virtual onlyRole(_ADMIN) {
-        revokeRole(_CURRENT_STUDENT, student);
-        grantRole(_PREVIOUS_STUDENT, student);
+    function expireStudent(address[] calldata students) external virtual onlyRole(_ADMIN) {
+        for(uint i = 0; i < students.length; i++) {
+            revokeRole(_CURRENT_STUDENT, students[i]);
+            grantRole(_PREVIOUS_STUDENT, students[i]);
+        }
     }
 
     // Completely removes student from system
-    function removeStudent(address student) external virtual onlyRole(_ADMIN) {
-        revokeRole(_CURRENT_STUDENT, student);
+    function removeStudent(address[] calldata students) external virtual onlyRole(_ADMIN) {
+        for(uint i = 0; i < students.length; i++) {
+            revokeRole(_CURRENT_STUDENT, students[i]);
+        }
     }
 
     // Adds marketplace admin
-    function addAdmin(address admin) external virtual onlyRole(_COOPER) {
-        grantRole(_ADMIN, admin);
+    function addAdmin(address[] calldata admins) external virtual onlyRole(_COOPER) {
+        for(uint i = 0; i < admins.length; i++) {
+            grantRole(_ADMIN, admins[i]);
+        }
     }
 
     // Removes marketplace admin
-    function removeAdmin(address admin) external virtual onlyRole(_COOPER) {
-        revokeRole(_ADMIN, admin);
+    function removeAdmin(address[] calldata admins) external virtual onlyRole(_COOPER) {
+        for(uint i = 0; i < admins.length; i++) {
+            revokeRole(_ADMIN, admins[i]);
+        }
     }
 
     // Change Cooper account

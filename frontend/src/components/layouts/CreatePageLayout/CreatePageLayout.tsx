@@ -14,6 +14,7 @@ import {
     } from '@chakra-ui/react';
 import { ContractRole } from '../../../services/nft_contract';
 import { FormSubmitButton, FormTextInput } from '../../ui/StyledFormFields/StyledFormFields';
+import { isValidAddress } from '../../../services/marketplace_contract';
 import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';
 
 type CreatePageLayoutProps = {
@@ -105,7 +106,7 @@ const RequestAccessModal = ({isOpen, onClose, address}: RequestAccessModalProps)
         return formValues.firstName == '' || formValues.lastName == '' 
             || formValues.idNumber.length < 7 
             || !(/^[\w\.]+@cooper\.edu$/.test(formValues.cooperEmail)) 
-            || !(/^0x[a-fA-F0-9]{40}$/.test(formValues.walletAddr));
+            || !isValidAddress(formValues.walletAddr);
     }
     
     return (<>

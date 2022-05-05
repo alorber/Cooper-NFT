@@ -28,6 +28,12 @@ export type ContractRoleResponse = {
     roles: ContractRole[]
 } | Failure;
 
+export type CommonRolesResponse = {
+    status: "Success",
+    commonRoles: ContractRole[],
+    commonNonRoles: ContractRole[]
+} | Failure;
+
 export type ContractURIResponse = {
     status: "Success",
     uri: string
@@ -47,7 +53,7 @@ const initiateNFTContractWriteConnection = async () => {
 }
 
 // Gives account "admin" role
-export const setContractAdmin = async (address: string): Promise<TransactionResponse> => {
+export const setContractAdmin = async (addresses: string[]): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if(!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -55,7 +61,7 @@ export const setContractAdmin = async (address: string): Promise<TransactionResp
     
     try {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.addAdmin(address);
+        const transaction = await contract.addAdmin(addresses);
         await transaction.wait();    
         return {status: "Success"};
     } catch(err: any) {
@@ -64,7 +70,7 @@ export const setContractAdmin = async (address: string): Promise<TransactionResp
 }
 
 // Removes account's "admin" role
-export const removeContractAdmin = async (address: string): Promise<TransactionResponse> => {
+export const removeContractAdmin = async (addresses: string[]): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if(!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -72,7 +78,7 @@ export const removeContractAdmin = async (address: string): Promise<TransactionR
     
     try {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.removeAdmin(address);
+        const transaction = await contract.removeAdmin(addresses);
         await transaction.wait();
         return {status: "Success"};
     }  catch(err: any) {
@@ -81,7 +87,7 @@ export const removeContractAdmin = async (address: string): Promise<TransactionR
 }
 
 // Gives account "student" role
-export const setContractStudent = async (address: string): Promise<TransactionResponse> => {
+export const setContractStudent = async (addresses: string[]): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if(!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -89,7 +95,7 @@ export const setContractStudent = async (address: string): Promise<TransactionRe
 
     try {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.addStudent(address);
+        const transaction = await contract.addStudent(addresses);
         await transaction.wait();
         return {status: "Success"};    
     }  catch(err: any) {
@@ -98,7 +104,7 @@ export const setContractStudent = async (address: string): Promise<TransactionRe
 }
 
 // Removes account's "student" role
-export const removeContractStudent = async (address: string): Promise<TransactionResponse> => {
+export const removeContractStudent = async (addresses: string[]): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if(!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -106,7 +112,7 @@ export const removeContractStudent = async (address: string): Promise<Transactio
 
     try {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.removeStudent(address);
+        const transaction = await contract.removeStudent(addresses);
         await transaction.wait();
         return {status: "Success"};    
     }  catch(err: any) {
@@ -115,7 +121,7 @@ export const removeContractStudent = async (address: string): Promise<Transactio
 }
 
 // Gives account "previous student" role
-export const setContractPreviousStudent = async (address: string): Promise<TransactionResponse> => {
+export const setContractPreviousStudent = async (addresses: string[]): Promise<TransactionResponse> => {
     // Checks MetaMask Install
     if(!isMetaMaskInstalled) {
         return MetaMaskNotInstalledError;
@@ -123,7 +129,7 @@ export const setContractPreviousStudent = async (address: string): Promise<Trans
     
     try {
         const {contract} = await initiateNFTContractWriteConnection();
-        const transaction = await contract.expireStudent(address);
+        const transaction = await contract.expireStudent(addresses);
         await transaction.wait();
         return {status: "Success"};
     }  catch(err: any) {
@@ -138,18 +144,62 @@ export const getContractRole = async (address: string): Promise<ContractRoleResp
         return MetaMaskNotInstalledError;
     }
 
-    const {contract} = await initiateNFTContractReadConnection();
-    let roleResp = await contract.getContractRoles(address);
-    const accountRoles: ContractRole[] = [];
+    try {
+        const {contract} = await initiateNFTContractReadConnection();
+        let roleResp = await contract.getContractRoles(address);
+        const accountRoles: ContractRole[] = [];
 
-    // Determines roles
-    for(let role in ContractRole) {
-        if(roleResp & 1) {
-            accountRoles.push(role as ContractRole);
+        // Determines roles
+        for(let role in ContractRole) {
+            if(roleResp & 1) {
+                accountRoles.push(role as ContractRole);
+            }
+            roleResp >>= 1;
         }
-        roleResp >>= 1;
+        return {status: "Success", roles: accountRoles}
+    } catch (err: any) {
+        return {status: "Failure", error: (err as ContractError).message}
     }
-    return {status: "Success", roles: accountRoles}
+}
+
+// Gets roles in common between accounts
+export const getCommonRoles = async (addresses: string[]): Promise<CommonRolesResponse> => {
+    // Checks MetaMask Install
+    if(!isMetaMaskInstalled) {
+        return MetaMaskNotInstalledError;
+    }
+
+    try {
+        const {contract} = await initiateNFTContractWriteConnection();
+        
+        // Determines roles all have and don't have
+        let commonRolesBits = 15; // 1111
+        let commonNonRolesBits = 15; // 1111
+        for(const address of addresses) {
+            const roleResp = await contract.getContractRoles(address);
+            commonRolesBits &= roleResp;
+            commonNonRolesBits &= (~roleResp);
+        }
+        
+        // Converts role bits to names
+        const commonRoles = [];
+        const commonNonRoles = [];
+        for(let role in ContractRole) {
+            if(commonRolesBits & 1) {
+                commonRoles.push(role as ContractRole);
+            }
+            if(commonNonRolesBits & 1) {
+                commonNonRoles.push(role as ContractRole);
+            }
+            commonRolesBits >>= 1;
+            commonNonRolesBits >>= 1;
+        }
+
+        return {status: "Success", commonRoles: commonRoles, commonNonRoles: commonNonRoles};
+    }  catch(err: any) {
+        console.log("22")
+        return {status: "Failure", error: (err as ContractError).message}
+    }
 }
 
 // Creates tokenID from CID

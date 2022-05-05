@@ -1,13 +1,12 @@
+import AdminSettingsPageLayout from '../layouts/AdminSettingsPageLayout/AdminSettingsPageLayout';
 import CreatePageLayout from '../layouts/CreatePageLayout/CreatePageLayout';
 import ExplorePageLayout from '../layouts/ExplorePageLayout/ExplorePageLayout';
-import FunctionalityTestLayout from '../layouts/FunctionalityTestLayout/FunctionalityTestLayout';
 import HomePageLayout from '../layouts/HomePageLayout/HomePageLayout';
 import LoginPageLayout from '../layouts/LoginPageLayout/LoginPageLayout';
 import MyNFTsLayout from '../layouts/MyNFTsLayout/MyNFTsLayout';
 import Navbar from '../sections/Navbar/Navbar';
 import NFTPageLayout from '../layouts/NFTPageLayout/NFTPageLayout';
 import React, { useEffect, useState } from 'react';
-import SettingsPageLayout from '../layouts/SettingsPageLayout/SettingsPageLayout';
 import WatchPageLayout from '../layouts/WatchPageLayout/WatchPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ContractRole } from '../../services/nft_contract';
@@ -78,13 +77,12 @@ const App = () => {
                         ethRateProps={{ethToUsdRate: ethToUsdRate, isLoadingETHRate: isLoadingETHRate, updateEthRate: getETHRate}} />} />
                     <Route path='/nft/:ids' element={<NFTPageLayout ethToUsdRate={ethToUsdRate} isLoadingEthRate={isLoadingETHRate} 
                         updateEthRate={getETHRate} address={address ?? ''} />} />
-                    <Route path='/test' element={<FunctionalityTestLayout />} />
                     <Route path='/watch_list' element={showIfLoggedIn(<WatchPageLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
                         isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />
                     <Route path='/my_nfts' element={showIfLoggedIn(<MyNFTsLayout address={address ?? ''} ethToUsdRate={ethToUsdRate} 
                         isLoadingEthRate={isLoadingETHRate} updateEthRate={getETHRate} />)} />
                     <Route path='/login' element={<LoginPageLayout loadWallet={loadWallet} metaMaskError={metaMaskError} />} />
-                    <Route path='/admin_settings' element={<SettingsPageLayout />} />
+                    <Route path='/admin_settings' element={<AdminSettingsPageLayout accountRoles={accountContractRoles} />} />
                 </Routes>
             </Stack>
         </BrowserRouter>
