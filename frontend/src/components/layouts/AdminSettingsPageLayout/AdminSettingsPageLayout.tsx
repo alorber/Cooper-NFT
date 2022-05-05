@@ -177,7 +177,8 @@ const ChangeRoleForm = ({isCooper}: ChangeRoleFormProps) => {
 
     // Checks if form is valid
     const isFormValid = () => {
-        return formAddresses.every((a: string) => isValidAddress(a)) && selectedAction !== null;
+        return formAddresses.every((a: string) => isValidAddress(a)) && selectedAction !== null
+            && (new Set(formAddresses).size === formAddresses.length);
     }
 
     // Submits form
