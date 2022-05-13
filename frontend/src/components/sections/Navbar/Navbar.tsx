@@ -51,7 +51,7 @@ const Navbar = ({isLoggedIn, accountRoles}: NavbarProps) => {
                 <Flex justifyContent={{ base: 'center', md: 'left' }} w='full' alignSelf='center'>
                     <NavbarLink linkTo={"/"} onPageChange={closeNavbar}>
                         {/* !!!!!!!!!!!!!! TODO: ADD LOGO !!!!!!!!!!!!!! */}
-                        Cooper Union
+                        CU Marketplace
                     </NavbarLink>
                 </Flex>
 

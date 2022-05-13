@@ -19,7 +19,7 @@ const LoginPageLayout = ({loadWallet, metaMaskError}: LoginPageLayoutProps) => {
     return (
         <Stack spacing={8}>
             <Heading mt={8} mx={4}>Join a community of artists, architects, and engineers!</Heading>
-            <Heading size={'md'}>Write Something Here</Heading>
+            <Heading size={'md'}>Connect your Ethereum wallet to begin buying and selling one-of-a-kind artwork! </Heading>
             {isMetaMaskInstalled() ? (
                 <MetaMaskInstalledView loadWallet={loadWallet} metaMaskError={metaMaskError} />
             ) : (
