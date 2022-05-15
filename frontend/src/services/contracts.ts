@@ -20,7 +20,7 @@ export type Failure = {
     error: string
 };
 
-export type MetaMaskAccessResponse = {
+export type AddressResponse = {
     status: "Success",
     address: string
 } | Failure;
@@ -46,7 +46,7 @@ export const MetaMaskNotInstalledError: Failure = {status: "Failure", error: "Me
 // Gets MetaMask Wallet
   // Request = true: Will request permission from user / MetaMask
   // Request = false: Will get wallets already connected / accepted by user
-export const getMetaMaskWallet = async (request: boolean = true): Promise<MetaMaskAccessResponse> => {
+export const getMetaMaskWallet = async (request: boolean = true): Promise<AddressResponse> => {
     if(window.ethereum) {
         try {
             const addresses = await window.ethereum.request({

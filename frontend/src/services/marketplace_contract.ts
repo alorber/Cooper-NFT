@@ -1,7 +1,7 @@
 import NFT_Marketplace from '../artifacts/contracts/NFT_Marketplace.sol/NFT_Marketplace.json';
 import { BigNumber, constants as etherConstants } from 'ethers';
 import { buildNFTMetadata, contractMarketItemsToNFTList, uploadFileToIPFS } from './ipfs';
-import { cidToTokenID } from './nft_contract';
+import { cidToTokenID, getCooperRoyaltyAddress } from './nft_contract';
 import {
     ContractError,
     Failure,
@@ -338,8 +338,18 @@ export const createNFT = async(
     // Creates TokenID from CID
     const tokenID = cidToTokenID(metadataCID);
 
+    // Gets Cooper royalty address if needed
+    let royaltyRecipientAddr = royaltyRecipient;
+    if(royaltyRecipient === "COOPER_UNION_ADDRESS") {
+        const cooperRoyaltyResp = await getCooperRoyaltyAddress();
+        if(cooperRoyaltyResp.status === 'Failure') {
+            return cooperRoyaltyResp;
+        }
+        royaltyRecipientAddr = cooperRoyaltyResp.address;
+    }
+
     // Mints
-    const mintResp = await mintAndCreateMarketItem(address, tokenID, royaltyRecipient, royaltyAmount, priceWei);
+    const mintResp = await mintAndCreateMarketItem(address, tokenID, royaltyRecipientAddr, royaltyAmount, priceWei);
 
     if(mintResp.status === "Success") {
         return {status: "Success"}

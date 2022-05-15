@@ -15,6 +15,9 @@ contract CU_NFT is ERC1155, ERC2981 {
     // Marketplace contract address and authorization modifier
     address private _marketplaceContract;
 
+    // Cooper Union account address - will be used when royalty recipient is set to Cooper Union
+    address private _cooperRoyaltyAddress;
+
     modifier onlyMarketplace {
         require(_msgSender() == _marketplaceContract, "Mint can only be called by the marketplace");
         _;
@@ -29,8 +32,8 @@ contract CU_NFT is ERC1155, ERC2981 {
     }
 
     constructor() ERC1155("ipfs://f0{id}") {
-        // Sets default royalty to be 5% to Cooper
-        _setDefaultRoyalty(_msgSender(), 500);
+        // Initializes cooper account address to contract deployer
+        _cooperRoyaltyAddress = _msgSender();
     }
 
     // Makes EIP2981 play nice with ERC1155
@@ -41,6 +44,15 @@ contract CU_NFT is ERC1155, ERC2981 {
     // Sets marketplace address
     function setMarketplaceAddress(address marketplace) external virtual onlyCooper {
         _marketplaceContract = marketplace;
+    }
+
+    // Sets address that will be used when Cooper Union is set as royalty recipient
+    function setCooperRoyaltyAddress(address cooperAddress) external virtual onlyCooper {
+        _cooperRoyaltyAddress = cooperAddress;
+    }
+
+    function getCooperRoyaltyAddress() external view virtual returns (address) {
+        return _cooperRoyaltyAddress;
     }
 
     // ------ Overriding uri function for IPFS ------

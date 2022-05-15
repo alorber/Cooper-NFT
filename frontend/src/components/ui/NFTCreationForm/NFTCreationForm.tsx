@@ -103,7 +103,7 @@ const NFTCreationForm = ({address, ethToUsdRate, isLoadingETHRate, updateEthRate
         ) : formValues.royaltyRecipient === RoyaltyRecipients.CURRENT_WALLET ? (
             address
         ) : formValues.royaltyRecipient === RoyaltyRecipients.COOPER_UNION ? (
-            ''
+            'COOPER_UNION_ADDRESS'
         ) : formValues.royaltyRecipient === RoyaltyRecipients.OTHER ? (
             formValues.royaltyRecipientOther
         ) : (
