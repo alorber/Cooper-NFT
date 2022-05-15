@@ -2,35 +2,20 @@
 
 ## Table of Contents
 1. [Introduction](#introduction)
-
-2. [Project Description](#project-description)
-
-    a. [Tech Stack](#tech-stack)
-    
-    b. [Role System](#role-system)
-    
-    c. [Royalties](#royalties)
-
-    d. [IPFS](#description-ipfs)
-    
+2. [Project Description](#project-description)  
+    a. [Tech Stack](#tech-stack)  
+    b. [Role System](#role-system)  
+    c. [Royalties](#royalties)  
+    d. [IPFS](#description-ipfs)  
     e. [MetaMask](#description-metamask)
-    
-3. [Features](#features)
-
-    a. [Backend](#features-backend)
-  
-    b. [Frontend](#features-frontend)
-
+3. [Features](#features)  
+    a. [Backend](#features-backend)  
+    b. [Frontend](#features-frontend)  
 4. [Future Work](#future-work)
-
-5. [How to Run](#how-to-run)
-
-    a. [Backend](#how-to-run-backend)
-    
-    b. [MetaMask](#how-to-run-metamask)
-    
-    c. [IPFS](#how-to-run-ipfs)
-    
+5. [How to Run](#how-to-run)  
+    a. [Backend](#how-to-run-backend)  
+    b. [MetaMask](#how-to-run-metamask)  
+    c. [IPFS](#how-to-run-ipfs)  
     d. [Frontend](#how-to-run-frontend)
 
 ---
@@ -93,7 +78,98 @@ The marketplace was developed on the Ethereum blockchain using the <a href="http
 
 ### Backend <a name="features-backend"></a>
 
+<p align="justify">
+&emsp; The backend of the marketplace consists of two Ethereum smart contracts; one smart contract controls the minting and ownership of NFTs, while the other contract runs the marketplace. Functionality of the marketplace contract includes: assigning roles; creating, editing, selling, and canceling market listings; and various methods to fetch desired information.
+</p>
+
 ### Frontend <a name="features-frontend"></a>
+
+<p align="justify">
+&emsp; The marketplace frontend was developed with ReactJS and interacts with the Ethereum smart contracts using the <a href="https://docs.ethers.io/v5/">EthersJS</a> library. All pages of the marketplace are responsive to screen size and will work on mobile devices. Regardless of whether a user has connected a wallet or not, they will be able to access the home page, the about page, the explore page, and individual NFT pages.
+</p>
+
+#### Home Page
+
+<p align="justify">
+&emsp; When entering the site, users will be greeted with a home page containing a ‘Discover New Art’ button that redirects to the explore page, a carousel displaying recently listed NFTs, and basic information for sellers and buyers.
+</p>
+
+<p align="center">
+  <img width="500px" alt="Home Page" src="https://user-images.githubusercontent.com/13024480/168486802-66ea23fb-e207-42ec-9c2c-ba4b26fa6378.png">
+</p>
+
+https://user-images.githubusercontent.com/13024480/168486708-e043828e-27e9-4a7a-81e0-f527957e0dff.mp4
+
+#### Explore Page
+
+<p align="justify">
+&emsp; On the explore page, users can view all NFTs currently listed on the marketplace, displayed as a grid of NFT cards. Each NFT card displays the NFT image, which will enlarge on hover, the seller, the price in ETH, and an approximate price in USD, using a conversation rate from the Coinbase API. If a user has connected a wallet, they will be able to click on the heart icon to add the NFT to their favorites, so that it can be viewed at a later time on the favorites page.</br>
+&emsp; Any page that displays NFTs, like the explore page, will contain a filter bar that allows the user to search NFT names and descriptions, or select a desired sort order; the possible fields to sort by are date listed and price, ascending and descending. Selecting the icon right of the sort selector will open a filters modal with more filter options depending on the page, and clicking the rightmost button will reset all filters.
+</p>
+
+<p align="center">
+  <img width="500px" alt="Explore Page" src="https://user-images.githubusercontent.com/13024480/168486916-cdf8a405-26b5-4567-9089-00d6ad9ed713.png">
+</p>
+
+https://user-images.githubusercontent.com/13024480/168486921-269bb63a-9912-4e71-ab23-98ca62f8f82e.mp4
+
+#### NFT Page
+
+<p align="justify">
+&emsp; If a user selects an NFT image, they will be redirected to that NFT’s page, which will display all information shown on the NFT card as well as the NFT’s description. The buttons, or actions, available on the individual NFT page will depend on if the user owns the given NFT. If the user does not own the viewed NFT, then it will be available to purchase; clicking the purchase button will open a prompt from MetaMask to accept the transaction and pay the desired sale price. If the user owns the NFT, then they will have access to a <i>cancel listing</i> button and an <i>edit listing</i> button, if listed, or a <i>list NFT</i> button if not listed.
+</p>
+
+<p align="center">
+  <img width="500px" alt="NFT Page" src="https://user-images.githubusercontent.com/13024480/168486950-0c7047ba-739e-4409-b212-44bd7e54c047.png">
+</p>
+
+https://user-images.githubusercontent.com/13024480/168486959-4bc5e8ba-47e0-44e1-b0f8-625b478574df.mp4
+
+#### Login Page
+
+<p align="justify">
+&emsp; If a user has not connected their MetaMask account, a login button will appear in the navbar and all attempts to access wallet-required pages will redirect to the login page. On the login page, if the user has installed the MetaMask browser, a button will appear that will open a MetaMask connection prompt; this MetaMask prompt will ask the user to select which wallets they would like to connect. If the user has not previously installed MetaMask, the page will supply a short description of the extension and offer a link to its download page.
+</p>
+
+https://user-images.githubusercontent.com/13024480/168487785-818fb892-6a96-46ce-8b4e-93560e177fd3.mp4
+
+#### My NFTs Page
+
+<p align="justify">
+&emsp; Once a wallet is connected, users will be able to access the favorites page and the My NFTs page, which allow them to view NFTs they have favorited and NFTs they own, respectively. On the My NFTs page, users can toggle between viewing listed and unlisted NFT, as well as set a maximum and minimum price, through the filters modal.</br>
+&emsp; If an NFT is unlisted, the NFT card will display a “List NFT” button instead of the price. Selecting this button will open a modal that will allow the user to easily list the NFT.
+</p>
+
+https://user-images.githubusercontent.com/13024480/168488239-f2243eb8-5b4a-41de-91b0-05e4ba2712a4.mp4
+
+
+#### Create Page
+
+<p align="justify">
+&emsp; On the create page, if the current user has been assigned the student role, then the create NFT form will be displayed. This easy-to-use form will walk the user through submitting all the necessary information to mint an NFT of their artwork. At the top of the form, users can drag and drop a file or click on the box to open a file viewer. Once uploaded, a preview of the file will be displayed. Selecting the “What are Royalties?” button will open a modal containing a short description of marketplace royalties. It is possible to opt-out of royalties, if the user is not interested; however, if the user decides to add a royalty percentage, which maxes out at fifteen percent, they can select to send the royalties to their own wallet, to Cooper Union, or to a wallet they write in. Listing the to-be-minted NFT on the marketplace is opt-in. If the user opts not to list the NFT, it will be minted and added to their owned, and unlisted, NFTs; if the user adds a sale price, then the minted NFT will be immediately listed on the marketplace. Listing the NFT at the time of minting saves the user some gas fees as one less transaction is required.</br>
+&emsp; If a non-student account attempts to mint an NFT, the page will instead display the option to request access. If selected, a modal will open requesting the student’s information, which would then be sent to the marketplace admins.
+</p>
+
+<p align="center">
+  <img width="500px" alt="Create Page - NFT Form" src="https://user-images.githubusercontent.com/13024480/168488117-a87b0ecd-7f1c-491c-9a57-72532fbeb30e.png">
+  <img width="500px" alt="Create Page - Request Access" src="https://user-images.githubusercontent.com/13024480/168488198-0e406d6b-e5bf-447c-acdf-a3d4091a8e4d.png">
+</p>
+
+https://user-images.githubusercontent.com/13024480/168488263-c4b5c4d1-269f-45b6-8916-447a0462ac06.mp4
+
+https://user-images.githubusercontent.com/13024480/168488267-8b761810-e3f6-40df-9ad6-d2a1126f6685.mp4
+
+#### Admin Page
+
+<p align="justify">
+&emsp; If the current user has been assigned as an admin, then they will have access to an admin page, which will appear in their navbar. This admin page would contain any settings relevant to admins, but at the moment only contains a form to update users’ roles. In this form, an admin can add as many valid wallet addresses, or accounts, as they wish, and the selector options will display all role-changing actions applicable to all wallet addresses given.
+</p>
+
+<p align="center">
+  <img width="500px" alt="Admin Page - NFT Form" src="https://user-images.githubusercontent.com/13024480/168488343-fd7ae5ca-da6c-4cbd-a2dc-5bb6d83456bf.png">
+</p>
+
+https://user-images.githubusercontent.com/13024480/168488392-b922a4ff-852a-463d-90f5-3d2e87b33421.mp4
 
 ## Future Work
 
@@ -109,9 +185,9 @@ The marketplace was developed on the Ethereum blockchain using the <a href="http
 
 ##### This section will detail how the code can be run once the repository is cloned.
 
-Both the frontend & backend use [Node 16.13.0](https://nodejs.org/ko/blog/release/v16.13.0/) and the [Yarn Package Manager](https://yarnpkg.com/).
+Both the frontend & backend use [NodeJS v16.13.0](https://nodejs.org/ko/blog/release/v16.13.0/) and the [Yarn Package Manager](https://yarnpkg.com/).
 
-Use `yarn install` in each directory to install all dependencies.
+Ensure the correct version of Node is installed and active, and then use `yarn install` in each directory to install all dependencies.
 
 ### Backend <a name="how-to-run-backend"></a>
 
@@ -155,6 +231,6 @@ export const IPFS_PROJECT_SECRET = '####################';
 
 ### Frontend <a name="how-to-run-frontend"></a>
 
-###### Run the following commands in the backend directory.
+###### Run the following commands in the frontend directory.
 
 Use `yarn start` to deploy the react server and start the frontend on *http://localhost:3000/*.
