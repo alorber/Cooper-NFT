@@ -21,6 +21,7 @@ import {
 import { FormConfirmationModal, FormSubmitButton } from '../../ui/StyledFormFields/StyledFormFields';
 import { parseNFTPageURL, URL_TOKEN_ID_LENGTH } from '../../../services/nftUrls';
 import { useParams } from 'react-router';
+import LoadingText from '../../ui/LoadingText/LoadingText';
 
 type NFTPageLayoutProps = {
     ethToUsdRate: number| null,
@@ -106,6 +107,7 @@ const NFTPageLayout = ({
 
         setIsPendingPurchase(true);
         await purchaseNFT(nft.itemId, nft.tokenId, nft.price);
+        reloadNFT();
         setIsPendingPurchase(false);
     }
 
@@ -120,7 +122,7 @@ const NFTPageLayout = ({
     }
 
     return isLoading ? (
-        <Heading>Loading...</Heading>
+        <LoadingText loadingText='Loading NFT...' textColor='black' textSize={'lg'} marginTop={4} />
     ) : nft == null ? (
         <Heading>Unable to load NFT. Try again later.</Heading>
     ) : (
