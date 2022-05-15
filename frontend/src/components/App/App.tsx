@@ -9,7 +9,7 @@ import NFTPageLayout from '../layouts/NFTPageLayout/NFTPageLayout';
 import React, { useEffect, useState } from 'react';
 import WatchPageLayout from '../layouts/WatchPageLayout/WatchPageLayout';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ContractRole } from '../../services/nft_contract';
+import { ContractRole } from '../../services/contractRoles';
 import { getETHToUSDRate } from '../../services/ethereumValue';
 import { loadUserWallet, watchMetaMask } from '../../services/contracts';
 import { Stack } from '@chakra-ui/react';

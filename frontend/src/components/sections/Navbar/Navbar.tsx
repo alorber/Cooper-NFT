@@ -13,7 +13,7 @@ import {
     Stack,
     useDisclosure
     } from '@chakra-ui/react';
-import { ContractRole } from '../../../services/nft_contract';
+import { ContractRole } from '../../../services/contractRoles';
 import { FaUserCircle } from 'react-icons/fa';
 import { NAVBAR_ITEMS, NavbarItem } from './NavbarItems';
 import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';

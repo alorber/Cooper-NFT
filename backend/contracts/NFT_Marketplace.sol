@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/interfaces/IERC2981.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./CU_NFT.sol";
-import "hardhat/console.sol";
 
-contract NFT_Marketplace is Ownable, ERC1155Holder {
+contract NFT_Marketplace is Ownable, ERC1155Holder, AccessControl {
     // Counters for IDs
     using Counters for Counters.Counter;
     Counters.Counter private _marketItemId;
@@ -23,6 +24,16 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
     address private _nftContract;
     // Maps ItemIds to market items
     mapping(uint256 => MarketItem) private idToMarketItem;
+
+    // ------ Roles ------
+    // Cooper: Can add / remove admins
+    bytes32 public constant _COOPER = keccak256("_COOPER");
+    // Admins: Can add / remove / expire students
+    bytes32 public constant _ADMIN = keccak256("_ADMIN");
+    // Current Students: Can mint tokens & list on marketplace
+    bytes32 public constant _CURRENT_STUDENT = keccak256("_CURRENT_STUDENT");
+    // Previous Students: Cannot list on marketplace, but can still get royalties
+    bytes32 public constant _PREVIOUS_STUDENT = keccak256("_PREVIOUS_STUDENT");
 
     // Custom error for fetching functions
     error invalidItemId();
@@ -49,18 +60,105 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         uint256 timeListed
     );
 
-    modifier onlyStudent {
-        require((CU_NFT(_nftContract).getContractRoles(_msgSender()) & 2) == 2, "Must be current student to mint");
-        _;
-    }
-
     constructor(address nftContract) {
         _feeRecipient = payable(owner());
         _nftContract = nftContract;
+
+        // Sets role hierarchy
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(_COOPER, _msgSender());
+        _setupRole(_ADMIN, _msgSender());
+        _setRoleAdmin(_ADMIN, _COOPER);
+        _setRoleAdmin(_CURRENT_STUDENT, _ADMIN);
+        _setRoleAdmin(_PREVIOUS_STUDENT, _ADMIN);
     }
 
+    // Makes AccessControl play nice with ERC1155
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155Receiver, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    // ------ Role Functions ------
+
+    // Adds current student
+    function addStudent(address[] calldata students) external virtual onlyRole(_ADMIN) {
+        for(uint i = 0; i < students.length; i++) {
+            grantRole(_CURRENT_STUDENT, students[i]);
+        }
+    }
+
+    // Changes current student to previous student
+    function expireStudent(address[] calldata students) external virtual onlyRole(_ADMIN) {
+        for(uint i = 0; i < students.length; i++) {
+            revokeRole(_CURRENT_STUDENT, students[i]);
+            grantRole(_PREVIOUS_STUDENT, students[i]);
+        }
+    }
+
+    // Completely removes student from system (used if student is added in error)
+    function removeStudent(address[] calldata students) external virtual onlyRole(_ADMIN) {
+        for(uint i = 0; i < students.length; i++) {
+            revokeRole(_CURRENT_STUDENT, students[i]);
+        }
+    }
+
+    // Adds marketplace admin
+    function addAdmin(address[] calldata admins) external virtual onlyRole(_COOPER) {
+        for(uint i = 0; i < admins.length; i++) {
+            grantRole(_ADMIN, admins[i]);
+        }
+    }
+
+    // Removes marketplace admin
+    function removeAdmin(address[] calldata admins) external virtual onlyRole(_COOPER) {
+        for(uint i = 0; i < admins.length; i++) {
+            revokeRole(_ADMIN, admins[i]);
+        }
+    }
+
+    // Change Cooper account
+    function updateCooperRole(address newOwner) external virtual onlyRole(_COOPER) onlyRole(DEFAULT_ADMIN_ROLE) {
+        grantRole(DEFAULT_ADMIN_ROLE, newOwner);
+        grantRole(_COOPER, newOwner);
+
+        revokeRole(_COOPER, _msgSender());
+        revokeRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
+
+    // Gets account's role(s)
+    function getContractRoles(address account) external view virtual returns (uint8) {
+        // Roles are return as 4 bits
+        // 1 in a given spot means account has been assigned that role
+        // Roles, in order of bit, are: COOPER   ADMIN   CURRENT_STUDENT   PREVIOUS_STUDENT
+        uint8 roles = 0;
+
+        // Checks Cooper role
+        if(hasRole(_COOPER, account)) {
+            roles = roles | 8;
+        }
+
+        // Checks Admin role
+        if(hasRole(_ADMIN, account)) {
+            roles = roles | 4;
+        }
+
+        // Checks Current Student role
+        if(hasRole(_CURRENT_STUDENT, account)) {
+            roles = roles | 2;
+        }
+
+        // Checks Previous Student role
+        if(hasRole(_PREVIOUS_STUDENT, account)) {
+            roles = roles | 1;
+        }
+
+        return roles;
+    }
+
+    // ------ Marketplace Functions ------
+
     // Updates the listing fee of the contract
-    function updateListingFee(uint _listingFee) external payable onlyOwner() {
+    function updateListingFee(uint _listingFee) external payable onlyRole(_COOPER) {
         listingFee = _listingFee;
     }
 
@@ -72,7 +170,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
     // Creates Market Item - Mints NFT & adds to system
     // If price is > 0 wei, will list also
     function mintAndCreateMarketItem(address nftOwner, uint256 tokenId, address royaltyRecipient, 
-            uint96 royaltyValue, uint256 price, uint256 boughtTimestamp, uint256 listedTimeStamp) public onlyStudent {
+            uint96 royaltyValue, uint256 price, uint256 boughtTimestamp, uint256 listedTimeStamp) public onlyRole(_CURRENT_STUDENT) {
         // Mints token (gives ownership to marketplace, if being listed)
         CU_NFT(_nftContract).mint(price > 0 ? address(this) : nftOwner, tokenId, 1, royaltyRecipient, royaltyValue);
         
@@ -140,7 +238,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         _itemsSold.decrement();
 
         // Transfers token to marketplace
-        ERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
+        IERC1155(_nftContract).safeTransferFrom(msg.sender, address(this), tokenId, 1, '');
     }
 
     // Edits market item listing
@@ -171,7 +269,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         _itemsSold.increment();
 
         // Transfers ownership of NFT back to owner
-        ERC1155(_nftContract).safeTransferFrom(address(this), idToMarketItem[marketItemId].owner, tokenId, 1, '');
+        IERC1155(_nftContract).safeTransferFrom(address(this), idToMarketItem[marketItemId].owner, tokenId, 1, '');
     }
 
     // Creates sale
@@ -196,7 +294,7 @@ contract NFT_Marketplace is Ownable, ERC1155Holder {
         // Pays remaining money to seller
         payable(seller).transfer(messageFunds);
         // Transfers ownership of NFT to buyer
-        ERC1155(_nftContract).safeTransferFrom(address(this), msg.sender, tokenId, 1, '');
+        IERC1155(_nftContract).safeTransferFrom(address(this), msg.sender, tokenId, 1, '');
 
         // Updates contract
         idToMarketItem[marketItemId].owner = payable(msg.sender);

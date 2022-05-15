@@ -21,7 +21,7 @@ import {
     setContractAdmin,
     setContractPreviousStudent,
     setContractStudent
-    } from '../../../services/nft_contract';
+    } from '../../../services/contractRoles';
 import {
     FormConfirmationModal,
     FormErrorMessage,

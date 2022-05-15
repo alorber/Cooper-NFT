@@ -12,7 +12,7 @@ import {
     Text,
     useDisclosure
     } from '@chakra-ui/react';
-import { ContractRole } from '../../../services/nft_contract';
+import { ContractRole } from '../../../services/contractRoles';
 import { FormSubmitButton, FormTextInput } from '../../ui/StyledFormFields/StyledFormFields';
 import { isValidAddress } from '../../../services/marketplace_contract';
 import { ThemedLinkButton } from '../../ui/ThemedButtons/ThemedButtons';

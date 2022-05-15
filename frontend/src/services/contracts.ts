@@ -1,4 +1,4 @@
-import { ContractRole, getContractRole } from './nft_contract';
+import { ContractRole, getContractRole } from './contractRoles';
 import { ethers } from 'ethers';
 // Functions to Access Ethereum Contracts
 
