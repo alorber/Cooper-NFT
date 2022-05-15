@@ -152,7 +152,7 @@ https://user-images.githubusercontent.com/13024480/168488239-f2243eb8-5b4a-41de-
 
 <p align="center">
   <img width="500px" alt="Create Page - NFT Form" src="https://user-images.githubusercontent.com/13024480/168488117-a87b0ecd-7f1c-491c-9a57-72532fbeb30e.png">
-  <img width="500px" alt="Create Page - Request Access" src="https://user-images.githubusercontent.com/13024480/168488198-0e406d6b-e5bf-447c-acdf-a3d4091a8e4d.png">
+  <img width="300px" alt="Create Page - Request Access" src="https://user-images.githubusercontent.com/13024480/168488198-0e406d6b-e5bf-447c-acdf-a3d4091a8e4d.png">
 </p>
 
 https://user-images.githubusercontent.com/13024480/168488263-c4b5c4d1-269f-45b6-8916-447a0462ac06.mp4
