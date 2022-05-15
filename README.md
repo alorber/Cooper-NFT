@@ -11,25 +11,35 @@
     
     c. [Royalties](#royalties)
 
-    d. [IPFS](#ipfs)
+    d. [IPFS](#description-ipfs)
     
-    e. [MetaMask](#metamask)
+    e. [MetaMask](#description-metamask)
     
 3. [Features](#features)
 
-    c. [Backend](#backend)
+    a. [Backend](#features-backend)
   
-    c. [Frontend](#frontend)
+    b. [Frontend](#features-frontend)
 
-3. [Future Work](#future-work)
+4. [Future Work](#future-work)
 
-4. [How to Run](#how-to-run)
+5. [How to Run](#how-to-run)
+
+    a. [Backend](#how-to-run-backend)
+    
+    b. [MetaMask](#how-to-run-metamask)
+    
+    c. [IPFS](#how-to-run-ipfs)
+    
+    d. [Frontend](#how-to-run-frontend)
+
+---
 
 ## Introduction
 
 <p align="justify">
-&emsp; Building a reputation early is extremely important for all aspiring artists. However, in order to do so while still in school, students would need to produce artwork to meet fair and museum schedules while also completing their regular coursework. This overload of work is not sustainable for most full-time students and can lead to negative consequences, including burnout. Yet, if students wait until graduation to begin entering the industry, they will likely have a period of minimal income, as they create art and wait for sales to increase. Lack of income combined with a possible debt from student loans can form a massive barrier of entry for recent graduates. Therefore, a solution is needed that would allow students to begin exposing themselves to the industry on their schedule, while also fulfilling their own responsibilities and coursework.</br>
-&emsp; One such solution is a digital NFT marketplace, which allows artists to create unique digital artworks and sell them online. However, while students could list on such marketplaces, their art would be hidden amongst thousands of more well-known digital artists. For this reason, we wish to create a Cooper Union NFT marketplace with the sole purpose of giving Cooper Union artists a platform on which their art can be seen and purchased.</br>
+&emsp; Building a reputation early is extremely important for all aspiring artists. However, in order to do so while still in school, students would need to produce artwork to meet fair and museum schedules while also completing their regular coursework. This overload of work is not sustainable for most full-time students and can lead to negative consequences, including burnout. Yet, if students wait until graduation to begin entering the industry, they will likely have a period of minimal income, as they create art and wait for sales to increase. Lack of income combined with a possible debt from student loans can form a massive barrier of entry for recent graduates. Therefore, a solution is needed that would allow students to begin exposing themselves to the industry on their schedule, while also fulfilling their own responsibilities and coursework.</br></br>
+&emsp; One such solution is a digital NFT marketplace, which allows artists to create unique digital artworks and sell them online. However, while students could list on such marketplaces, their art would be hidden amongst thousands of more well-known digital artists. For this reason, we wish to create a Cooper Union NFT marketplace with the sole purpose of giving Cooper Union artists a platform on which their art can be seen and purchased.</br></br>
 &emsp; The purpose of this project was to develop an Ethereum-based NFT marketplace following the ERC-1155 token standard. The marketplace would restrict minting to Cooper Union students alone and would be driven by the Cooper Union name brand. This proof-of-concept would display the possibilities of applying an NFT marketplace to an academic institution and would initiate conversations within Cooper Union on its development.
 
 The full project paper can be read [here]().
@@ -44,18 +54,18 @@ The marketplace was developed on the Ethereum blockchain using the <a href="http
 </p>
 
 <p align="center">
-  <img alt="Profile Page, Profile View" src="https://user-images.githubusercontent.com/13024480/168460639-692eb268-d0ce-4837-9552-bf2580270e56.png">
+  <img alt="Tech Stack" width="650px" src="https://user-images.githubusercontent.com/13024480/168460639-692eb268-d0ce-4837-9552-bf2580270e56.png">
 </p>
   
 ### Role System
 
 <p align="justify">
-&emsp; The core feature of this marketplace is the restriction of minting art to current students. This is accomplished through a system of account roles built into the marketplace smart contract, which is implemented using <a href="https://docs.openzeppelin.com/contracts/4.x/api/access#AccessControl">OpenZeppelin’s AccessControl library</a>. Users are not required to have a role, but the available roles are: Cooper Union, Admin, Current Student, and Previous Student.</br> 
+&emsp; The core feature of this marketplace is the restriction of minting art to current students. This is accomplished through a system of account roles built into the marketplace smart contract, which is implemented using <a href="https://docs.openzeppelin.com/contracts/4.x/api/access#AccessControl">OpenZeppelin’s AccessControl library</a>. Users are not required to have a role, but the available roles are: Cooper Union, Admin, Current Student, and Previous Student.</br></br> 
 &emsp; The Cooper Union role is automatically assigned to the account that deploys the marketplace contract. This account, presumably run by Cooper Union administration, would have control over main aspects of the marketplace; currently, this is limited to the marketplace transaction fee, but more customizability could be added in the future as required. The marketplace owner also has the ability to assign the Admin role to other accounts; these admin accounts would be responsible for validating students, assigning them the Current Student role, and changing the role to Previous Student upon graduation. Realistically, these admins would be Cooper Union administrators working in tandem with the registrar. Current students have the ability to mint new artwork, while previous students have no distinct functionality, but are tracked in case future features require it. All accounts, though, including those without a specified role, have the ability to purchase art on the marketplace and resell all owned art.
 </p>
   
 <p align="center">
-  <img width="500px" alt="Profile Page, Profile View" src="https://user-images.githubusercontent.com/13024480/168460754-9e5b09b0-adce-4eef-a39f-06d2c26a4348.png">
+  <img width="500px" alt="Marketplace Role Hierarchy" src="https://user-images.githubusercontent.com/13024480/168460754-9e5b09b0-adce-4eef-a39f-06d2c26a4348.png">
 </p>
 
 ### Royalties
@@ -64,18 +74,87 @@ The marketplace was developed on the Ethereum blockchain using the <a href="http
 &emsp; Another essential feature of the marketplace is creator royalties; when an NFT is resold, a percentage of the sale price is paid to the creator of the NFT, or another Ethereum wallet of their choosing. This functionality is accomplished by implementing the EIP-2981 NFT Royalty Standard in the NFT smart contract. When a creator mints a new piece of artwork, they may specify a royalty percentage up to fifteen percent as well as the desired royalty receiver; these fields cannot be changed and are stored within the NFT smart contract, where they can be requested by any marketplace implementing this royalty standard. Therefore, since most marketplaces are adopting EIP-2981, NFTs minted and sold on the Cooper NFT Marketplace can be integrated into the wider Ethereum marketplace network.
 </p>
 
-### IPFS
+### IPFS <a name="description-ipfs"></a>
 
 <p align="justify">
-&emsp; While NFTs can be stored on the blockchain itself, this can become prohibitively expensive as each byte of data used incurs a fee. A more common approach, which is implemented in this project, is storing the NFT elsewhere and storing a hash of the token address on the blockchain. At first glance, this may appear less secure, but platforms exist that solve these issues. The system used in this project, and promoted by Ethereum, is <a href="https://ipfs.io/">InterPlanetary File System (IPFS)</a>.</br>
-&emsp; IPFS is a distributed system for storing and accessing files, websites, applications, and data. The two main features of IPFS are decentralization and content addressing. Files are stored across all nodes participating in the system, allowing for data resiliency, so if a server goes down, the token will not be lost. Additionally, tokens are addressed by hashes of the content contained. Therefore, the address for a given block of data, or token, will never change, and if the content of the data changes, it will be given a new address. Meaning, once an IPFS address is stored on the blockchain, the content it references cannot be modified or tampered with.</br>
-&emsp; The pipeline for minting an NFT on this marketplace is as follows: Once the necessary information is acquired, the file or artwork is uploaded to IPFS. IPFS, as described above, will return a content id (CID) referring to the file. This CID is packaged with other information to create the NFT metadata, which is then uploaded to IPFS. The CID referring to the metadata is passed to the NFT contract where it is used as the token ID of the newly minted NFT.</br>
+&emsp; While NFTs can be stored on the blockchain itself, this can become prohibitively expensive as each byte of data used incurs a fee. A more common approach, which is implemented in this project, is storing the NFT elsewhere and storing a hash of the token address on the blockchain. At first glance, this may appear less secure, but platforms exist that solve these issues. The system used in this project, and promoted by Ethereum, is <a href="https://ipfs.io/">InterPlanetary File System (IPFS)</a>.</br></br>
+&emsp; IPFS is a distributed system for storing and accessing files, websites, applications, and data. The two main features of IPFS are decentralization and content addressing. Files are stored across all nodes participating in the system, allowing for data resiliency, so if a server goes down, the token will not be lost. Additionally, tokens are addressed by hashes of the content contained. Therefore, the address for a given block of data, or token, will never change, and if the content of the data changes, it will be given a new address. Meaning, once an IPFS address is stored on the blockchain, the content it references cannot be modified or tampered with.</br></br>
+&emsp; The pipeline for minting an NFT on this marketplace is as follows: Once the necessary information is acquired, the file or artwork is uploaded to IPFS. IPFS, as described above, will return a content id (CID) referring to the file. This CID is packaged with other information to create the NFT metadata, which is then uploaded to IPFS. The CID referring to the metadata is passed to the NFT contract where it is used as the token ID of the newly minted NFT.</br></br>
 &emsp; For the purposes of this project, <a href="https://infura.io/">Infura</a> was used to access IPFS. Infura is a platform that provides dedicated IPFS nodes for blockchain-based applications; testing of the marketplace did not reach the threshold of Infura’s free tier, but constant access from the Cooper Union student body most likely would. Therefore, if this project is further developed upon and ultimately deployed, Cooper Union would benefit from hosting their own IPFS node, which they could use to store all NFTs listed on their marketplace. 
 </p>
 
-### MetaMask
+### MetaMask <a name="description-metamask"></a>
 
 <p align="justify">
 &emsp; Many choices exist for connecting Ethereum wallets to marketplaces, but one of the most popular options, which is used in this project, is <a href="https://metamask.io/">MetaMask</a>. MetaMask is a crypto wallet browser extension that allows users to link their Ethereum wallets with websites. Wallets, on this marketplace and most others, act as a user’s unique identifier and account. Once linked, this marketplace will have the ability to initiate Ethereum transactions on behalf of the user, which must then be accepted and paid for through MetaMask; no transaction can occur without the user explicitely accepting. In order to access any account-based functionality, including viewing owned NFTs and purchasing NFTs, users would have to connect their MetaMask wallet. 
 </p>
 
+## Features
+
+### Backend <a name="features-backend"></a>
+
+### Frontend <a name="features-frontend"></a>
+
+## Future Work
+
+<p align="justify">
+&emsp; Although the core implementation of the desired marketplace has been completed, there is still a lot more to accomplish. Future work on the current marketplace design would include fleshing out incomplete features and adding new ones that could not be completed in the allotted time. These additional features include user profiles, minting multiple NFTs in a single batch operation, minting fungible tokens with a specified edition size, auction style sales, listing end-times, favorited counter, and NFT collections. These features are similar to larger marketplaces and would greatly benefit this marketplace’s user experience.</br></br>
+&emsp; The current design of the marketplace requires the user to pay for all minting. However, in a marketplace run by an academic institution, this would create an unfair advantage to wealthier students who can afford to list more artwork. Two possible solutions to this issue were discussed, along with their drawbacks. The first possibility was to have Cooper Union pay for all gas fees; the issue with this system, though, is that Cooper Union would want to confirm that the art they are paying for is actual art, and not someone attempting to mess with the system and waste money. Determining this, however, would require a staff member acting as a marketplace gatekeeper, approving NFTs they believe to be genuine, and a database to store the NFTs until they are approved and minted. Implementing this would require hiring someone for the gatekeeper position, as well as open up the school to issues with determining which art is truly genuine.</br></br>
+&emsp; An alternative solution would be to have Cooper Union allot each student a specific minting allowance. No gatekeeper would be required, since students attempting to waste money would just be wasting their own. If this could be implemented within the smart contract, then the school wouldn’t need to be involved in the minting process other than supplying the funds. This is a promising solution, but would require significantly more discussion and thought before it would be approved by the school administration.</br></br>
+&emsp; Connecting the marketplace to the institution’s website is another potential application of our project. The donation page could have a section to donate NFTs; these NFT would be sold on the marketplace and all proceeds and future royalties would go to Cooper Union.</br></br>
+&emsp; Finally, the largest change that would need to be completed in the future, is moving the marketplace to an alternate blockchain. Throughout our discussions with students and faculty of the School of Art and Architecture, we received pushback for using the Ethereum blockchain, because of its environmental implications. Since this project was meant as a proof-of-concept to present to administration, Ethereum was chosen due to the abundance of documentation. However, if Cooper Union wishes to proceed with this marketplace, the smart contracts will need to be rewritten for a blockchain that better aligns with the institution's values.
+</p>
+
+## How to Run
+
+##### This section will detail how the code can be run once the repository is cloned.
+
+Both the frontend & backend use [Node 16.13.0](https://nodejs.org/ko/blog/release/v16.13.0/) and the [Yarn Package Manager](https://yarnpkg.com/).
+
+Use `yarn install` in each directory to install all dependencies.
+
+### Backend <a name="how-to-run-backend"></a>
+
+###### Run the following commands in the backend directory.
+
+[Hardhat](https://hardhat.org/getting-started/) is used to compile, deploy, and test the Ethereum smart contracts.
+
+In order to deploy a local Ethereum network node to test smart contracts on, run `npx hardhat node`. 
+If successful, hardhat will print a series of test Ethereum wallets that can be imported into MetaMask.
+
+Once the Ethereum node is set up, the contracts can be deployed with `npx hardhat run scripts/deploy.ts --network localhost`. 
+This will run the deploy script and, if successful, will print the addresses of both contracts.
+
+To allow the frontend to send requests to the smart contracts, create a file named *CONTRACT_ADDRESSES.ts* in the `frontend/src/services` directory and paste the following code, filling in the contract addresses printed by Hardhat.
+
+```javaScript
+// Blockchain Addresses for Smart Contracts
+
+export const CU_NFT_ADDRESS = '0x#############################';
+export const CU_MARKETPLACE_ADDRESS = '0x#############################';
+```
+
+### MetaMask <a name="how-to-run-metamask"></a>
+
+To connect MetaMask to the test network, *Show Test Networks* will need to be enabled in **Settings -> Advanced**. Once enabled, use the network dropdown menu to select *Localhost 8545*. 
+
+The test Ethereum wallets printed by Hardhat can now be added to MetaMask by selecting **Import Accounts** and pasting the private keys of the accounts desired. When testing, *Account 0* will be the account that deployed the contract and will be given the *Cooper Union* & *Admin* marketplace roles.
+
+### IPFS <a name="how-to-run-ipfs"></a>
+
+<a href="https://infura.io/">Infura</a> was used to access IPFS in this project. To connect this project to Infura, create an Infura account and a free-tier IPFS project. 
+
+In the `frontend/src/services` directory, create a file named *IPFS_AUTH.ts* and paste the following code, filling in the project ID & secret:
+
+```javaScript
+// Project ID & Secret for Infura
+
+export const IPFS_PROJECT_ID = '####################';
+export const IPFS_PROJECT_SECRET = '####################';
+```
+
+### Frontend <a name="how-to-run-frontend"></a>
+
+###### Run the following commands in the backend directory.
+
+Use `yarn start` to deploy the react server and start the frontend on *http://localhost:3000/*.
