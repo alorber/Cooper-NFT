@@ -27,7 +27,7 @@
 &emsp; One such solution is a digital NFT marketplace, which allows artists to create unique digital artworks and sell them online. However, while students could list on such marketplaces, their art would be hidden amongst thousands of more well-known digital artists. For this reason, we wish to create a Cooper Union NFT marketplace with the sole purpose of giving Cooper Union artists a platform on which their art can be seen and purchased.</br></br>
 &emsp; The purpose of this project was to develop an Ethereum-based NFT marketplace following the ERC-1155 token standard. The marketplace would restrict minting to Cooper Union students alone and would be driven by the Cooper Union name brand. This proof-of-concept would display the possibilities of applying an NFT marketplace to an academic institution and would initiate conversations within Cooper Union on its development.
 
-The full project paper can be read [here]().
+The full project paper can be read [here](https://github.com/alorber/Cooper-NFT/blob/main/CU%20NFT%20Marketplace%20Final%20Paper.pdf).
 </p>
 
 ## Project Description
